@@ -37,7 +37,7 @@ if(__SNOWPACK_ENV__.MODE === 'development'){
 // encode room name, room count
 
 var offline = false
-var version = '0.4.1'
+var version = '1.0.0'
 var earlyAccessMode = false
 
 
