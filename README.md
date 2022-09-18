@@ -4,6 +4,8 @@ p5.js live-coding collaborative classroom environment.
 cc [teddavis.org](http://teddavis.org), 2021 – 2022  
 *This project was funded through an [FHNW Lehrfonds](https://www.fhnw.ch/de/die-fhnw/strategische-entwicklungsschwerpunkte/hochschullehre-2025) grant.*
 
+[cocodingclassroom.cc](https://cocodingclassroom.cc/)
+
 -----
 
 *Welcome to COCODING Classroom! Here's a rough guide to get you started.*
