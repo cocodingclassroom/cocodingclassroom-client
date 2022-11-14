@@ -16,15 +16,15 @@ import 'ace-builds/src-min-noconflict/mode-javascript'
 import 'ace-builds/src-min-noconflict/worker-javascript'
 import 'ace-builds/src-min-noconflict/theme-cobalt'
 
-
-// // *** double check if broken on snowpack build??
-if(__SNOWPACK_ENV__.MODE === 'development'){
-	console.log('dev mode')
-	Ace.config.set('basePath', './node_modules/ace-builds/src-min-noconflict/');
-}else if(__SNOWPACK_ENV__.MODE === 'production'){
-	console.log('prod mode')
-	Ace.config.set('basePath', './_snowpack/pkg/ace-builds/src-min-noconflict/');
-}
+//
+// // // *** double check if broken on snowpack build??
+// if(__SNOWPACK_ENV__.MODE === 'development'){
+// 	console.log('dev mode')
+// 	Ace.config.set('basePath', './node_modules/ace-builds/src-min-noconflict/');
+// }else if(__SNOWPACK_ENV__.MODE === 'production'){
+// 	console.log('prod mode')
+// 	Ace.config.set('basePath', './_snowpack/pkg/ace-builds/src-min-noconflict/');
+// }
 
 // const {SNOWPACK_PUBLIC_API_URL} = __SNOWPACK_ENV__;
 // console.log(__SNOWPACK_ENV__.MODE)
