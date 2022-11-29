@@ -15,6 +15,7 @@ export class Chat {
 
     //members
     chatLog;
+    chatLogObserver;
 
     constructor(room) {
         this.roomId = room.roomId;
@@ -22,7 +23,7 @@ export class Chat {
         this.ydoc = room.ydoc;
         this.provider = room.provider;
         this.mode = room.mode;
-        this.chatID = `chat_${this.roomId}-${this.mode}`//"chat_" + this.editor.id + mode
+        this.chatID = `chat_${this.roomId}-${this.mode}`
         this.chatLog = this.ydoc.getArray(this.chatID);
     }
 
@@ -47,6 +48,10 @@ export class Chat {
         this.renderChatLog(chatLogElement);
         this.addChatLogObserver(chatLogElement);
         return rootElement;
+    }
+
+    destroy = () => {
+        this.chatLog.unobserve(this.chatLogObserver)
     }
 
     renderChatTrashElement = () => {
@@ -90,12 +95,12 @@ export class Chat {
     }
 
     addChatLogObserver(chatLogElement) {
-        let _chatLogObserver = (e, t) => {
+        this.chatLogObserver = () => {
             // if (e.target === this.chatLog)  // => true
             this.renderChatLog(chatLogElement)
         }
 
-        this.chatLog.observe(_chatLogObserver)
+        this.chatLog.observe(this.chatLogObserver)
     }
 
     renderChatLogElement() {
@@ -163,7 +168,5 @@ export class Chat {
                 cc.vexFocus()
             }
         })
-
     }
-
 }

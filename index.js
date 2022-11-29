@@ -1320,7 +1320,7 @@ cc.classroomRender = function(){
 			cc.getPrefs()
 
 			// safemode incase big bug (prevents compile)
-			if(window.location.hash == '#bug'){
+			if(window.location.hash === '#bug'){
 				cc.safeMode = true
 			}
 

@@ -3,10 +3,16 @@ import {AceBinding, AceCursors} from "../y-ace";
 import * as ace from "ace-builds";
 import {wc_hex_is_light} from "./utils";
 import {Chat} from "./chat";
+import {CocodingMode} from "./enums";
+
 
 export class Room {
 
     chat;
+    ydoc;
+    provider;
+    roomId;
+    mode;
 
     constructor(binding, ydoc, provider, roomID) {
         // class'ify inputs
@@ -14,7 +20,7 @@ export class Room {
         this.ydoc = ydoc
         this.provider = provider
         this.room = roomID
-        this.mode = cc.y.settings.get('mode')
+        this.mode = CocodingMode.EDIT; //TODO: this is temporary, will take mode from cc again later
         this.s = cc.y.rooms.get(this.room.toString())
 
         this.chat = new Chat(this)
@@ -30,7 +36,7 @@ export class Room {
         //this.chat = this.htmlContainer.getElementsByClassName('cc-chat')[0]
         this.console = this.htmlContainer.querySelector('.cc-console')
 
-        if (this.room === 0 || this.mode === 'gallery') {
+        if (this.room === 0 || this.mode === CocodingMode.GALLERY) {
             setTimeout(this.navExtended.bind(this))
             setTimeout(this.navSettings.bind(this))
         }
@@ -191,9 +197,9 @@ export class Room {
                 if (event.keyCode == 13) {
                     event.preventDefault()
                     if (this.keyDown.get(16)) {
-                        this.mode === 'edit' ? this.recompileRemote(true) : this.recompile(true)
+                        this.mode === CocodingMode.EDIT ? this.recompileRemote(true) : this.recompile(true)
                     } else {
-                        this.mode === 'edit' ? this.recompileRemote() : this.recompile()
+                        this.mode === CocodingMode.EDIT ? this.recompileRemote() : this.recompile()
                     }
                 }
 
@@ -307,8 +313,8 @@ export class Room {
 
         // make A editor readonly (unless privs)
 
-        if (this.room == 0 && this.mode === 'edit') { // check userID too...
-            if (this.mode === 'edit') {
+        if (this.room === 0 && this.mode === CocodingMode.EDIT) { // check userID too...
+            if (this.mode === CocodingMode.EDIT) {
                 this.editor.setReadOnly(true)
                 if (this.s.admin.includes(cc.p.token) || this.s.write.includes(cc.p.token)) {
                     this.editor.setReadOnly(false)
@@ -322,7 +328,7 @@ export class Room {
 
         // remove tracker on editor focus
         this.editor.on("focus", function () {
-            if (this.mode === 'edit') {
+            if (this.mode === CocodingMode.EDIT) {
                 cc.cursorTrack(this.room)
             }
             cc.keymap.set(16, false)
@@ -335,10 +341,10 @@ export class Room {
         this.type = this.ydoc.getText(this.editor.id)
 
         // edit mode
-        if (this.mode === 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             this.aceBinding = new AceBinding(this.type, this.editor, this.provider.awareness)
 
-            if (this.room == 0) {
+            if (this.room === 0) {
                 this.aceCursors = new AceCursors(this.aceBinding)
             }
         }
@@ -404,7 +410,7 @@ export class Room {
             // ignore self
             if (this.provider.awareness.clientID !== key) {
                 let user = this.userParse(key)
-                if (value.room == this.room || this.room == 0) {
+                if (value.room === this.room || this.room === 0) {
                     if (user.helpNeeded || user.request || user.admin || user.write) {
                         ul.unshift(user.html)
                         if (user.helpNeeded) {
@@ -419,13 +425,13 @@ export class Room {
 
         // show users
         elmUL.querySelector('.cc-userlist-peers').innerHTML = ul.join('')
-        if (this.mode === 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             cc.cursorTrackUpdate()
         }
         cc.tipsInit()
 
         // pulse window
-        if (this.room == 0 && this.mode === 'edit') {
+        if (this.room === 0 && this.mode === CocodingMode.EDIT) {
             if (cc.helpNeeded) {
                 this.meta.classList.add('cc-meta-visible')
             } else {
@@ -433,7 +439,7 @@ export class Room {
             }
         }
 
-        if (this.mode === 'gallery') {
+        if (this.mode === CocodingMode.GALLERY) {
             this.meta.classList.add('cc-meta-visible')
         }
     }
@@ -466,15 +472,15 @@ export class Room {
 
         let helpEmoji = user.helpNeeded ? '👋' : '✋'
         let helpNeeded = ``
-        if (this.mode === 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             if (user.isSelf) {
                 helpNeeded = `<div class="cc-raisehand ${helpStyle}" onclick="cc.toggleHelp();event.stopPropagation();" data-tip="Request Help">${helpEmoji}</div>`
             } else {
                 if (user.helpNeeded) {
-                    let helpAction = (this.room == 0) ? `onclick="cc.roomChange(${value.room});cc.roomWalkCheck();event.stopPropagation();" data-tip="Offer Help"` : ''
+                    let helpAction = (this.room === 0) ? `onclick="cc.roomChange(${value.room});cc.roomWalkCheck();event.stopPropagation();" data-tip="Offer Help"` : ''
 
                     // lower hand if admin
-                    if (this.room != 0 && cc.admins().includes(cc.p.token)) {
+                    if (this.room !== 0 && cc.admins().includes(cc.p.token)) {
                         helpAction = `onclick="cc.toggleHelp(${key});event.stopPropagation();" data-tip="Lower Hand"`
                     }
                     helpNeeded = `<div class="cc-raisehand ${helpStyle}" ${helpAction}>${helpEmoji}</div>`
@@ -508,7 +514,7 @@ export class Room {
         }
 
         let userWrite = ``
-        if (this.s.locked && this.mode === 'edit') {
+        if (this.s.locked && this.mode === CocodingMode.EDIT) {
             if (!user.isSelf) {
                 if (this.s.write.includes(value.user.token)) {
                     userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.room}, ${value.user.token}, false)" class="cc-user-write-active" data-tip="Toggle Write Access">${cc.icons.toggle.right}</span>` : `<span class="cc-user-write-active">${cc.icons.toggle.right}</span>`
@@ -555,7 +561,7 @@ export class Room {
         }
 
         let userSplitterValue = value.user.hasOwnProperty('splitter') ? value.user.splitter : 50
-        let userSplitter = (this.room == 0) ? `<div class="cc-user-splitter ${userNameColor}" style="left:${userSplitterValue}%;border-left:4px solid ${value.user.color}"></div>` : ``
+        let userSplitter = (this.room === 0) ? `<div class="cc-user-splitter ${userNameColor}" style="left:${userSplitterValue}%;border-left:4px solid ${value.user.color}"></div>` : ``
 
         user.html = `<div class="cc-user cc-user-${userType} cc-user-id-${key} ${helpStyle} ${trackingClass}" style="background:${value.user.color};${blurStatus}" ${tracking}>
 			${userSplitter}
@@ -573,17 +579,17 @@ export class Room {
 
     /* ROOMS */
     roomList() {
-        if (this.room != 0) { //  || this.mode === 'gallery'  || this.mode !== 'edit'
+        if (this.room !== 0) { //  || this.mode === CocodingMode.GALLERY  || this.mode !== 'edit'
             let rl = this.htmlContainer.querySelector('.cc-roomlist')
             rl.innerHTML = this.roomItems()
             rl.onchange = function (elm) {
-                if (cc.admins().includes(cc.p.token) && this.mode === 'gallery') {
+                if (cc.admins().includes(cc.p.token) && this.mode === CocodingMode.GALLERY) {
                     cc.y.settings.set('room', elm.target.value)
                 } else {
                     cc.roomChange(elm.target.value)
                 }
             }.bind(this);
-            if (!cc.admins().includes(cc.p.token) && this.mode === 'gallery') {
+            if (!cc.admins().includes(cc.p.token) && this.mode === CocodingMode.GALLERY) {
                 rl.disabled = 'disabled'
             }
             cc.tipsInit()
@@ -601,7 +607,7 @@ export class Room {
         arr.forEach((v, k) => {
             if (k > 0) {
                 let sel = ''
-                if (k == this.room) {
+                if (k === this.room) {
                     sel = 'selected'
                 }
                 let status = ''
@@ -619,10 +625,6 @@ export class Room {
         return opts
     }
 
-
-    /* CHAT */
-
-
     /* TOGGLE GUI/INSTANCE */
 
     // show/hide editor
@@ -630,7 +632,7 @@ export class Room {
         if (this.editorContainer.style.visibility !== 'visible') {
             // this.meta.style.display = 'block'
             this.editorContainer.style.visibility = 'visible'
-            if (id == this.room) {
+            if (id === this.room) {
                 this.editor.focus()
             }
         } else {
@@ -643,7 +645,7 @@ export class Room {
 
     // show/hide meta
     toggleMeta() {
-        if (this.meta.style.display == 'none') {
+        if (this.meta.style.display === 'none') {
             this.meta.style.display = 'block'
         } else {
             this.meta.style.display = 'none'
@@ -683,7 +685,7 @@ export class Room {
     }
 
     toggleWrite() {
-        if (this.mode === 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             let locked = true
             this.editor.setReadOnly(true)
             // console.log([this.s.admin[0], this.s.write[0], cc.p.token])
@@ -740,7 +742,7 @@ export class Room {
         }
 
         if (this.validCode) {
-            if (this.consoleTimer != undefined) {
+            if (this.consoleTimer !== undefined) {
                 clearTimeout(this.consoleTimer)
             }
             this.consoleTimer = setTimeout(function () {
@@ -821,7 +823,7 @@ export class Room {
         let tempCode = js_beautify(aceEdit.getValue(), beautifyOptions)
         aceEdit.setValue(tempCode, -1)
         aceEdit.gotoLine(tempPos.row + 1, tempPos.column, false)
-        if (this.mode === 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             cc.editorClearSelection()
             cc.roomSync('clearSelection')
         }
@@ -844,7 +846,7 @@ export class Room {
         let annos = this.editor.getSession().getAnnotations();
         let errorsFound = false;
         for (let i = 0; i < annos.length; i++) {
-            if (annos[i].type == 'error') {
+            if (annos[i].type === 'error') {
                 errorsFound = true
             }
         }
@@ -887,7 +889,7 @@ export class Room {
         }
 
         let pVars = {}
-        if (this.iframeContent.frameCount != undefined) {
+        if (this.iframeContent.frameCount !== undefined) {
             // p5 specific
             pVars.frameCount = this.iframeContent.frameCount + 1
             pVars.mouseX = this.iframeContent.mouseX
@@ -898,9 +900,9 @@ export class Room {
         let rawLines = this.editor.session.getLines(0, this.editor.session.getLength())
 
         // softCompile
-        if (force == undefined && !this.windowBroken) {
+        if (force === undefined && !this.windowBroken) {
             // p5 specific
-            if (this.iframeContent.frameCount != undefined) {
+            if (this.iframeContent.frameCount !== undefined) {
                 let drawPos = [] //{};
                 let drawPosSel = -1
                 let countBrackets = false
@@ -952,7 +954,7 @@ export class Room {
                         }
                         if (allLines[i].includes('}')) {
                             braces -= (allLines[i].match(/}/g) || []).length
-                            if (braces == 0) {
+                            if (braces === 0) {
                                 drawPos[drawPos.length - 1].end = i
                                 countBrackets = false
                             }
@@ -967,11 +969,11 @@ export class Room {
                         let cPos = this.curPositions[j]
                         if (cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end) {
                             // console.log(drawPos[i].name); // debug where change occured
-                            if (drawPos[i].name != 'setup' && drawPos[i].name != 'preload' && drawPos[i].type == 'function') {
+                            if (drawPos[i].name !== 'setup' && drawPos[i].name !== 'preload' && drawPos[i].type === 'function') {
                                 softFunction = true
                                 drawPosSel = i
                                 funName = drawPos[i].name
-                            } else if (drawPos[i].type == 'class') {
+                            } else if (drawPos[i].type === 'class') {
                                 softClass = true
                                 drawPosSel = i
                             }
@@ -982,7 +984,7 @@ export class Room {
                 // if custom function, grab where it's used
                 let functionPos = []
                 for (let j = 0; j < drawPos.length; j++) {
-                    if (funName == drawPos[j].name) {
+                    if (funName === drawPos[j].name) {
                         // find lines where drawPos[i].name sits
                         for (let i = 0; i < allLines.length; i++) {
                             if (allLines[i].includes(drawPos[j].name + '(')) {
@@ -998,7 +1000,7 @@ export class Room {
                     for (let j = 0; j < drawPos.length; j++) {
                         if (fPos >= drawPos[j].start && fPos <= drawPos[j].end) {
                             // console.log(drawPos[i].name); // debug where chage occured
-                            if (drawPos[j].name == 'setup' || drawPos[j].name == 'preload') { // && !settings.cocoding.active
+                            if (drawPos[j].name === 'setup' || drawPos[j].name === 'preload') { // && !settings.cocoding.active
                                 softFunction = false
                             }
                         }
@@ -1218,9 +1220,9 @@ export class Room {
     syncEventIn(evData) {
         let ev = evData;
         let copy;
-        if (ev.mode == 'keyboard') {
+        if (ev.mode === 'keyboard') {
             copy = new KeyboardEvent(ev.type, ev.opts)
-        } else if (ev.mode == 'mouse') {
+        } else if (ev.mode === 'mouse') {
             // let opts = this.getOpts(event, this.mouseFields);
             copy = new MouseEvent(ev.type, ev.opts)
         }
@@ -1250,7 +1252,7 @@ export class Room {
     }
 
     destroy() {
-        this.chatLog.unobserve(this._chatLogObserver)
+        this.chat.destroy();
         if (this.aceCursors !== undefined) {
             this.aceCursors.destroy()
         }
@@ -1326,12 +1328,12 @@ export class Room {
 				</div>
 			</div>
 		`
-        if (this.room !== 0 && this.mode === 'edit') {
+        if (this.room !== 0 && this.mode === CocodingMode.EDIT) {
             newHeader.style = 'display:none;'
         }
         newMetalist.appendChild(newHeader)
 
-        if (this.room > 0 || this.mode === 'gallery') {
+        if (this.room > 0 || this.mode === CocodingMode.GALLERY) {
 
 
             // roomlist as select pulldown
@@ -1342,7 +1344,7 @@ export class Room {
             let newSessionlist = document.createElement('select')
             newSessionlist.setAttribute('data-tip', 'Change Room')
             newSessionlist.className = 'cc-roomlist'
-            if (this.mode === 'gallery') {
+            if (this.mode === CocodingMode.GALLERY) {
                 if (!cc.admins().includes(cc.p.token)) {
                     newSessionlist.setAttribute('data-tip', 'Synced View')
                 }
@@ -1358,8 +1360,8 @@ export class Room {
 
         let newSessionExtendedNav = document.createElement('div')
         newSessionExtendedNav.innerHTML = `<div class="cc-controls-row">
-				${this.room === 0 && this.s.admin.includes(cc.p.token) && this.mode === 'edit' ? this.nav.reset + this.nav.code : ''} ${this.nav.save} ${this.s.admin.includes(cc.p.token) ? this.nav.screencast : ''}
-				${this.room === 0 && this.mode === 'edit' ? this.nav.merge : ''}
+				${this.room === 0 && this.s.admin.includes(cc.p.token) && this.mode === CocodingMode.EDIT ? this.nav.reset + this.nav.code : ''} ${this.nav.save} ${this.s.admin.includes(cc.p.token) ? this.nav.screencast : ''}
+				${this.room === 0 && this.mode === CocodingMode.EDIT ? this.nav.merge : ''}
 
 			</div>
 
@@ -1372,7 +1374,7 @@ export class Room {
 
 			<div class="cc-controls-extended"></div>
 		`
-        if (this.room == 0 || this.mode === 'gallery') {
+        if (this.room === 0 || this.mode === CocodingMode.GALLERY) {
             newMetalist.appendChild(newSessionExtendedNav)
         }
 
@@ -1406,15 +1408,15 @@ export class Room {
         newMetalist.appendChild(newChat)
 
         // settings
-        if (this.room === 0 || this.mode === 'gallery') {
+        if (this.room === 0 || this.mode === CocodingMode.GALLERY) {
             let newSettings = document.createElement('div')
             newSettings.className = 'cc-settings'
             newMetalist.appendChild(newSettings)
         }
 
         // place left/right
-        let roomHolder = (id === 0 && this.mode === 'edit') ? 'room-a' : 'room-b'
-        if (this.mode === 'gallery') {
+        let roomHolder = (id === 0 && this.mode === CocodingMode.EDIT) ? 'room-a' : 'room-b'
+        if (this.mode === CocodingMode.GALLERY) {
             roomHolder = 'room-b'
         }
         document.getElementById(roomHolder).appendChild(newContainer)
@@ -1473,7 +1475,7 @@ export class Room {
         let curDelay = cc.y.settings.get('liveDelay')
         for (let i = .5; i <= 2; i += .5) {
             let sel = ''
-            if (i == curDelay) {
+            if (i === curDelay) {
                 sel = 'selected'
             }
             opts += `<option ${sel}>${i}</option>`
@@ -1490,7 +1492,7 @@ export class Room {
 			</div>
 		`
 
-        if (this.room != 0 && this.mode === 'edit') {
+        if (this.room !== 0 && this.mode === CocodingMode.EDIT) {
             this.htmlContainer.querySelector('.cc-controls').innerHTML = navRoom
         }
 
@@ -1498,7 +1500,7 @@ export class Room {
         // nav options
         let lockStatus = ''
         if (this.room > 0 && cc.y.settings.get('roomLocks')) {
-            if (this.room == 1 && !cc.admins().includes(cc.p.token)) {
+            if (this.room === 1 && !cc.admins().includes(cc.p.token)) {
                 lockStatus = this.nav.unlockDisabled
             } else if (this.s.locked) {
                 lockStatus = this.nav.lock
@@ -1515,7 +1517,7 @@ export class Room {
             renameStatus = this.nav.renameDisabled
         }
 
-        if (this.mode === 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             let roomlistNav = this.htmlContainer.querySelector('.cc-roomlist-nav')
             if (roomlistNav !== null) {
                 this.htmlContainer.querySelector('.cc-roomlist-nav').innerHTML = `${renameStatus}${lockStatus}`
@@ -1528,13 +1530,13 @@ export class Room {
 
     navExtended() {
         let nav = ``
-        if (this.mode == 'edit') {
+        if (this.mode === CocodingMode.EDIT) {
             nav = `
 				<div class="cc-controls-row" ${cc.admins().includes(cc.p.token) ? '' : 'style="display:none;"'}>
 					${cc.admins().includes(cc.p.token) ? this.nav.layers + this.nav.walk + this.nav.message + this.nav.splitter : ''}
 				</div>
 			`
-        } else if (this.mode == 'gallery') {
+        } else if (this.mode === CocodingMode.GALLERY) {
             nav = `
 				<div class="cc-controls-row" ${cc.admins().includes(cc.p.token) ? '' : 'style="display:none;"'}>
 					${cc.admins().includes(cc.p.token) ? this.nav.walk + this.nav.message : ''}
