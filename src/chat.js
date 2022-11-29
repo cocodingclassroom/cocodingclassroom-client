@@ -12,8 +12,6 @@ export class Chat {
 
     //html
     rootElement;
-    chatLogElement;
-    chatHeaderElement;
 
     //members
     chatLog;
@@ -22,82 +20,103 @@ export class Chat {
         this.roomId = room.roomId;
         this.room = room;
         this.ydoc = room.ydoc;
-
         this.provider = room.provider;
         this.mode = mode
         this.chatID = `chat_${this.roomId}-${this.mode}`//"chat_" + this.editor.id + mode
-
-        this.chatLog = this.ydoc.getArray(this.chatID)
-        this.registerChatLogObserver();
+        this.chatLog = this.ydoc.getArray(this.chatID);
     }
 
     getRootElement = () => {
         this.chatLog = this.ydoc.getArray(this.chatID)
-        this.renderChat();
-        this.renderChatLog();
+        this.rootElement = this.render();
         return this.rootElement;
     }
 
-    registerChatLogObserver() {
-        let _chatLogObserver = (e, t) => {
-            // if (e.target === this.chatLog)  // => true
-            this.renderChatLog()
-        }
-        this.chatLog.observe(_chatLogObserver)
+    render() {
+        let rootElement = this.renderRootElement();
+        let chatHeaderElement = this.renderChatHeader();
+        let chatLogElement = this.renderChatLogElement();
+        let chatInputElement = this.renderChatInputElement();
+        let chatTrashElement = this.renderChatTrashElement();
+
+        chatHeaderElement.appendChild(chatTrashElement);
+        rootElement.appendChild(chatHeaderElement);
+        rootElement.appendChild(chatLogElement);
+        rootElement.appendChild(chatInputElement);
+
+        this.renderChatLog(chatLogElement);
+        this.addChatLogObserver(chatLogElement);
+        return rootElement;
     }
 
-    renderChat() {
-        this.rootElement = document.createElement('div');
-        this.rootElement.className = 'cc-chat';
-
-        this.chatHeaderElement = document.createElement('div');
-        this.chatHeaderElement.classes = 'cc-chat-header';
-
-        this.chatLogElement = document.createElement('div');
-        this.chatLogElement.classes = 'cc-chat-log';
-
-        this.chatInputElement = document.createElement('input');
-        this.chatInputElement.classes = 'cc-chat-input';
-        this.chatInputElement.placeholder = 'chat...';
-
-        // chat trash
-        this.chatTrashElement = document.createElement('div');
-        this.chatTrashElement.classes = 'cc-chat-trash';
+    renderChatTrashElement = () => {
+        let chatTrashElement = document.createElement('div');
+        chatTrashElement.classes = 'cc-chat-trash';
         let chatTrashHTML = ''
 
-        //add clear chat, if logged-in user is admin
         if (this.mode === 'edit' || cc.admins().includes(cc.p.token)) {
             chatTrashHTML = `<div class="cc-chat-trash" data-tip="Clear Chat">${cc.icons.trash}</div>`
             if ((this.roomId === 0 && !cc.admins().includes(cc.p.token)) || (cc.y.settings.get('roomLocks') && this.room.locked && !this.room.admin.includes(cc.p.token))) {
                 chatTrashHTML = ``
             }
         }
-        this.chatTrashElement.innerHTML = chatTrashHTML;
+        chatTrashElement.innerHTML = chatTrashHTML;
 
         if (((this.mode === 'edit' && this.roomId !== 0) || cc.admins().includes(cc.p.token))) {
-            this.chatTrashElement.addEventListener('mousedown', (event) => {
+            chatTrashElement.addEventListener('mousedown', (event) => {
                 this.clearChat()
             })
         }
 
-        // chat container
-        this.chatHeaderElement.appendChild(this.chatTrashElement);
-        this.rootElement.appendChild(this.chatHeaderElement);
-        this.rootElement.appendChild(this.chatLogElement);
-        this.rootElement.appendChild(this.chatInputElement);
+        return chatTrashElement;
+    }
 
-        this.chatInputElement.addEventListener('keyup', (event) => {
+    renderChatInputElement() {
+        let chatInputElement = document.createElement('input');
+        chatInputElement.classes = 'cc-chat-input';
+        chatInputElement.placeholder = 'chat...';
+
+        chatInputElement.addEventListener('keyup', (event) => {
             if (event.code === "Enter") {
-                let message = this.chatInputElement.value;
+                let message = chatInputElement.value;
                 if (message.length > 0) {
-                    this.sendMessage(this.chatInputElement.value)
-                    this.chatInputElement.value = '';
+                    this.sendMessage(chatInputElement.value)
+                    chatInputElement.value = '';
                 }
             }
         })
+
+        return chatInputElement;
     }
 
-    renderChatLog() {
+    addChatLogObserver(chatLogElement) {
+        let _chatLogObserver = (e, t) => {
+            // if (e.target === this.chatLog)  // => true
+            this.renderChatLog(chatLogElement)
+        }
+
+        this.chatLog.observe(_chatLogObserver)
+    }
+
+    renderChatLogElement() {
+        let chatLogElement = document.createElement('div');
+        chatLogElement.classes = 'cc-chat-log';
+        return chatLogElement;
+    }
+
+    renderChatHeader() {
+        let chatHeaderElement = document.createElement('div');
+        chatHeaderElement.classes = 'cc-chat-header';
+        return chatHeaderElement;
+    }
+
+    renderRootElement() {
+        let rootElement = document.createElement('div');
+        rootElement.className = 'cc-chat';
+        return rootElement;
+    }
+
+    renderChatLog(chatLogElement) {
         //this.meta.classList.add('cc-meta-visible')
         let chatHTML = []
         if (this.chatLog)
@@ -108,7 +127,6 @@ export class Chat {
                     return '<a class="cc-chat-log-link" href="' + url + '" target="_blank">' + url + '</a>';
                 })
 
-                // invert name color if light/dark background
                 let userNameColor = 'color-light'
                 if (wc_hex_is_light(e.color)) {
                     userNameColor = 'color-dark'
@@ -123,28 +141,16 @@ export class Chat {
                 )
             })
 
-        this.chatLogElement.innerHTML = chatHTML.join('')
-
-        setTimeout(() => {
-            this.chatLogElement.scrollTop = this.chatLogElement.scrollHeight
-        }, 10)
-
-        // setTimeout(() => {
-        //     this.meta.classList.remove('cc-meta-visible')
-        // }, 1000)
+        chatLogElement.innerHTML = chatHTML.join('')
+        chatLogElement.scrollTop = chatLogElement.scrollHeight
     }
 
     sendMessage(text) {
         let userSelf = this.provider.awareness.getLocalState().user
-        // console.log(this.room, userSelf, elm.value)
         this.chatLog.push([{room: this.room, name: userSelf.name, color: userSelf.color, msg: text}])
     }
 
     clearChat() {
-        // let confirmClear = confirm('Clear chat for this room?')
-        // if(confirmClear){
-        // 	this.chatLog.delete(0, this.chatLog.length) // purge chat
-        // }
         vex.dialog.confirm({
             unsafeMessage: 'Clear chat for this room?',
             callback: function (value) {
