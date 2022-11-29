@@ -21,7 +21,7 @@ export class Chat {
         this.room = room;
         this.ydoc = room.ydoc;
         this.provider = room.provider;
-        this.mode = mode
+        this.mode = room.mode;
         this.chatID = `chat_${this.roomId}-${this.mode}`//"chat_" + this.editor.id + mode
         this.chatLog = this.ydoc.getArray(this.chatID);
     }
