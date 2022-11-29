@@ -11,31 +11,31 @@ export class Chat {
     ydoc;
 
     //html
-    chatElement;
+    rootElement;
     chatLogElement;
     chatHeaderElement;
 
     //members
     chatLog;
 
-    constructor(mode, roomId, ydoc, provider, room) {
-        this.roomId = roomId;
+    constructor(room) {
+        this.roomId = room.roomId;
         this.room = room;
-        this.ydoc = ydoc;
+        this.ydoc = room.ydoc;
 
-        this.provider = provider;
+        this.provider = room.provider;
         this.mode = mode
-        this.chatID = `chat_${roomId}-${this.mode}`//"chat_" + this.editor.id + mode
+        this.chatID = `chat_${this.roomId}-${this.mode}`//"chat_" + this.editor.id + mode
 
-        this.chatLog = ydoc.getArray(this.chatID)
+        this.chatLog = this.ydoc.getArray(this.chatID)
         this.registerChatLogObserver();
     }
 
-    getElement = () => {
+    getRootElement = () => {
         this.chatLog = this.ydoc.getArray(this.chatID)
         this.renderChat();
         this.renderChatLog();
-        return this.chatElement;
+        return this.rootElement;
     }
 
     registerChatLogObserver() {
@@ -47,8 +47,8 @@ export class Chat {
     }
 
     renderChat() {
-        this.chatElement = document.createElement('div');
-        this.chatElement.className = 'cc-chat';
+        this.rootElement = document.createElement('div');
+        this.rootElement.className = 'cc-chat';
 
         this.chatHeaderElement = document.createElement('div');
         this.chatHeaderElement.classes = 'cc-chat-header';
@@ -82,9 +82,9 @@ export class Chat {
 
         // chat container
         this.chatHeaderElement.appendChild(this.chatTrashElement);
-        this.chatElement.appendChild(this.chatHeaderElement);
-        this.chatElement.appendChild(this.chatLogElement);
-        this.chatElement.appendChild(this.chatInputElement);
+        this.rootElement.appendChild(this.chatHeaderElement);
+        this.rootElement.appendChild(this.chatLogElement);
+        this.rootElement.appendChild(this.chatInputElement);
 
         this.chatInputElement.addEventListener('keyup', (event) => {
             if (event.code === "Enter") {

@@ -17,7 +17,7 @@ export class Room {
         this.mode = cc.y.settings.get('mode')
         this.s = cc.y.rooms.get(this.room.toString())
 
-        this.chat = new Chat(this.mode, this.room, this.ydoc, this.provider, this.room)
+        this.chat = new Chat(this)
 
         this.navInit()
         this.htmlContainer = this.addHTML()
@@ -30,7 +30,7 @@ export class Room {
         //this.chat = this.htmlContainer.getElementsByClassName('cc-chat')[0]
         this.console = this.htmlContainer.querySelector('.cc-console')
 
-        if (this.room == 0 || this.mode === 'gallery') {
+        if (this.room === 0 || this.mode === 'gallery') {
             setTimeout(this.navExtended.bind(this))
             setTimeout(this.navSettings.bind(this))
         }
@@ -1240,10 +1240,10 @@ export class Room {
 
         if (!this.syncTimerWait) {
             this.syncTimerWait = true
-            this.syncTimer = setTimeout(function () {
+            this.syncTimer = setTimeout(() => {
                 this.syncTimerWait = false
                 this.emit('dispatchSyncEvent', this.ev)
-            }.bind(this), 30) // *** play with timing, lag vs flood
+            }, 30) // *** play with timing, lag vs flood
         }
 
 
@@ -1326,7 +1326,7 @@ export class Room {
 				</div>
 			</div>
 		`
-        if (this.room != 0 && this.mode === 'edit') {
+        if (this.room !== 0 && this.mode === 'edit') {
             newHeader.style = 'display:none;'
         }
         newMetalist.appendChild(newHeader)
@@ -1400,7 +1400,7 @@ export class Room {
         newUserlist.appendChild(newUserPeers)
 
         // chat
-        let newChat = this.chat.getElement();
+        let newChat = this.chat.getRootElement();
         // let newChat = document.createElement('div')
         // newChat.className = 'cc-chat'
         newMetalist.appendChild(newChat)
