@@ -8,25 +8,25 @@ import {CocodingMode} from "./enums";
 
 export class Room {
 
+    //members
     chat;
-    ydoc;
+    yDoc;
     provider;
     roomId;
     mode;
 
-    constructor(binding, ydoc, provider, roomID) {
-        // class'ify inputs
+    constructor(binding, yDoc, provider, roomID) {
         this.binding = binding
-        this.ydoc = ydoc
+        this.yDoc = yDoc
         this.provider = provider
-        this.room = roomID
+        this.roomId = roomID
         this.mode = CocodingMode.EDIT; //TODO: this is temporary, will take mode from cc again later
-        this.s = cc.y.rooms.get(this.room.toString())
+        this.s = cc.y.rooms.get(this.roomId.toString())
 
         this.chat = new Chat(this)
 
-        this.navInit()
-        this.htmlContainer = this.addHTML()
+        this.initializeNavigation()
+        this.htmlContainer = this.render()
         this.editorContainer = this.htmlContainer.getElementsByClassName('cc-code')[0]
         this.editorContainer.style.fontSize = cc.settings.editor.fontsize + 'pt'
         this.editorContainer.style.visibility = 'visible'
@@ -36,12 +36,12 @@ export class Room {
         //this.chat = this.htmlContainer.getElementsByClassName('cc-chat')[0]
         this.console = this.htmlContainer.querySelector('.cc-console')
 
-        if (this.room === 0 || this.mode === CocodingMode.GALLERY) {
+        if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
             setTimeout(this.navExtended.bind(this))
             setTimeout(this.navSettings.bind(this))
         }
 
-        if (this.room > 0) {
+        if (this.roomId > 0) {
             setTimeout(this.navUpdate.bind(this))
         }
 
@@ -313,7 +313,7 @@ export class Room {
 
         // make A editor readonly (unless privs)
 
-        if (this.room === 0 && this.mode === CocodingMode.EDIT) { // check userID too...
+        if (this.roomId === 0 && this.mode === CocodingMode.EDIT) { // check userID too...
             if (this.mode === CocodingMode.EDIT) {
                 this.editor.setReadOnly(true)
                 if (this.s.admin.includes(cc.p.token) || this.s.write.includes(cc.p.token)) {
@@ -329,7 +329,7 @@ export class Room {
         // remove tracker on editor focus
         this.editor.on("focus", function () {
             if (this.mode === CocodingMode.EDIT) {
-                cc.cursorTrack(this.room)
+                cc.cursorTrack(this.roomId)
             }
             cc.keymap.set(16, false)
             cc.keymap.set(17, false)
@@ -338,13 +338,13 @@ export class Room {
 
 
         // each room based on y.text shared type
-        this.type = this.ydoc.getText(this.editor.id)
+        this.type = this.yDoc.getText(this.editor.id)
 
         // edit mode
         if (this.mode === CocodingMode.EDIT) {
             this.aceBinding = new AceBinding(this.type, this.editor, this.provider.awareness)
 
-            if (this.room === 0) {
+            if (this.roomId === 0) {
                 this.aceCursors = new AceCursors(this.aceBinding)
             }
         }
@@ -359,8 +359,8 @@ export class Room {
         this.provider.awareness.setLocalState(selfState)
     }
 
-    navInit() {
-        let id = this.room
+    initializeNavigation() {
+        let id = this.roomId
         this.nav = {
             reset: `<div onclick="cc.reset(${id})" data-tip="New Sketch">${cc.icons.new}</div>`,
             code: `<div onclick="cc.code()" data-tip="Sync Code">${cc.icons.code}</div>`,
@@ -384,6 +384,9 @@ export class Room {
             lockDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.lock}</div>`,
             unlock: `<div class="cc-nav-lock unlock" ${this.s.admin.includes(cc.p.token) || cc.admins().includes(cc.p.token) || this.s.admin.length == 1 ? 'onclick="cc.roomLock(' + id + ', true)" data-tip="Lock Editor"' : 'data-tip="Lock Editor" style="opacity:.6;cursor:help;"'}>${cc.icons.unlock}</div>`,
             unlockDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.unlock}</div>`,
+        }
+        if (cc.y.rooms.size > 30 || this.mode !== 'edit') {
+            this.nav.layers = `<div data-tip="Add Rooms - Limit 30" style="opacity:.5;">${cc.icons.layers}</div>`
         }
     }
 
@@ -410,7 +413,7 @@ export class Room {
             // ignore self
             if (this.provider.awareness.clientID !== key) {
                 let user = this.userParse(key)
-                if (value.room === this.room || this.room === 0) {
+                if (value.room === this.roomId || this.roomId === 0) {
                     if (user.helpNeeded || user.request || user.admin || user.write) {
                         ul.unshift(user.html)
                         if (user.helpNeeded) {
@@ -431,7 +434,7 @@ export class Room {
         cc.tipsInit()
 
         // pulse window
-        if (this.room === 0 && this.mode === CocodingMode.EDIT) {
+        if (this.roomId === 0 && this.mode === CocodingMode.EDIT) {
             if (cc.helpNeeded) {
                 this.meta.classList.add('cc-meta-visible')
             } else {
@@ -477,10 +480,10 @@ export class Room {
                 helpNeeded = `<div class="cc-raisehand ${helpStyle}" onclick="cc.toggleHelp();event.stopPropagation();" data-tip="Request Help">${helpEmoji}</div>`
             } else {
                 if (user.helpNeeded) {
-                    let helpAction = (this.room === 0) ? `onclick="cc.roomChange(${value.room});cc.roomWalkCheck();event.stopPropagation();" data-tip="Offer Help"` : ''
+                    let helpAction = (this.roomId === 0) ? `onclick="cc.roomChange(${value.room});cc.roomWalkCheck();event.stopPropagation();" data-tip="Offer Help"` : ''
 
                     // lower hand if admin
-                    if (this.room !== 0 && cc.admins().includes(cc.p.token)) {
+                    if (this.roomId !== 0 && cc.admins().includes(cc.p.token)) {
                         helpAction = `onclick="cc.toggleHelp(${key});event.stopPropagation();" data-tip="Lower Hand"`
                     }
                     helpNeeded = `<div class="cc-raisehand ${helpStyle}" ${helpAction}>${helpEmoji}</div>`
@@ -517,20 +520,20 @@ export class Room {
         if (this.s.locked && this.mode === CocodingMode.EDIT) {
             if (!user.isSelf) {
                 if (this.s.write.includes(value.user.token)) {
-                    userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.room}, ${value.user.token}, false)" class="cc-user-write-active" data-tip="Toggle Write Access">${cc.icons.toggle.right}</span>` : `<span class="cc-user-write-active">${cc.icons.toggle.right}</span>`
+                    userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.roomId}, ${value.user.token}, false)" class="cc-user-write-active" data-tip="Toggle Write Access">${cc.icons.toggle.right}</span>` : `<span class="cc-user-write-active">${cc.icons.toggle.right}</span>`
                 } else if (this.s.request.includes(value.user.token)) {
-                    userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.room}, ${value.user.token}, true)" class="cc-user-write pulse" data-tip="Toggle Write Access">${cc.icons.toggle.left}</span>` : `<span class="cc-user-write pulse">${cc.icons.toggle.left}</span>`
+                    userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.roomId}, ${value.user.token}, true)" class="cc-user-write pulse" data-tip="Toggle Write Access">${cc.icons.toggle.left}</span>` : `<span class="cc-user-write pulse">${cc.icons.toggle.left}</span>`
                 } else if (!this.s.admin.includes(value.user.token)) {
-                    userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.room}, ${value.user.token}, true)" class="cc-user-write" data-tip="Toggle Write Access">${cc.icons.toggle.left}</span>` : ``
+                    userWrite = this.s.admin.includes(cc.p.token) ? `<span onclick="event.stopPropagation();cc.toggleWrite(${this.roomId}, ${value.user.token}, true)" class="cc-user-write" data-tip="Toggle Write Access">${cc.icons.toggle.left}</span>` : ``
                 }
             }
             if (!this.s.admin.includes(cc.p.token) && user.isSelf) {
                 if (this.s.write.includes(value.user.token)) {
                     userWrite = `<span class="cc-user-write-active" data-tip="Granted Write">${cc.icons.toggle.right}</span>`
                 } else if (this.s.request.includes(value.user.token)) {
-                    userWrite = `<span onclick="event.stopPropagation();cc.requestWrite(${this.room}, ${value.user.token}, false)" class="cc-user-write pulse" data-tip="Cancel Request Write">${cc.icons.toggle.left}</span>`
+                    userWrite = `<span onclick="event.stopPropagation();cc.requestWrite(${this.roomId}, ${value.user.token}, false)" class="cc-user-write pulse" data-tip="Cancel Request Write">${cc.icons.toggle.left}</span>`
                 } else {
-                    userWrite = `<span onclick="event.stopPropagation();cc.requestWrite(${this.room}, ${value.user.token}, true)" class="cc-user-write" data-tip="Request Write">${cc.icons.toggle.left}</span>`
+                    userWrite = `<span onclick="event.stopPropagation();cc.requestWrite(${this.roomId}, ${value.user.token}, true)" class="cc-user-write" data-tip="Request Write">${cc.icons.toggle.left}</span>`
                 }
             }
         }
@@ -546,12 +549,12 @@ export class Room {
         // show users room only on left side
         let userSessionAction = user.isSelf ? 'cc-user-room-self"' : `cc-user-room-action" onclick="cc.roomChange(${value.room});cc.roomWalkCheck();event.stopPropagation();" data-tip="Jump to Room"`
         let userSession = `<sup class="cc-user-room ${userSessionAction} ${userNameColor}>${value.room}</sup>`
-        if (this.room !== 0 || this.mode !== 'edit') {
+        if (this.roomId !== 0 || this.mode !== 'edit') {
             userSession = ``
         }
 
         let trackingClass = 'cursor-eyes'
-        let tracking = `onclick="cc.cursorTrack(${this.room}, ${key})" data-tip="Track Cursor" data-tip-left`
+        let tracking = `onclick="cc.cursorTrack(${this.roomId}, ${key})" data-tip="Track Cursor" data-tip-left`
         if (user.isSelf) {
             tracking = `onclick="cc.userRename()" data-tip="Set Name + Color" data-tip-left`
         }
@@ -561,7 +564,7 @@ export class Room {
         }
 
         let userSplitterValue = value.user.hasOwnProperty('splitter') ? value.user.splitter : 50
-        let userSplitter = (this.room === 0) ? `<div class="cc-user-splitter ${userNameColor}" style="left:${userSplitterValue}%;border-left:4px solid ${value.user.color}"></div>` : ``
+        let userSplitter = (this.roomId === 0) ? `<div class="cc-user-splitter ${userNameColor}" style="left:${userSplitterValue}%;border-left:4px solid ${value.user.color}"></div>` : ``
 
         user.html = `<div class="cc-user cc-user-${userType} cc-user-id-${key} ${helpStyle} ${trackingClass}" style="background:${value.user.color};${blurStatus}" ${tracking}>
 			${userSplitter}
@@ -579,7 +582,7 @@ export class Room {
 
     /* ROOMS */
     roomList() {
-        if (this.room !== 0) { //  || this.mode === CocodingMode.GALLERY  || this.mode !== 'edit'
+        if (this.roomId !== 0) { //  || this.mode === CocodingMode.GALLERY  || this.mode !== 'edit'
             let rl = this.htmlContainer.querySelector('.cc-roomlist')
             rl.innerHTML = this.roomItems()
             rl.onchange = function (elm) {
@@ -607,7 +610,7 @@ export class Room {
         arr.forEach((v, k) => {
             if (k > 0) {
                 let sel = ''
-                if (k === this.room) {
+                if (k === this.roomId) {
                     sel = 'selected'
                 }
                 let status = ''
@@ -632,7 +635,7 @@ export class Room {
         if (this.editorContainer.style.visibility !== 'visible') {
             // this.meta.style.display = 'block'
             this.editorContainer.style.visibility = 'visible'
-            if (id === this.room) {
+            if (id === this.roomId) {
                 this.editor.focus()
             }
         } else {
@@ -689,7 +692,7 @@ export class Room {
             let locked = true
             this.editor.setReadOnly(true)
             // console.log([this.s.admin[0], this.s.write[0], cc.p.token])
-            if (this.room === 0) {
+            if (this.roomId === 0) {
                 if (this.s.admin.includes(cc.p.token) || this.s.write.includes(cc.p.token)) {
                     locked = false
                 }
@@ -870,8 +873,8 @@ export class Room {
 
     // share recompile of editor with remote peers
     recompileRemote(force) {
-        if (this.room !== 0 || this.s.admin.includes(cc.p.token) || cc.admins().includes(cc.p.token)) {
-            this.emit('compiled', {room: this.room, force: force})
+        if (this.roomId !== 0 || this.s.admin.includes(cc.p.token) || cc.admins().includes(cc.p.token)) {
+            this.emit('compiled', {room: this.roomId, force: force})
         }
         this.recompile(force)
     }
@@ -1160,7 +1163,7 @@ export class Room {
         if (this.pass || event.type == 'mousedown' || event.type == 'mouseup') {
             this.processMouse(event);
         }
-        cc.roomFocus = this.room
+        cc.roomFocus = this.roomId
     };
 
     passMouseClick(event) {
@@ -1235,7 +1238,7 @@ export class Room {
     }
 
     syncEventOut(evMode, evType, evOpts) {
-        this.ev = {room: this.room, 'mode': evMode, 'type': evType, 'opts': evOpts} // , 'fc':this.iframeContent.frameCount
+        this.ev = {room: this.roomId, 'mode': evMode, 'type': evType, 'opts': evOpts} // , 'fc':this.iframeContent.frameCount
 
         // p5 specific
         this.ev.fc = this.iframeContent.frameCount
@@ -1261,107 +1264,102 @@ export class Room {
     }
 
     roomExport() {
-        console.log(this.room + ' !!!')
+        console.log(this.roomId + ' !!!')
     }
 
-    /* HTML RENDER */
-
-    // *** one big thing or [√] break into components?
-    addHTML() {
+    render() {
         // 0 = A, 1 = B, 2+ = rest
-        let id = this.room
+        let roomId = this.roomId
 
-        // overhall holding div
-        let newContainer = document.createElement('div')
-        newContainer.className = 'cc-container'
+        let rootElement = this.renderRootElement();
+        let flash = this.renderFlashElement();
+        let frame = this.renderCodeFrameElement(roomId);
+        let editor = this.renderEditorElement();
+        let console = this.renderConsoleElement();
+        let metaList = this.renderMetaListElement();
 
-        let newFlash = document.createElement('div')
-        newFlash.className = 'cc-flash'
-        newContainer.appendChild(newFlash)
+        rootElement.appendChild(editor)
+        rootElement.appendChild(frame)
+        rootElement.appendChild(console)
+        rootElement.appendChild(flash)
+        rootElement.appendChild(metaList)
 
-        // iframes for code
-        let newFrame = document.createElement('iframe')
-        newFrame.name = 'frame-' + id
-        newFrame.className = 'cc-iframe'
-        newFrame.sandbox = 'allow-same-origin allow-scripts allow-downloads allow-pointer-lock'
-        newFrame.srcdoc = ''
-        newContainer.appendChild(newFrame)
-
-        // ace
-        let newEditor = document.createElement('div')
-        newEditor.className = 'cc-code'
-        newContainer.appendChild(newEditor)
-
-        // console
-        let newConsole = document.createElement('textarea')
-        newConsole.className = 'cc-console'
-        // newConsole.setAttribute('readonly')
-        newContainer.appendChild(newConsole)
-
-        // meta
-        let newMetalist = document.createElement('div')
-        newMetalist.className = 'cc-meta'
-
-        newMetalist.addEventListener('mouseenter', e => {
-            cc.showUsers()
-        })
-        newMetalist.addEventListener('mouseleave', e => {
-            cc.hideUsers()
-        })
-        newContainer.appendChild(newMetalist)
-
-
-        if (cc.y.rooms.size > 30 || this.mode !== 'edit') {
-            this.nav.layers = `<div data-tip="Add Rooms - Limit 30" style="opacity:.5;">${cc.icons.layers}</div>`
+        //TODO: add strategy for gallery mode
+        if (this.roomId > 0 || this.mode === CocodingMode.GALLERY) {
+            let sessionHolder = this.renderSessionHolder();
+            metaList.appendChild(sessionHolder)
+        }
+        let sessionExtendedNav = this.renderSessionExtendedNavElement();
+        if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
+            metaList.appendChild(sessionExtendedNav)
         }
 
-        // header
-        let newHeader = document.createElement('div')
-        newHeader.className = 'cc-header'
-        newHeader.innerHTML = `
-			<div class="cc-roomlist-holder cc-room-0">
-				<div class="cc-header-title" data-tip="${cc.version}" onclick="cc.aboutToggle()">
-					COCODING Classroom
-				</div>
-				<div class="cc-controls-row">
-					${this.nav.about} ${this.nav.settings}
-				</div>
-			</div>
-		`
-        if (this.room !== 0 && this.mode === CocodingMode.EDIT) {
-            newHeader.style = 'display:none;'
-        }
-        newMetalist.appendChild(newHeader)
+        let header = this.renderHeaderElement();
+        let controlElement = this.renderControlElement();
+        let userList = this.renderUserListElement();
+        let userSelf = this.renderUserSelfElement();
+        let userPeers = this.renderUserPeersElement();
+        let newChat = this.chat.getRootElement();
 
-        if (this.room > 0 || this.mode === CocodingMode.GALLERY) {
+        metaList.appendChild(header)
+        metaList.appendChild(controlElement)
+        metaList.appendChild(userList)
+        userList.appendChild(userSelf)
+        userList.appendChild(userPeers)
+        metaList.appendChild(newChat)
 
-
-            // roomlist as select pulldown
-            let newSessionHolder = document.createElement('div')
-            newSessionHolder.className = 'cc-roomlist-holder'
-            newMetalist.appendChild(newSessionHolder)
-
-            let newSessionlist = document.createElement('select')
-            newSessionlist.setAttribute('data-tip', 'Change Room')
-            newSessionlist.className = 'cc-roomlist'
-            if (this.mode === CocodingMode.GALLERY) {
-                if (!cc.admins().includes(cc.p.token)) {
-                    newSessionlist.setAttribute('data-tip', 'Synced View')
-                }
-
-                newSessionlist.style = 'min-width:100% !important;max-width:100% !important;'
-            }
-            newSessionHolder.appendChild(newSessionlist)
-
-            let newSessionRenamer = document.createElement('div')
-            newSessionRenamer.className = 'cc-controls-row cc-roomlist-nav'
-            newSessionHolder.appendChild(newSessionRenamer)
+        // settings
+        if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
+            let newSettings = this.renderSettingsElement();
+            metaList.appendChild(newSettings)
         }
 
-        let newSessionExtendedNav = document.createElement('div')
-        newSessionExtendedNav.innerHTML = `<div class="cc-controls-row">
-				${this.room === 0 && this.s.admin.includes(cc.p.token) && this.mode === CocodingMode.EDIT ? this.nav.reset + this.nav.code : ''} ${this.nav.save} ${this.s.admin.includes(cc.p.token) ? this.nav.screencast : ''}
-				${this.room === 0 && this.mode === CocodingMode.EDIT ? this.nav.merge : ''}
+        //TODO: rethink the placement strategy
+        // place left/right
+        let roomHolder = (roomId === 0 && this.mode === CocodingMode.EDIT) ? 'room-a' : 'room-b'
+        if (this.mode === CocodingMode.GALLERY) {
+            roomHolder = 'room-b'
+        }
+        document.getElementById(roomHolder).appendChild(rootElement)
+
+        return rootElement
+    }
+
+    renderSettingsElement() {
+        let newSettings = document.createElement('div')
+        newSettings.className = 'cc-settings'
+        return newSettings;
+    }
+
+    renderUserPeersElement() {
+        let userPeers = document.createElement('div')
+        userPeers.className = 'cc-userlist-peers'
+        return userPeers;
+    }
+
+    renderUserSelfElement() {
+        let userSelf = document.createElement('div')
+        userSelf.className = 'cc-userlist-self'
+        return userSelf;
+    }
+
+    renderUserListElement() {
+        let userList = document.createElement('div')
+        userList.className = 'cc-userlist'
+        return userList;
+    }
+
+    renderControlElement() {
+        let newControls = document.createElement('div')
+        newControls.className = 'cc-controls'
+        return newControls;
+    }
+
+    renderSessionExtendedNavElement() {
+        let sessionExtendedNav = document.createElement('div')
+        sessionExtendedNav.innerHTML = `<div class="cc-controls-row">
+				${this.roomId === 0 && this.s.admin.includes(cc.p.token) && this.mode === CocodingMode.EDIT ? this.nav.reset + this.nav.code : ''} ${this.nav.save} ${this.s.admin.includes(cc.p.token) ? this.nav.screencast : ''}
+				${this.roomId === 0 && this.mode === CocodingMode.EDIT ? this.nav.merge : ''}
 
 			</div>
 
@@ -1374,54 +1372,93 @@ export class Room {
 
 			<div class="cc-controls-extended"></div>
 		`
-        if (this.room === 0 || this.mode === CocodingMode.GALLERY) {
-            newMetalist.appendChild(newSessionExtendedNav)
-        }
+        return sessionExtendedNav;
+    }
 
+    renderSessionHolder() {
+        let newSessionHolder = document.createElement('div')
+        newSessionHolder.className = 'cc-roomlist-holder'
 
-        // controls
-        let newControls = document.createElement('div')
-        newControls.className = 'cc-controls'
-        // contents set below
-        newMetalist.appendChild(newControls)
-
-
-        // userlist
-        let newUserlist = document.createElement('div')
-        newUserlist.className = 'cc-userlist'
-        newMetalist.appendChild(newUserlist)
-
-        // userSelf
-        let newUserSelf = document.createElement('div')
-        newUserSelf.className = 'cc-userlist-self'
-        newUserlist.appendChild(newUserSelf)
-
-        // userOthers
-        let newUserPeers = document.createElement('div')
-        newUserPeers.className = 'cc-userlist-peers'
-        newUserlist.appendChild(newUserPeers)
-
-        // chat
-        let newChat = this.chat.getRootElement();
-        // let newChat = document.createElement('div')
-        // newChat.className = 'cc-chat'
-        newMetalist.appendChild(newChat)
-
-        // settings
-        if (this.room === 0 || this.mode === CocodingMode.GALLERY) {
-            let newSettings = document.createElement('div')
-            newSettings.className = 'cc-settings'
-            newMetalist.appendChild(newSettings)
-        }
-
-        // place left/right
-        let roomHolder = (id === 0 && this.mode === CocodingMode.EDIT) ? 'room-a' : 'room-b'
+        let newSessionlist = document.createElement('select')
+        newSessionlist.setAttribute('data-tip', 'Change Room')
+        newSessionlist.className = 'cc-roomlist'
         if (this.mode === CocodingMode.GALLERY) {
-            roomHolder = 'room-b'
-        }
-        document.getElementById(roomHolder).appendChild(newContainer)
+            if (!cc.admins().includes(cc.p.token)) {
+                newSessionlist.setAttribute('data-tip', 'Synced View')
+            }
 
-        return newContainer
+            newSessionlist.style = 'min-width:100% !important;max-width:100% !important;'
+        }
+        newSessionHolder.appendChild(newSessionlist)
+
+        let newSessionRenamer = document.createElement('div')
+        newSessionRenamer.className = 'cc-controls-row cc-roomlist-nav'
+        newSessionHolder.appendChild(newSessionRenamer)
+        return newSessionHolder;
+    }
+
+    renderHeaderElement() {
+        let newHeader = document.createElement('div')
+        newHeader.className = 'cc-header'
+        newHeader.innerHTML = `
+			<div class="cc-roomlist-holder cc-room-0">
+				<div class="cc-header-title" data-tip="${cc.version}" onclick="cc.aboutToggle()">
+					COCODING Classroom
+				</div>
+				<div class="cc-controls-row">
+					${this.nav.about} ${this.nav.settings}
+				</div>
+			</div>
+		`
+        if (this.roomId !== 0 && this.mode === CocodingMode.EDIT) {
+            newHeader.style = 'display:none;'
+        }
+        return newHeader;
+    }
+
+    renderMetaListElement() {
+        let metaList = document.createElement('div')
+        metaList.className = 'cc-meta'
+        metaList.addEventListener('mouseenter', e => {
+            cc.showUsers()
+        })
+        metaList.addEventListener('mouseleave', e => {
+            cc.hideUsers()
+        })
+        return metaList;
+    }
+
+    renderConsoleElement() {
+        let newConsole = document.createElement('textarea')
+        newConsole.className = 'cc-console'
+        return newConsole;
+    }
+
+    renderEditorElement() {
+        let newEditor = document.createElement('div')
+        newEditor.className = 'cc-code'
+        return newEditor;
+    }
+
+    renderCodeFrameElement(roomId) {
+        let newFrame = document.createElement('iframe')
+        newFrame.name = 'frame-' + roomId
+        newFrame.className = 'cc-iframe'
+        newFrame.sandbox = 'allow-same-origin allow-scripts allow-downloads allow-pointer-lock'
+        newFrame.srcdoc = ''
+        return newFrame;
+    }
+
+    renderFlashElement() {
+        let newFlash = document.createElement('div')
+        newFlash.className = 'cc-flash'
+        return newFlash;
+    }
+
+    renderRootElement() {
+        let newContainer = document.createElement('div')
+        newContainer.className = 'cc-container'
+        return newContainer;
     }
 
     navSettings() {
@@ -1492,15 +1529,15 @@ export class Room {
 			</div>
 		`
 
-        if (this.room !== 0 && this.mode === CocodingMode.EDIT) {
+        if (this.roomId !== 0 && this.mode === CocodingMode.EDIT) {
             this.htmlContainer.querySelector('.cc-controls').innerHTML = navRoom
         }
 
 
         // nav options
         let lockStatus = ''
-        if (this.room > 0 && cc.y.settings.get('roomLocks')) {
-            if (this.room === 1 && !cc.admins().includes(cc.p.token)) {
+        if (this.roomId > 0 && cc.y.settings.get('roomLocks')) {
+            if (this.roomId === 1 && !cc.admins().includes(cc.p.token)) {
                 lockStatus = this.nav.unlockDisabled
             } else if (this.s.locked) {
                 lockStatus = this.nav.lock
@@ -1510,7 +1547,7 @@ export class Room {
         }
 
         let renameStatus = this.nav.renameDisabled
-        if (this.room > 1) {
+        if (this.roomId > 1) {
             renameStatus = this.nav.rename
         }
         if (cc.y.settings.get('roomLocks') && this.s.locked && !this.s.admin.includes(cc.p.token)) {

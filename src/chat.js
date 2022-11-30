@@ -8,7 +8,7 @@ export class Chat {
     chatID;
     roomId;
     room;
-    ydoc;
+    yDoc;
 
     //html
     rootElement;
@@ -20,15 +20,15 @@ export class Chat {
     constructor(room) {
         this.roomId = room.roomId;
         this.room = room;
-        this.ydoc = room.ydoc;
+        this.yDoc = room.yDoc;
         this.provider = room.provider;
         this.mode = room.mode;
         this.chatID = `chat_${this.roomId}-${this.mode}`
-        this.chatLog = this.ydoc.getArray(this.chatID);
+        this.chatLog = this.yDoc.getArray(this.chatID);
     }
 
     getRootElement = () => {
-        this.chatLog = this.ydoc.getArray(this.chatID)
+        this.chatLog = this.yDoc.getArray(this.chatID)
         this.rootElement = this.render();
         return this.rootElement;
     }

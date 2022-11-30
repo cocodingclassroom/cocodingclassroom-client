@@ -253,7 +253,8 @@ cc.editorLineNumbers = function(val){
 cc.editorClearSelection = function(){
 
 	// move cursor to existing pos..(?!) to remove selection on paste/tidy
-	let tempEditor = cc.rooms.get(cc.p.room).editor
+	var viewingRoom = cc.rooms.get(cc.p.room);
+	let tempEditor = viewingRoom.editor;
 	let tempPos = tempEditor.getCursorPosition()
 	// tempEditor.gotoLine(tempPos.row+1, tempPos.column, false)
 }
