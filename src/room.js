@@ -713,7 +713,7 @@ export class Room {
             status = "🛡️";
           }
         }
-        opts += `<option value=${k} ${sel}>${k} _ ${v[1].name} ${status}</option>`; // '<option value='+k+' '+ sel +'>'+k+' – '+v+'</option>'
+        opts += `<option value="${k}" ${sel}>${k} _ ${v[1].name} ${status}</option>`; // '<option value='+k+' '+ sel +'>'+k+' – '+v+'</option>'
       }
     });
     return opts;
@@ -1444,7 +1444,7 @@ export class Room {
     metaList.className = "cc-meta";
     metaList.addEventListener("mouseenter", (e) => {
       cc.showUsers();
-      console.log("mouse entering")
+      console.log("mouse entering");
     });
     metaList.addEventListener("mouseleave", (e) => {
       cc.hideUsers();
@@ -1583,9 +1583,7 @@ export class Room {
     return newHeader;
   }
 
-  renderMetaListElement() {
-
-  }
+  renderMetaListElement() {}
 
   renderConsoleElement() {
     let newConsole = document.createElement("textarea");
