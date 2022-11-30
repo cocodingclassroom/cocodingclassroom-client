@@ -1443,12 +1443,11 @@ export class Room {
     let metaList = document.createElement("div");
     metaList.className = "cc-meta";
     metaList.addEventListener("mouseenter", (e) => {
+      //TODO: show and hide users should be room internally
       cc.showUsers();
-      console.log("mouse entering");
     });
     metaList.addEventListener("mouseleave", (e) => {
       cc.hideUsers();
-      console.log("mouse leaving");
     });
 
     let header = this.renderHeaderElement();
