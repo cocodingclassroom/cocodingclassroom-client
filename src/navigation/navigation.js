@@ -1,12 +1,11 @@
 import { CocodingMode, RoomType } from "../enums";
-import { SettingsPanel } from "./settingsPanel";
 import { TeacherRoomHeader } from "./teacherRoomHeader";
+import { Controls } from "./controls";
 
 export class Navigation {
-
-  room;
+  room; //Room Object
   nav;
-  rootElement;
+  rootElement; //HTMLElement
 
   constructor(room) {
     this.room = room;
@@ -15,9 +14,7 @@ export class Navigation {
 
   initializeNavigationMap(id) {
     this.nav = {
-      reset: `<div onclick="cc.reset(${id})" data-tip="New Sketch">${cc.icons.new}</div>`,
       code: `<div onclick="cc.code()" data-tip="Sync Code">${cc.icons.code}</div>`,
-      save: `<div onclick="cc.roomExport(${id})" data-tip="Export Code">${cc.icons.save}</div>`,
       rename: `<div onclick="cc.roomRename(${id})" data-tip="Rename">${cc.icons.rename}</div>`,
       renameDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.rename}</div>`,
       adminDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.shield.empty}</div>`,
@@ -29,7 +26,6 @@ export class Navigation {
       trash: `<div onclick="cc.roomRemove(${id}, this)" data-tip="Remove">${cc.icons.trash}</div>`,
       splitter: `<div onclick="cc.splitterSync()" data-tip="Sync Split-Screen">${cc.icons.layout}</div>`,
       message: `<div onclick="cc.broadcastMessage()" data-tip="Broadcast Message">${cc.icons.message}</div>`,
-      screencast: `<div class="cc-nav-radio" onclick="cc.toggleSyncEvents(${id})" data-tip="Broadcast mouse/keyboard">${cc.icons.screencast}</div>`,
       lock: `<div class="cc-nav-lock" ${
         this.room.s.admin.includes(cc.p.token) ||
         cc.admins().includes(cc.p.token)
@@ -55,17 +51,21 @@ export class Navigation {
     let rootElement = document.createElement("div");
 
     let teacherHeader = new TeacherRoomHeader(this.room);
-
-
     let headerElement = teacherHeader.getRootElement();
-    let controls = this.renderControlElement();
-    let extendedSessionNav = this.renderSessionExtendedNavElement();
-    let extendedNav = this.navExtended();
+
+    let controls = new Controls(this.room);
+    let controlsElement = controls.getRootElement();
+
+    // let controls = this.renderControlElement();
+    // let extendedSessionNav = this.renderSessionExtendedNavElement();
+    // let extendedNav = this.navExtended();
 
     rootElement.append(headerElement);
-    rootElement.append(controls);
+    rootElement.append(controlsElement);
+
+    // rootElement.append(controls);
     // rootElement.append(extendedSessionNav);
-    rootElement.append(extendedNav);
+    // rootElement.append(extendedNav);
 
     this.rootElement = rootElement;
   };
@@ -75,24 +75,7 @@ export class Navigation {
     return this.rootElement;
   };
 
-  renderControlElement() {
-    let controls = document.createElement("div");
-    controls.className = "cc-controls";
-    return controls;
-  }
-
-  // renderTeacherRoomHeader = () => {
-  //   let header = document.createElement("div");
-  //   if (
-  //     this.room.roomType === RoomType.TEACHER &&
-  //     this.room.mode === CocodingMode.EDIT
-  //   ) {
-  //     header.innerHTML = `<teacher-room-header roomId="${this.room.roomId}" ></teacher-room-header>`;
-  //   }
-  //   return header;
-  // };
-
-  renderSessionExtendedNavElement() {
+  renderSessionExtendedNavElement = () => {
     let isAdminOfRoom = this.room.s.admin.includes(cc.p.token);
     let isTeacherRoom = this.room.roomType === RoomType.TEACHER;
     let isEditMode = this.room.mode === CocodingMode.EDIT;
@@ -118,30 +101,7 @@ export class Navigation {
     return sessionExtendedNav;
   }
 
-  update() {
-    let navRoom = `
-			<div class="cc-controls-row">
-				${
-          !this.room.s.locked ||
-          !cc.y.settings.get("roomLocks") ||
-          (this.s.locked && this.s.admin.includes(cc.p.token))
-            ? this.nav.reset
-            : ""
-        }
-				${this.nav.save}
-				${
-          (cc.y.settings.get("roomLocks") &&
-            this.room.s.admin.includes(cc.p.token)) ||
-          cc.admins().includes(cc.p.token)
-            ? this.nav.screencast
-            : ""
-        }
-			</div>
-		`;
-
-    if (this.room.roomId !== 0 && this.room.mode === CocodingMode.EDIT) {
-      this.rootElement.querySelector(".cc-controls").innerHTML = navRoom;
-    }
+  update = () => {
 
     // nav options
     let lockStatus = "";
@@ -180,7 +140,7 @@ export class Navigation {
     cc.tipsInit();
   }
 
-  navExtended() {
+  navExtended = () => {
     let nav = ``;
     if (this.room.mode === CocodingMode.EDIT) {
       nav = `
