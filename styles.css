@@ -178,7 +178,7 @@ button {
     /*height: 26px;*/
 }
 
-.cc-room-0 {
+.cc-header-title-background {
     background: #666;
 }
 
@@ -261,11 +261,11 @@ button {
     animation: pulse 1s linear infinite alternate !important;
 }
 
-.cc-room-0 .cc-controls-row div, .cc-roomlist-holder .cc-controls-row div {
+.cc-header-title-background .cc-controls-row div, .cc-roomlist-holder .cc-controls-row div {
     background: #666;
 }
 
-.cc-room-0 .cc-controls-row div:hover, .cc-roomlist-holder .cc-controls-row div:hover {
+.cc-header-title-background .cc-controls-row div:hover, .cc-roomlist-holder .cc-controls-row div:hover {
     background: #555;
 }
 

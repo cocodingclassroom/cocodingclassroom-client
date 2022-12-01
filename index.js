@@ -13,6 +13,8 @@ import 'ace-builds/src-min-noconflict/mode-javascript'
 import 'ace-builds/src-min-noconflict/worker-javascript'
 import 'ace-builds/src-min-noconflict/theme-cobalt'
 import {Room} from "./src/room";
+import { RoomType } from "./src/enums";
+import { TeacherRoomHeader } from "./src/navigation/teacherRoomHeader";
 
 //
 // // // *** double check if broken on snowpack build??
@@ -34,7 +36,7 @@ import {Room} from "./src/room";
 
 // encode room name, room count
 
-var offline = false
+var offline = true
 var version = '1.0.0'
 var earlyAccessMode = false
 
@@ -364,7 +366,7 @@ cc.roomChange = function(newID){
 		cc.roomSync('userList')
 
 		if(cc.y.settings.get('mode') == 'edit'){
-			cc.rooms.get(newID).navUpdate()
+			cc.rooms.get(newID).navigation.update()
 		}else{
 			// keep settings open if so between rooms
 			let settingsPanel = cc.rooms.get(curID).meta.querySelector('.cc-settings')
@@ -375,7 +377,7 @@ cc.roomChange = function(newID){
 
 
 			// keep roomwalk green if active across rooms
-			let roomWalkElm = cc.rooms.get(newID).htmlContainer.querySelector('.cc-roomwalk')
+			let roomWalkElm = cc.rooms.get(newID).getRootElement().querySelector('.cc-roomwalk')
 			if(roomWalkElm !== null){
 				if(cc.timerWalk != undefined){
 					if(!roomWalkElm.classList.contains('cc-nav-active')){
@@ -404,7 +406,7 @@ cc.roomWalkCheck = function(){
 }
 
 cc.roomWalk = function(force){
-	let elm = cc.rooms.get(cc.roomFocus).htmlContainer.querySelector('.cc-roomwalk')
+	let elm = cc.rooms.get(cc.roomFocus).getRootElement().querySelector('.cc-roomwalk')
 
 	// toggle off if called while active
 	if(cc.timerWalk != undefined && force === undefined){
@@ -522,7 +524,11 @@ cc.roomsParse = function(){
 
 	arr.forEach((v, k)=>{
 		if(!cc.rooms.has(parseInt(k))){
-			cc.rooms.set(parseInt(k), new Room(cc.binding, cc.ydoc, cc.provider, parseInt(k)))
+			let roomType = RoomType.STUDENT;
+			if (k === 0) {
+				roomType = RoomType.TEACHER;
+			}
+			cc.rooms.set(parseInt(k), new Room(cc.binding, cc.ydoc, cc.provider, k, roomType))
 		}
 	})
 
@@ -579,7 +585,7 @@ cc.roomSync = function(msg){
 
 cc.toggleSyncEvents = function(roomID, force){
 	if(cc.rooms.get(roomID).s.admin.includes(cc.p.token) || cc.admins().includes(cc.p.token)){
-		let elm = cc.rooms.get(roomID).htmlContainer.querySelector('.cc-nav-radio')
+		let elm = cc.rooms.get(roomID).getRootElement().querySelector('.cc-nav-radio')
 		if(elm === null){
 			return
 		}
@@ -738,8 +744,8 @@ cc.timeStampFile = function(timeInput){
 
 // follow users cursor on demand (per split-screen!)
 cc.cursorTrack = function(room, id){
-	let elm = cc.rooms.get(room).htmlContainer.querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-id-'+id)[0]
-	let tracked = cc.rooms.get(room).htmlContainer.querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-tracking')[0]
+	let elm = cc.rooms.get(room).getRootElement().querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-id-'+id)[0]
+	let tracked = cc.rooms.get(room).getRootElement().querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-tracking')[0]
 
 	// remove tracker on editor focus
 	if(id == undefined){
@@ -763,8 +769,8 @@ cc.cursorTrack = function(room, id){
 cc.cursorTrackRemove = function(room){
 	let tracking = cc.tracked.get(room)
 	if(tracking !== undefined){
-		let elm = cc.rooms.get(room).htmlContainer.querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-id-'+tracking.id)[0]
-		let tracked = cc.rooms.get(room).htmlContainer.querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-tracking')[0]
+		let elm = cc.rooms.get(room).getRootElement().querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-id-'+tracking.id)[0]
+		let tracked = cc.rooms.get(room).getRootElement().querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-tracking')[0]
 
 		if(tracked !== undefined){
 			tracked.classList.remove('cc-user-tracking')
@@ -779,8 +785,8 @@ cc.cursorTrackRemove = function(room){
 // add cursor tracking style + interval
 cc.cursorTrackUpdate = function(){
 	for(let [room, tracking] of cc.tracked){
-		let elm = cc.rooms.get(room).htmlContainer.querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-id-'+tracking.id)[0]
-		let tracked = cc.rooms.get(room).htmlContainer.querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-tracking')[0]
+		let elm = cc.rooms.get(room).getRootElement().querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-id-'+tracking.id)[0]
+		let tracked = cc.rooms.get(room).getRootElement().querySelector('.cc-userlist-peers').querySelectorAll('.cc-user-tracking')[0]
 
 		// trash if user reloaded page
 		if(elm === undefined){
@@ -1454,7 +1460,7 @@ cc.classroomRender = function(){
 				// *** spoofing + adding room breaks here??
 				// update main or current room
 				if(roomObserve == 0 || roomObserve == cc.p.room){
-					roomChange.navInit()
+					roomChange.navigation.initializeNavigationMap(roomChange.roomId)
 					roomChange.userListSelf()
 					roomChange.userList()
 					roomChange.toggleWrite()
@@ -1462,7 +1468,7 @@ cc.classroomRender = function(){
 
 				// update lockview if roomLocks
 				if(cc.y.settings.get('roomLocks')){
-					roomCur.navUpdate()
+					roomCur.navigation.update()
 				}
 			}
 
@@ -1492,11 +1498,11 @@ cc.classroomRender = function(){
 
 				if(settingChanged === 'roomLocks'){
 					let curClassroom = cc.rooms.get(parseInt(cc.p.room))
-					curClassroom.navUpdate()
+					curClassroom.navigation.update()
 				}
 
 				// redraw settings on changes
-				if(cc.y.settings.get('mode') == 'gallery'){
+				if(cc.y.settings.get('mode') === 'gallery'){
 					for(let c of cc.rooms.values()){
 						c.navSettings()
 					}
@@ -1928,22 +1934,6 @@ cc.aboutToggle = function(){
 	// })
 }
 
-cc.settingsToggle = function(roomID, hide){
-	let elm = cc.rooms.get(roomID).htmlContainer.querySelector('.cc-nav-settings')
-
-	let settingsPanelSel = cc.y.settings.get('mode') === 'edit' ? 0 : cc.p.room
-	let settingsPanel = cc.rooms.get(settingsPanelSel).meta.getElementsByClassName('cc-settings')[0]
-
-	if(cc.computedStyle(settingsPanel,'display') != 'none' || hide){
-		settingsPanel.style.display = 'none'
-		elm.classList.remove('cc-settings-active')
-	}else{
-		settingsPanel.style.display = 'block'
-		elm.classList.add('cc-settings-active')
-	}
-	cc.tipsInit()
-}
-
 cc.computedStyle = function (el,style) {
     var cs;
     if (typeof el.currentStyle != 'undefined'){
@@ -1987,10 +1977,10 @@ window.addEventListener('load', () => {
 		cc.binding = binding
 
 		// show GUI if no classroom ID via url
-		if(cc.classroom == undefined){
+		if(cc.classroom === undefined){
 			for(let i=0; i < 30; i++){
 				let sel = ''
-				if(i==4){
+				if(i===4){
 					sel = 'selected'
 				}
 				cc.elms.setup.rooms.innerHTML += `<option ${sel}>${i+1}</option>`

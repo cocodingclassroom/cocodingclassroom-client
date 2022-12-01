@@ -3,7 +3,8 @@ import { AceBinding, AceCursors } from "../y-ace";
 import * as ace from "ace-builds";
 import { wc_hex_is_light } from "./utils";
 import { Chat } from "./chat";
-import { CocodingMode } from "./enums";
+import { CocodingMode, RoomType } from "./enums";
+import { Navigation } from "./navigation/navigation";
 
 export class Room {
   //members
@@ -13,36 +14,31 @@ export class Room {
   roomId;
   mode;
 
-  constructor(binding, yDoc, provider, roomID) {
+  constructor(binding, yDoc, provider, roomID, roomType) {
     this.binding = binding;
     this.yDoc = yDoc;
     this.provider = provider;
     this.roomId = roomID;
+    this.roomType = roomType;
     this.mode = CocodingMode.EDIT; //TODO: this is temporary, will take mode from cc again later
     this.s = cc.y.rooms.get(this.roomId.toString());
 
     this.chat = new Chat(this);
+    this.navigation = new Navigation(this);
 
-    this.initializeNavigation();
-    this.htmlContainer = this.render();
-    this.editorContainer =
-      this.htmlContainer.getElementsByClassName("cc-code")[0];
-    this.editorContainer.style.fontSize = cc.settings.editor.fontsize + "pt";
-    this.editorContainer.style.visibility = "visible";
-    this.iframe = this.htmlContainer.getElementsByClassName("cc-iframe")[0];
-    this.iframeContent = this.iframe.contentWindow;
-    this.meta = this.htmlContainer.getElementsByClassName("cc-meta")[0];
-    //this.chat = this.htmlContainer.getElementsByClassName('cc-chat')[0]
-    this.console = this.htmlContainer.querySelector(".cc-console");
-
-    if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
-      setTimeout(this.navExtended.bind(this));
-      setTimeout(this.navSettings.bind(this));
-    }
-
-    if (this.roomId > 0) {
-      setTimeout(this.navUpdate.bind(this));
-    }
+    this.rootElement = this.render();
+    //
+    // if (
+    //   this.roomType === RoomType.TEACHER ||
+    //   this.mode === CocodingMode.GALLERY
+    // ) {
+    //   setTimeout(this.navExtended.bind(this));
+    //   setTimeout(this.navSettings.bind(this));
+    // }
+    //
+    // if (this.roomType === RoomType.STUDENT) {
+    //   setTimeout(this.navUpdate.bind(this));
+    // }
 
     // misc vars
     this.active = true; // toggle if classroom !visible
@@ -56,21 +52,6 @@ export class Room {
     this.consoleMessageP = ""; // store previous message
 
     this.setupEditor();
-
-    // drawing coords *** (P5LIVE chalkboard or notes per room??)
-    // this.coords = ydoc.getArray('chalkboard-'+this.room)
-
-    // const connectBtn = document.getElementById('y-connect-btn')
-    // 	connectBtn.addEventListener('click', () => {
-    // 		if (this.provider.shouldConnect) {
-    // 			this.provider.disconnect()
-    // 			connectBtn.textContent = 'Connect'
-    // 		} else {
-    // 			this.provider.connect()
-    // 			connectBtn.textContent = 'Disconnect'
-    // 		}
-    // 	})
-    // }
 
     // handle iframe mouse/keyboard/console
     this.iframeMeta = `
@@ -204,7 +185,7 @@ export class Room {
     });
 
     this.editorContainer.addEventListener("keyup", (event) => {
-      this.keyDown.set(event.keyCode, event.type == "keydown"); // check modifiers
+      this.keyDown.set(event.keyCode, event.type === "keydown"); // check modifiers
     });
 
     // iFrame magic from P5LIVE (passing key/mouse = small issue on B mouseX)
@@ -212,13 +193,13 @@ export class Room {
     // get mouse clicks on top
     // initially inspired from here:
     // https://stackoverflow.com/a/44143731/10885535
-    this.htmlContainer.addEventListener("mousemove", (event) => {
+    this.rootElement.addEventListener("mousemove", (event) => {
       this.passMouse(event);
     });
-    this.htmlContainer.addEventListener("mouseup", (event) => {
+    this.rootElement.addEventListener("mouseup", (event) => {
       this.passMouse(event);
     });
-    this.htmlContainer.addEventListener("mousedown", (event) => {
+    this.rootElement.addEventListener("mousedown", (event) => {
       this.passMouse(event);
     });
     this.mouseFields = [
@@ -286,6 +267,10 @@ export class Room {
       // }, 100)
     }
   }
+
+  getRootElement = () => {
+    return this.rootElement;
+  };
 
   setupEditor = () => {
     // ace setup
@@ -366,7 +351,7 @@ export class Room {
         }
       }
     } else {
-      this.htmlContainer.style.display = "none";
+      this.rootElement.style.display = "none";
       this.active = false;
     }
 
@@ -409,62 +394,20 @@ export class Room {
     this.provider.awareness.setLocalState(selfState);
   }
 
-  initializeNavigation() {
-    let id = this.roomId;
-    this.nav = {
-      reset: `<div onclick="cc.reset(${id})" data-tip="New Sketch">${cc.icons.new}</div>`,
-      code: `<div onclick="cc.code()" data-tip="Sync Code">${cc.icons.code}</div>`,
-      save: `<div onclick="cc.roomExport(${id})" data-tip="Export Code">${cc.icons.save}</div>`,
-      rename: `<div onclick="cc.roomRename(${id})" data-tip="Rename">${cc.icons.rename}</div>`,
-      renameDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.rename}</div>`,
-      //admin: `<button onclick="cc.roomLock(${id})" style="height:50px;width:50px;" data-tip="Claim Room">${cc.icons.shield.empty}</button>`, // <div onclick="cc.roomLock(${id})" data-tip="Admin">${cc.icons.shield.empty}</div>
-      adminDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.shield.empty}</div>`,
-      merge: `<div onclick="cc.mergeDialog()" data-tip="« Compare Code »">${cc.icons.merge}</div>`,
-      login: `<div onclick="cc.userAuth()" data-tip="Admin Login">${cc.icons.shield.empty}</div>`,
-      layers: `<div onclick="cc.roomAdd(this)" data-tip="Add Room">${cc.icons.layers}</div>`,
-      layersFull: `<div data-tip="Add Rooms - Limit 30" style="opacity:.5;">${cc.icons.layers}</div>`,
-      walk: `<div class="cc-roomwalk" onclick="cc.roomWalk()" data-tip="Walk Classroom">${cc.icons.users}</div>`,
-      about: `<div style="cursor: help;" onclick="cc.aboutToggle()" data-tip="About">${cc.icons.about}</div>`,
-      settings: `<div class="cc-nav-settings" onclick="cc.settingsToggle(${id})" data-tip="Settings">${cc.icons.settings}</div>`,
-      trash: `<div onclick="cc.roomRemove(${id}, this)" data-tip="Remove">${cc.icons.trash}</div>`,
-      splitter: `<div onclick="cc.splitterSync()" data-tip="Sync Split-Screen">${cc.icons.layout}</div>`,
-      message: `<div onclick="cc.broadcastMessage()" data-tip="Broadcast Message">${cc.icons.message}</div>`,
-      screencast: `<div class="cc-nav-radio" onclick="cc.toggleSyncEvents(${id})" data-tip="Broadcast mouse/keyboard">${cc.icons.screencast}</div>`,
-      lock: `<div class="cc-nav-lock" ${
-        this.s.admin.includes(cc.p.token) || cc.admins().includes(cc.p.token)
-          ? 'onclick="cc.roomLock(' + id + ', false)" data-tip="Unlock Editor"'
-          : 'data-tip="Locked Editor" style="opacity:.6;cursor:help;"'
-      }>${cc.icons.lock}</div>`,
-      lockDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.lock}</div>`,
-      unlock: `<div class="cc-nav-lock unlock" ${
-        this.s.admin.includes(cc.p.token) ||
-        cc.admins().includes(cc.p.token) ||
-        this.s.admin.length == 1
-          ? 'onclick="cc.roomLock(' + id + ', true)" data-tip="Lock Editor"'
-          : 'data-tip="Lock Editor" style="opacity:.6;cursor:help;"'
-      }>${cc.icons.unlock}</div>`,
-      unlockDisabled: `<div style="opacity:.3;cursor:inherit;">${cc.icons.unlock}</div>`,
-    };
-    if (cc.y.rooms.size > 30 || this.mode !== "edit") {
-      this.nav.layers = `<div data-tip="Add Rooms - Limit 30" style="opacity:.5;">${cc.icons.layers}</div>`;
-    }
-  }
 
-  // check user color lightness for text overlay black or white
-  // https://stackoverflow.com/a/51567564/10885535
 
   /* USER */
 
   // only view your own user info
   userListSelf() {
-    const elmUL = this.htmlContainer.querySelector(".cc-userlist-self");
+    const elmUL = this.rootElement.querySelector(".cc-userlist-self");
     let user = this.userParse(this.provider.awareness.clientID);
     elmUL.innerHTML = user.html;
   }
 
   // list other users
   userList() {
-    const elmUL = this.htmlContainer.querySelector(".cc-userlist");
+    const elmUL = this.rootElement.querySelector(".cc-userlist");
     let ul = [];
     let states = this.provider.awareness.getStates();
     cc.helpNeeded = false;
@@ -662,7 +605,7 @@ export class Room {
   roomList() {
     if (this.roomId !== 0) {
       //  || this.mode === CocodingMode.GALLERY  || this.mode !== 'edit'
-      let rl = this.htmlContainer.querySelector(".cc-roomlist");
+      let rl = this.rootElement.querySelector(".cc-roomlist");
       rl.innerHTML = this.roomItems();
       rl.onchange = function (elm) {
         if (
@@ -748,7 +691,7 @@ export class Room {
 
   toggleActive(togState) {
     if (togState) {
-      this.htmlContainer.style.display = "block";
+      this.rootElement.style.display = "block";
       this.active = true;
       this.collapsed = false;
       this.initEditor();
@@ -760,7 +703,7 @@ export class Room {
       // this.userList()
       // setTimeout(()=>{this.initEditor()}, 0)
     } else {
-      this.htmlContainer.style.display = "none";
+      this.rootElement.style.display = "none";
       this.active = false;
       this.collapsed = true;
 
@@ -1317,7 +1260,7 @@ export class Room {
 
   getOpts(event, fields) {
     let opts = {};
-    let offX = this.htmlContainer.offsetLeft;
+    let offX = this.rootElement.offsetLeft;
     fields.forEach(function (f) {
       if (f in event) {
         opts[f] = event[f];
@@ -1414,18 +1357,24 @@ export class Room {
     let roomId = this.roomId;
 
     let rootElement = this.renderRootElement();
-    let flash = this.renderFlashElement();
+    //let flash = this.renderFlashElement();
     let frame = this.renderCodeFrameElement(roomId);
     let editor = this.renderEditorElement();
     let console = this.renderConsoleElement();
 
+    this.iframe = frame;
+    this.console = console;
+    this.editorContainer = editor;
+
     rootElement.appendChild(editor);
     rootElement.appendChild(frame);
     rootElement.appendChild(console);
-    rootElement.appendChild(flash);
+    //rootElement.appendChild(flash);
 
     let metaList = this.renderMetaElement();
     rootElement.appendChild(metaList);
+
+    this.meta = metaList;
 
     //TODO: rethink the placement strategy
     // place left/right
@@ -1435,6 +1384,10 @@ export class Room {
       roomHolder = "room-b";
     }
     document.getElementById(roomHolder).appendChild(rootElement);
+
+    //Needs to happen after the iframe has been added to the view, however this is a bit annoying
+    this.iframe = frame;
+    this.iframeContent = frame.contentWindow;
 
     return rootElement;
   }
@@ -1450,39 +1403,33 @@ export class Room {
       cc.hideUsers();
     });
 
-    let header = this.renderHeaderElement();
-    let controls = this.renderControlElement();
+    let header = this.navigation.getRootElement();
+
     let userList = this.renderUserListElement();
     let chat = this.chat.getRootElement();
 
     metaList.appendChild(header);
-    metaList.appendChild(controls);
 
     //TODO: add strategy for gallery mode
     if (this.roomId > 0 || this.mode === CocodingMode.GALLERY) {
       let sessionHolder = this.renderSessionHolder();
       metaList.appendChild(sessionHolder);
     }
-    let sessionExtendedNav = this.renderSessionExtendedNavElement();
-    if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
-      metaList.appendChild(sessionExtendedNav);
-    }
+    // let sessionExtendedNav = this.renderSessionExtendedNavElement();
+    // if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
+    //   metaList.appendChild(sessionExtendedNav);
+    // }
 
     // settings
     if (this.roomId === 0 || this.mode === CocodingMode.GALLERY) {
-      let newSettings = this.renderSettingsElement();
-      metaList.appendChild(newSettings);
+      // let newSettings = this.renderSettingsElement();
+      // metaList.appendChild(newSettings);
     }
     metaList.appendChild(userList);
     metaList.appendChild(chat);
     return metaList;
   }
 
-  renderSettingsElement() {
-    let newSettings = document.createElement("div");
-    newSettings.className = "cc-settings";
-    return newSettings;
-  }
 
   renderUserPeersElement() {
     let userPeers = document.createElement("div");
@@ -1506,39 +1453,7 @@ export class Room {
     return userList;
   }
 
-  renderControlElement() {
-    let controls = document.createElement("div");
-    controls.className = "cc-controls";
-    return controls;
-  }
 
-  renderSessionExtendedNavElement() {
-    let sessionExtendedNav = document.createElement("div");
-    sessionExtendedNav.innerHTML = `<div class="cc-controls-row">
-				${
-          this.roomId === 0 &&
-          this.s.admin.includes(cc.p.token) &&
-          this.mode === CocodingMode.EDIT
-            ? this.nav.reset + this.nav.code
-            : ""
-        } ${this.nav.save} ${
-      this.s.admin.includes(cc.p.token) ? this.nav.screencast : ""
-    }
-				${this.roomId === 0 && this.mode === CocodingMode.EDIT ? this.nav.merge : ""}
-
-			</div>
-
-			<!-- potential extended save nav ***** -->
-			<div class="cc-controls-extended-save" style="display:none;">
-				<div class="cc-controls-row">
-					${this.nav.reset}${this.nav.about}
-				</div>
-			</div>
-
-			<div class="cc-controls-extended"></div>
-		`;
-    return sessionExtendedNav;
-  }
 
   renderSessionHolder() {
     let newSessionHolder = document.createElement("div");
@@ -1563,27 +1478,6 @@ export class Room {
     return newSessionHolder;
   }
 
-  renderHeaderElement() {
-    let newHeader = document.createElement("div");
-    newHeader.className = "cc-header";
-    newHeader.innerHTML = `
-			<div class="cc-roomlist-holder cc-room-0">
-				<div class="cc-header-title" data-tip="${cc.version}" onclick="cc.aboutToggle()">
-					COCODING Classroom
-				</div>
-				<div class="cc-controls-row">
-					${this.nav.about} ${this.nav.settings}
-				</div>
-			</div>
-		`;
-    if (this.roomId !== 0 && this.mode === CocodingMode.EDIT) {
-      newHeader.style = "display:none;";
-    }
-    return newHeader;
-  }
-
-  renderMetaListElement() {}
-
   renderConsoleElement() {
     let newConsole = document.createElement("textarea");
     newConsole.className = "cc-console";
@@ -1591,19 +1485,21 @@ export class Room {
   }
 
   renderEditorElement() {
-    let newEditor = document.createElement("div");
-    newEditor.className = "cc-code";
-    return newEditor;
+    let editor = document.createElement("div");
+    editor.className = "cc-code";
+    editor.style.fontSize = cc.settings.editor.fontsize + "pt";
+    editor.style.visibility = "visible";
+    return editor;
   }
 
   renderCodeFrameElement(roomId) {
-    let newFrame = document.createElement("iframe");
-    newFrame.name = "frame-" + roomId;
-    newFrame.className = "cc-iframe";
-    newFrame.sandbox =
+    let frame = document.createElement("iframe");
+    frame.name = "frame-" + roomId;
+    frame.className = "cc-iframe";
+    frame.sandbox =
       "allow-same-origin allow-scripts allow-downloads allow-pointer-lock";
-    newFrame.srcdoc = "";
-    return newFrame;
+    frame.srcdoc = "";
+    return frame;
   }
 
   renderFlashElement() {
@@ -1616,168 +1512,5 @@ export class Room {
     let newContainer = document.createElement("div");
     newContainer.className = "cc-container";
     return newContainer;
-  }
-
-  navSettings() {
-    let adminSettings = `<div class="cc-settings-subhead">CLASSROOM</div>
-				<div data-tip="Set classroom mode" data-tip-left>
-					Mode <select class="cc-settings-mode" data-tip="" onchange="cc.modeChange(this.value)">
-						<option ${cc.y.settings.get("mode") === "edit" ? "selected" : ""}>edit</option>
-						<option ${
-              cc.y.settings.get("mode") === "gallery" ? "selected" : ""
-            }>gallery</option>
-					</select>
-				</div>
-				<div data-tip="Auto compile code on keyup" data-tip-left>
-					<input class="cc-setting-checkbox" type="checkbox" ${
-            cc.y.settings.get("liveCoding") ? "checked" : ""
-          } onchange="cc.y.settings.set('liveCoding', this.checked);">
-					Live Coding
-
-					<select class="cc-settings-livedelay" data-tip="Keyup delay in seconds" onchange="cc.y.settings.set('liveDelay', this.value)">
-						${this.navSettingsLiveDelay()}
-					</select> sec
-				</div>
-				<div data-tip="Display code line numbers" data-tip-left>
-					<input class="cc-setting-checkbox" type="checkbox" ${
-            cc.y.settings.get("lineNumbers") ? "checked" : ""
-          } onchange="cc.y.settings.set('lineNumbers', this.checked);">
-					Line Numbers
-				</div>
-				<div data-tip="Anyone can lock their room" data-tip-left>
-					<input class="cc-setting-checkbox" type="checkbox" ${
-            cc.y.settings.get("roomLocks") ? "checked" : ""
-          } onchange="cc.y.settings.set('roomLocks', this.checked);">
-					Room Locks
-				</div>
-				<div data-tip="Speed of walking through rooms" data-tip-left>
-					Walk Delay:
-					<input class="cc-setting-input cc-settings-walkdelay" type="text" value="${
-            cc.settings.walkDelay
-          }" onchange="cc.settings.walkDelay=this.value;cc.roomWalk(true);cc.settingsSave()"> sec
-				</div>`;
-
-    let settingsHTML = `
-				<div class="cc-settings-bar"></div>
-				${cc.admins().includes(cc.p.token) ? adminSettings : ""}
-
-				<div class="cc-settings-subhead">EDITOR</div>
-
-				<div data-tip="Set code font size" data-tip-left>
-					Font Size:
-					<input class="cc-setting-input cc-settings-fontsize" type="text" value="${
-            cc.settings.editor.fontsize
-          }" onkeyup="cc.editorFontSize(this.value)"> pt
-				</div>
-			`;
-
-    if (this.htmlContainer.querySelector(".cc-settings") !== undefined) {
-      this.htmlContainer.querySelector(".cc-settings").innerHTML = settingsHTML;
-    }
-  }
-
-  navSettingsLiveDelay() {
-    let opts = "";
-    let curDelay = cc.y.settings.get("liveDelay");
-    for (let i = 0.5; i <= 2; i += 0.5) {
-      let sel = "";
-      if (i === curDelay) {
-        sel = "selected";
-      }
-      opts += `<option ${sel}>${i}</option>`;
-    }
-    return opts;
-  }
-
-  navUpdate() {
-    let navRoom = `
-			<div class="cc-controls-row">
-				${
-          !this.s.locked ||
-          !cc.y.settings.get("roomLocks") ||
-          (this.s.locked && this.s.admin.includes(cc.p.token))
-            ? this.nav.reset
-            : ""
-        }
-				${this.nav.save}
-				${
-          (cc.y.settings.get("roomLocks") &&
-            this.s.admin.includes(cc.p.token)) ||
-          cc.admins().includes(cc.p.token)
-            ? this.nav.screencast
-            : ""
-        }
-			</div>
-		`;
-
-    if (this.roomId !== 0 && this.mode === CocodingMode.EDIT) {
-      this.htmlContainer.querySelector(".cc-controls").innerHTML = navRoom;
-    }
-
-    // nav options
-    let lockStatus = "";
-    if (this.roomId > 0 && cc.y.settings.get("roomLocks")) {
-      if (this.roomId === 1 && !cc.admins().includes(cc.p.token)) {
-        lockStatus = this.nav.unlockDisabled;
-      } else if (this.s.locked) {
-        lockStatus = this.nav.lock;
-      } else {
-        lockStatus = this.nav.unlock;
-      }
-    }
-
-    let renameStatus = this.nav.renameDisabled;
-    if (this.roomId > 1) {
-      renameStatus = this.nav.rename;
-    }
-    if (
-      cc.y.settings.get("roomLocks") &&
-      this.s.locked &&
-      !this.s.admin.includes(cc.p.token)
-    ) {
-      renameStatus = this.nav.renameDisabled;
-    }
-
-    if (this.mode === CocodingMode.EDIT) {
-      let roomlistNav = this.htmlContainer.querySelector(".cc-roomlist-nav");
-      if (roomlistNav !== null) {
-        this.htmlContainer.querySelector(
-          ".cc-roomlist-nav"
-        ).innerHTML = `${renameStatus}${lockStatus}`;
-      }
-      this.toggleWrite();
-      this.roomList();
-    }
-    cc.tipsInit();
-  }
-
-  navExtended() {
-    let nav = ``;
-    if (this.mode === CocodingMode.EDIT) {
-      nav = `
-				<div class="cc-controls-row" ${
-          cc.admins().includes(cc.p.token) ? "" : 'style="display:none;"'
-        }>
-					${
-            cc.admins().includes(cc.p.token)
-              ? this.nav.layers +
-                this.nav.walk +
-                this.nav.message +
-                this.nav.splitter
-              : ""
-          }
-				</div>
-			`;
-    } else if (this.mode === CocodingMode.GALLERY) {
-      nav = `
-				<div class="cc-controls-row" ${
-          cc.admins().includes(cc.p.token) ? "" : 'style="display:none;"'
-        }>
-					${cc.admins().includes(cc.p.token) ? this.nav.walk + this.nav.message : ""}
-				</div>
-			`;
-    }
-    this.htmlContainer.querySelector(".cc-controls-extended").innerHTML = nav;
-    cc.tipsInit();
   }
 }
