@@ -53,7 +53,6 @@ export class SettingsPanel {
 				</div>`;
 
     this.rootElement.innerHTML = `
-        <div class="cc-settings">
 				  <div class="cc-settings-bar"></div>
           <!--	Add Admin settings if the user an admin	-->
 				  ${this.isAdmin ? adminSettings : ""}
@@ -66,8 +65,8 @@ export class SettingsPanel {
             cc.settings.editor.fontsize
           }" onkeyup="cc.editorFontSize(this.value)"> pt
 				</div>
-				</div>
 			`;
+    this.rootElement.classList.add("cc-settings");
   };
 
   _renderLiveDelaySettings = () => {

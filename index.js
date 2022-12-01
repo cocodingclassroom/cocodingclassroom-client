@@ -36,9 +36,9 @@ import { TeacherRoomHeader } from "./src/navigation/teacherRoomHeader";
 
 // encode room name, room count
 
-var offline = true
-var version = '1.0.0'
-var earlyAccessMode = false
+const offline = true
+export const version = '1.0.0'
+const earlyAccessMode = false
 
 
 
@@ -1899,40 +1899,6 @@ cc.guiToggle = function(elm, toggle = true){
 	}
 }
 
-cc.aboutToggle = function(){
-
-	let markedOptions = {
-		headerPrefix:'marked-'
-	};
-	let readmePath = 'README.md?' + version;
-	let request = new XMLHttpRequest();
-	request.open('GET', readmePath, true);
-	request.send();
-	request.addEventListener('load', function(){
-		let markedReadme = marked.parse(request.responseText, markedOptions);
-		let verrev = '<p>v '+ version + '<br>';
-		markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
-		let aboutDiv = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
-
-		vex.dialog.alert({
-			unsafeMessage:aboutDiv,
-			afterOpen: function(){
-				cc.vexFocus();
-			}
-		})
-	});
-
-
-	// vex.dialog.alert({
-	// 	unsafeMessage: `COCODING Classroom<hr>
-	// 	Signup for Early-Access (~ Spring '22):<br>
-	// 	» <a href="https://forms.gle/F2bWtJErYj3S4Pc5A" target="_blank">Registration Form</a>`,
-	// 	afterOpen: function(){
-	// 		// cc.vexSmall(this.rootEl);
-	// 		cc.vexFocus()
-	// 	}
-	// })
-}
 
 cc.computedStyle = function (el,style) {
     var cs;
