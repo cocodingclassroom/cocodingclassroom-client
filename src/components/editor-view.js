@@ -3,13 +3,20 @@ import * as ace from "ace-builds";
 import "ace-builds/src-noconflict/theme-cobalt";
 import "ace-builds/src-noconflict/mode-javascript";
 import { styleMap } from "lit/directives/style-map.js";
+import { RoomService } from "../services/room-service";
 
 export class EditorView extends LitElement {
   static properties = {
-    editorIdentifier: { type: String },
+    roomId: { type: String },
     editorWidth: { type: Number },
     leftAlign: { type: Number },
+    editorIdentifier: { state: true, type: String },
   };
+
+  connectedCallback() {
+    this.editorIdentifier = `editor-${this.roomId}`;
+    super.connectedCallback();
+  }
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
@@ -35,6 +42,8 @@ export class EditorView extends LitElement {
       "gotolineend", // ctrl + e
       "transposeletters", // ctrl + t (totally removed)
     ]);
+    let room = RoomService.get().rooms[this.roomId];
+    editor.setValue(room.codeContent.toString(), -1);
   }
 
   render() {
@@ -48,10 +57,10 @@ export class EditorView extends LitElement {
       styles.right = 0;
     }
     return html`
-        <div class="editor" 
-             id=${this.editorIdentifier}
-             style="${styleMap(styles)}"">
-        </div> `;
+            <div class="editor"
+                 id=${this.editorIdentifier}
+                 style="${styleMap(styles)}"">
+            </div> `;
   }
 
   static styles = css`

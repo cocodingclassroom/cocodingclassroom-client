@@ -1,8 +1,9 @@
 import { YSyncModel } from "/src/models/y-sync-model.js";
+import { BindingService } from "../services/binding-service";
 
 export class ClassroomModel extends YSyncModel {
   classRoomId;
-  binding;
+  activeBindingType;
   roomIds;
   peopleIds;
 
@@ -10,7 +11,8 @@ export class ClassroomModel extends YSyncModel {
     super(`classroom_${classRoomId}`);
     this.classRoomId = classRoomId;
     this.setup();
-    this.binding = this.binding ?? BindingType.P5;
+    this.activeBindingType = this.activeBindingType ?? BindingType.P5;
+    BindingService.get().setBindingByBindingType(this.activeBindingType);
     this.roomIds = this.roomIds ?? [];
     this.peopleIds = this.peopleIds ?? [];
   }

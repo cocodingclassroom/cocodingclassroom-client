@@ -64,14 +64,14 @@ export class ClassRoomView extends LitElement {
     return html`
       ${this.roomLeft
         ? html` <cc-room
-            room="${this.roomLeft}"
+            roomId="${this.roomLeft.id}"
             width="${leftWidth}"
             isLeft="${0}"
           ></cc-room>`
         : ""}
       ${this.roomRight
         ? html` <cc-room
-            room="${this.roomRight}"
+            roomId="${this.roomRight.id}"
             width="${rightWith}"
             isLeft="${1}"
           ></cc-room>`

@@ -6,16 +6,13 @@ export class RoomView extends LitElement {
     roomId: { type: Number },
     width: { type: Number },
     isLeft: { type: Number },
+    binding: { type: Object, state: true },
   };
-
-  connectedCallback() {
-    super.connectedCallback();
-  }
 
   render() {
     return html`
       <cc-editor
-        editorIdentifier="editor-${this.roomId}"
+        roomId="${this.roomId}"
         editorWidth="${this.width}"
         leftAlign="${this.isLeft}"
       >

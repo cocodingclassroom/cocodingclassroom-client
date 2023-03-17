@@ -69,6 +69,8 @@ export class SyncService {
 
   getSharedMap = (mapName) => this._yDoc.getMap(mapName);
 
+  getSharedText = (textName) => this._yDoc.getText(textName);
+
   getSyncId = () => {
     return this._yDoc.clientID;
   };

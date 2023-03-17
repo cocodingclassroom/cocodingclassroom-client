@@ -134,7 +134,7 @@ export class Setup extends LitElement {
     console.log("submitted");
     let newClassroomId = ClassroomService.get().createNewRoom(() => {
       console.log("created new room");
-      Router.go(`${window.location.href}classroom/${newClassroomId}`);
+      Router.go(`/classroom/${newClassroomId}`);
     }, this.initialRoomNumbers);
   };
 
