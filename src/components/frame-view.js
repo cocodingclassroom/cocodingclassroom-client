@@ -36,6 +36,7 @@ export class FrameView extends LitElement {
       bottom: 0;
       height: 99.55%;
       border: 0;
+      pointer-events: none;
     }
   `;
 }

@@ -92,6 +92,7 @@ export class ClassRoomView extends LitElement {
 
   _dragMiddleBar = (e) => {
     let x = e.clientX;
+    console.log(x);
     let screenWidth = window.innerWidth;
     let percentageDrag = (100 / screenWidth) * x;
     this.localUser.leftSize = this._clampPercentage(percentageDrag);
