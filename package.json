@@ -1,22 +1,33 @@
 {
-  "name": "snowpack-testing",
-  "version": "1.0.0",
-  "description": "",
+  "name": "cocoding2",
+  "version": "0.0.0",
   "main": "index.js",
+  "private": true,
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "start": "webpack serve --open"
   },
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "@vaadin/router": "^1.7.4",
+    "ace-builds": "^1.15.1",
+    "html-webpack-plugin": "^5.5.0",
+    "lit": "^2.6.1",
+    "lit-element-router": "^2.0.3",
+    "routify": "^1.2.7",
+    "style-loader": "^3.3.2",
+    "unique-names-generator": "^4.7.1",
+    "y-protocols": "^1.0.5",
+    "y-websocket": "^1.4.5",
+    "yjs": "^13.5.46"
+  },
   "devDependencies": {
-    "ace-builds": "^1.4.12",
-    "lib0": "^0.2.42",
-    "snowpack": "^3.3.7",
-    "y-protocols": "^1.0.4",
-    "y-webrtc": "^10.1.8",
-    "y-websocket": "^1.3.11",
-    "yjs": "^13.5.6"
+    "prettier": "2.8.4",
+    "process": "^0.11.10",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
   }
 }
