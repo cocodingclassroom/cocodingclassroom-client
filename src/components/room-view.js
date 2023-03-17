@@ -1,5 +1,6 @@
 import { html, LitElement } from "lit";
 import { EditorView } from "./editor-view";
+import { FrameView } from "./frame-view";
 
 export class RoomView extends LitElement {
   static properties = {
@@ -17,6 +18,11 @@ export class RoomView extends LitElement {
         leftAlign="${this.isLeft}"
       >
       </cc-editor>
+      <cc-frame
+        roomId="${this.roomId}"
+        frameWidth="${this.width}"
+        leftAlign="${this.isLeft}"
+      ></cc-frame>
     `;
   }
 }

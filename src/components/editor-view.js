@@ -6,6 +6,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
 import { AceBinding, AceCursors } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
+import { getSplitScreenWidthAndAlignStyle } from "../util/util";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -55,20 +56,17 @@ export class EditorView extends LitElement {
   }
 
   render() {
-    const styles = {};
-    styles.width = `${this.editorWidth}px`;
-
-    // styles.set("width", );
-    if (this.leftAlign === 0) {
-      styles.left = 0;
-    } else {
-      styles.right = 0;
-    }
+    const styles = getSplitScreenWidthAndAlignStyle(
+      this.editorWidth,
+      this.leftAlign
+    );
     return html`
-            <div class="editor"
-                 id=${this.editorIdentifier}
-                 style="${styleMap(styles)}"">
-            </div> `;
+      <div
+        class="editor"
+        id=${this.editorIdentifier}
+        style="${styleMap(styles)}"
+      ></div>
+    `;
   }
 
   static styles = css`

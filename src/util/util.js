@@ -5,3 +5,16 @@ export const getRandomID = () => {
     id += chars.charAt(Math.floor(Math.random() * chars.length));
   return id;
 };
+
+export const getSplitScreenWidthAndAlignStyle = (width, leftAlign) => {
+  const styles = {};
+  styles.width = `${width}px`;
+
+  // styles.set("width", );
+  if (leftAlign === 0) {
+    styles.left = 0;
+  } else {
+    styles.right = 0;
+  }
+  return styles;
+};
