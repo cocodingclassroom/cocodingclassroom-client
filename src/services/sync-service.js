@@ -71,6 +71,10 @@ export class SyncService {
 
   getSharedText = (textName) => this._yDoc.getText(textName);
 
+  getAwareness = () => {
+    return this._awareness;
+  };
+
   getSyncId = () => {
     return this._yDoc.clientID;
   };

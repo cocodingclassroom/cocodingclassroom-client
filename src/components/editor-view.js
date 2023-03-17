@@ -4,6 +4,8 @@ import "ace-builds/src-noconflict/theme-cobalt";
 import "ace-builds/src-noconflict/mode-javascript";
 import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
+import { AceBinding, AceCursors } from "../util/y-ace";
+import { SyncService } from "../services/sync-service";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -42,8 +44,14 @@ export class EditorView extends LitElement {
       "gotolineend", // ctrl + e
       "transposeletters", // ctrl + t (totally removed)
     ]);
+    // setup binding
     let room = RoomService.get().rooms[this.roomId];
-    editor.setValue(room.codeContent.toString(), -1);
+    let binding = new AceBinding(
+      room.codeContent,
+      editor,
+      SyncService.get().getAwareness()
+    );
+    // let cursorBinding = new AceCursors(binding);
   }
 
   render() {
