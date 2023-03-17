@@ -8,7 +8,7 @@ export class EditorView extends LitElement {
   static properties = {
     editorIdentifier: { type: String },
     editorWidth: { type: Number },
-    leftAlign: { type: Boolean },
+    leftAlign: { type: Number },
   };
 
   firstUpdated(_changedProperties) {
@@ -30,6 +30,7 @@ export class EditorView extends LitElement {
       tabSize: 4,
       useSoftTabs: false,
     });
+    editor.container.style.background = "rgba(1,1,1,0)";
     editor.commands.removeCommands([
       "gotolineend", // ctrl + e
       "transposeletters", // ctrl + t (totally removed)
@@ -38,10 +39,10 @@ export class EditorView extends LitElement {
 
   render() {
     const styles = {};
-    styles.width = `${this.editorWidth}%`;
+    styles.width = `${this.editorWidth}px`;
 
     // styles.set("width", );
-    if (this.leftAlign) {
+    if (this.leftAlign === 0) {
       styles.left = 0;
     } else {
       styles.right = 0;

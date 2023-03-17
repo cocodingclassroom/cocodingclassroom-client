@@ -4,6 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ClassroomService } from "/src/services/classroom-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
+import { RoomView } from "./room-view";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
@@ -26,6 +27,11 @@ export class ClassRoomView extends LitElement {
         this._setMembers();
       }
     );
+    document.addEventListener("resize", this.onResize);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("resize", this.onResize);
   }
 
   _setMembers() {
@@ -43,16 +49,36 @@ export class ClassRoomView extends LitElement {
     this.localUser.addListener(update);
     this.roomRight.addListener(update);
     this.roomLeft.addListener(update);
+    this.classroom.addListener(update);
   }
 
+  onResize = () => {
+    this.requestUpdate();
+  };
+
   render() {
-    let leftWidth = this.localUser?.leftSize ?? 50;
+    let width = window.innerWidth;
+    let pixelWidthPerPercent = width / 100;
+    let leftWidth = (this.localUser?.leftSize ?? 50) * pixelWidthPerPercent;
+    let rightWith = width - 5 - leftWidth;
     return html`
-      ${ClassroomService.get().rooms?.forEach((room) => {
-        return html` <cc-room roomId="${room.id}"></cc-room>`;
-      })}
+      ${this.roomLeft
+        ? html` <cc-room
+            room="${this.roomLeft}"
+            width="${leftWidth}"
+            isLeft="${0}"
+          ></cc-room>`
+        : ""}
+      ${this.roomRight
+        ? html` <cc-room
+            room="${this.roomRight}"
+            width="${rightWith}"
+            isLeft="${1}"
+          ></cc-room>`
+        : ``}
+
       <div
-        style="${styleMap({ left: `${leftWidth}%` })}"
+        style="${styleMap({ left: `${leftWidth}px` })}"
         class="middle-bar"
         .onmousedown="${(e) => this._dragMiddleBarStart(e)}"
       ></div>

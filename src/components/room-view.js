@@ -1,8 +1,11 @@
 import { html, LitElement } from "lit";
+import { EditorView } from "./editor-view";
 
 export class RoomView extends LitElement {
   static properties = {
-    room: { type: Object },
+    roomId: { type: Number },
+    width: { type: Number },
+    isLeft: { type: Number },
   };
 
   connectedCallback() {
@@ -12,8 +15,8 @@ export class RoomView extends LitElement {
   render() {
     return html`
       <cc-editor
-        editorIdentifier="editor-${this.room.id}"
-        editorWidth="${this.roomWidth}"
+        editorIdentifier="editor-${this.roomId}"
+        editorWidth="${this.width}"
         leftAlign="${this.isLeft}"
       >
       </cc-editor>
