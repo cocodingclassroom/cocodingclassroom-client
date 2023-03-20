@@ -110,8 +110,8 @@ export class EditorView extends LitElement {
       top: 0;
       bottom: 0;
       width: 100%;
-      height 100%;
     }
+
     .run-button {
       position: absolute;
       z-index: 3;
@@ -122,6 +122,46 @@ export class EditorView extends LitElement {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
+    }
+
+    .ace_line span {
+      background: rgba(0, 50, 50, 1);
+      border-right: 1em solid rgba(0, 50, 50, 1);
+      margin-right: -1em;
+      padding-bottom: 2px;
+      /*color: #fff;*/
+    }
+
+    .ace_line span:last-child {
+      border-right: none;
+      margin-right: 0;
+    }
+
+    .marker-del,
+    .marker-ins {
+      position: absolute;
+      z-index: 99;
+      background: rgba(0, 255, 0, 0.5) !important;
+    }
+
+    .marker-del {
+      background: rgba(255, 0, 0, 0.5) !important;
+    }
+
+    .ace_marker-layer {
+      z-index: 99;
+    }
+
+    #merge-holder .ace_marker-layer {
+      z-index: 0;
+    }
+
+    .ace_active-line {
+      width: 0px;
+    }
+
+    .ace_gutter-active-line {
+      background-color: rgba(150, 150, 0, 0.5) !important;
     }
   `;
 }
