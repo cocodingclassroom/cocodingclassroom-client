@@ -6,9 +6,9 @@ import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
 import { AceBinding, AceCursors } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
-import { getSplitScreenWidthAndAlignStyle } from "../util/util";
 import { recompile } from "../util/compiler";
 import run from "../assets/icons/run.svg";
+import { OutputView } from "./output-view";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -16,6 +16,7 @@ export class EditorView extends LitElement {
     editorWidth: { type: Number },
     leftAlign: { type: Number },
     editorIdentifier: { state: true, type: String },
+    message: { type: String, state: true },
   };
 
   room;
@@ -67,24 +68,20 @@ export class EditorView extends LitElement {
     this.editor.session.on("change", (x) => {
       this.onEditorChange(x);
     });
+    this.room.l_editorForRoom = this.editor;
+    this.compile();
   }
 
   onEditorChange = (delta) => {
     this.room.l_changedPositions.push(delta.start);
-    // this.compile();
   };
 
   compile() {
-    recompile(
-      false,
-      this.room.l_iframeForRoom,
-      this.editor,
-      this.room.l_iframeMeta,
-      this.room.l_changedPositions,
-      (message) => {
-        console.log(message);
-      }
-    );
+    recompile(false, this.room, (message) => {
+      this.message = message;
+      console.log(this.message);
+      this.requestUpdate();
+    });
   }
 
   render() {
@@ -100,6 +97,7 @@ export class EditorView extends LitElement {
       >
         <img width="8" height="8" src="${run}" alt="run button" />
       </button>
+      <cc-console message="${this.message}"></cc-console>
     `;
   }
 

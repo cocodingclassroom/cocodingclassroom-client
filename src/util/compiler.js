@@ -1,16 +1,13 @@
 import { BindingService } from "../services/binding-service";
 import loopBreaker from "loop-breaker";
 
-export const recompile = (
-  force,
-  iframe,
-  editor,
-  iframeMeta,
-  currentPositions,
-  consoleCallback
-) => {
-  let iframeContent = iframe.contentWindow;
+export const recompile = (forceCompile, room, consoleCallback) => {
+  let iframeContent = room.l_iframeForRoom.contentWindow;
+  let iframe = room.l_iframeForRoom;
+  let iframeMeta = room.l_iframeMeta;
+  let editor = room.l_editorForRoom;
   let activeBinding = BindingService.get().binding;
+  let currentPositions = room.l_changedPositions;
 
   // clearTimeout(this.errorTimer)
   // if (this.collapsed) {
@@ -34,7 +31,7 @@ export const recompile = (
   // let rawLines = editor.session.getLines(0, editor.session.getLength());
 
   // softCompile
-  if (!force) {
+  if (!forceCompile) {
     // && !this.windowBroken) {
     // p5 specific
     if (iframeContent.frameCount !== undefined) {
@@ -58,7 +55,7 @@ export const recompile = (
         let sandboxParts = sandboxMatch[0].split("\n");
         if (sandboxParts.indexOf(currCode) > -1) {
           iframeContent.eval(sandboxMatch[0]);
-          if (!force) {
+          if (!forceCompile) {
             return false;
           }
         }
@@ -210,7 +207,6 @@ export const recompile = (
       return;
     }
   }
-  55;
 
   let fullCode = sketchCode + "\n\n" + activeBinding.codeCustom;
   s.innerHTML = fullCode;
@@ -221,14 +217,18 @@ export const recompile = (
   // when ready, add sketch script
   iframe.onload = () => {
     // windowBroken = false;
-    iframeContent.ccSelf = this;
+    iframeContent.ccSelf = {};
+    iframeContent.ccSelf.consoleMessage = (message) => {
+      consoleCallback(message);
+    };
+
     iframeContent.document.body.appendChild(s);
     // this.validCode = true
     // this.consoleClear()
 
     // p5 specific
     if (pVars.hasOwnProperty("frameCount")) {
-      iframeContent.frameCount = pVars.frameCount;
+      iframeContent.frameCount = 0;
       iframeContent.mouseX = pVars.mouseX;
       iframeContent.mouseY = pVars.mouseY;
     }
