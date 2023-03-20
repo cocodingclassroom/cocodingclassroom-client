@@ -22,6 +22,7 @@ export class YSyncModel {
         propertyName !== "mapName" &&
         propertyName !== "listeners" &&
         propertyName !== "map" &&
+        !propertyName.startsWith("l_") &&
         typeof this[propertyName] !== "function"
       ) {
         initialData[propertyName] = this[propertyName];

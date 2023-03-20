@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { getSplitScreenWidthAndAlignStyle } from "../util/util";
 import { styleMap } from "lit/directives/style-map.js";
+import { RoomService } from "../services/room-service";
 
 export class FrameView extends LitElement {
   static properties = {
@@ -10,27 +11,29 @@ export class FrameView extends LitElement {
     frameIdentifier: { state: true },
   };
 
+  room;
+  iframeReference;
+
   connectedCallback() {
     this.frameIdentifier = `frame_${this.roomId}`;
+    this.room = RoomService.get().getRoom(this.roomId);
+
     super.connectedCallback();
   }
 
   firstUpdated(_changedProperties) {
+    this.iframeReference = this.shadowRoot.getElementById(this.frameIdentifier);
+    this.room.l_iframeForRoom = this.iframeReference;
     super.firstUpdated(_changedProperties);
   }
 
   render = () => {
-    const styles = getSplitScreenWidthAndAlignStyle(
-      this.frameWidth,
-      this.leftAlign
-    );
-    return html`
-      <iframe id="" class="frame" style="${styleMap(styles)}"></iframe>
-    `;
+    return html` <iframe id="${this.frameIdentifier}" class="frame"></iframe> `;
   };
 
   static styles = css`
     .frame {
+      z-index: 1;
       position: absolute;
       top: 0;
       bottom: 0;

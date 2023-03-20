@@ -1,7 +1,9 @@
 import { Room, RoomType } from "/src/models/room.js";
 
 export class RoomService {
+  static _instance;
   rooms;
+
   constructor() {
     if (RoomService._instance !== undefined && RoomService._instance !== null) {
       throw new Error(
@@ -15,6 +17,10 @@ export class RoomService {
     if (RoomService._instance === undefined)
       RoomService._instance = new RoomService();
     return RoomService._instance;
+  };
+
+  getRoom = (roomId) => {
+    if (roomId >= 0 && roomId < this.rooms.length) return this.rooms[roomId];
   };
 
   init = (classroom, numberOfRooms) => {

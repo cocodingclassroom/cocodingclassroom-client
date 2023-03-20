@@ -57,9 +57,8 @@ p5binding.iframeTemplate = `<!DOCTYPE html>
 			cursor: crosshair;
 		}
 	</style>
-		<script type="text/javascript" src="./p5.min.js"></script>
-		<script type="text/javascript" src="./addons/p5.sound.min.js"></script>
-
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js" integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--		<script type="text/javascript" src="./addons/p5.sound.min.js"></script>-->
 
 </head>
 <body>

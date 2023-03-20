@@ -9,6 +9,9 @@ export const getRandomID = () => {
 export const getSplitScreenWidthAndAlignStyle = (width, leftAlign) => {
   const styles = {};
   styles.width = `${width}px`;
+  styles.height = "100%";
+  styles.position = "absolute";
+  styles.top = 0;
 
   // styles.set("width", );
   if (leftAlign === 0) {

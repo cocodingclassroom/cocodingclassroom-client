@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { EditorView } from "./editor-view";
 import { FrameView } from "./frame-view";
 
@@ -12,19 +12,23 @@ export class RoomView extends LitElement {
 
   render() {
     return html`
+      <cc-frame
+        class="frame"
+        roomId="${this.roomId}"
+        frameWidth="${this.width}"
+        leftAlign="${this.isLeft}"
+      ></cc-frame>
       <cc-editor
+        class="editor"
         roomId="${this.roomId}"
         editorWidth="${this.width}"
         leftAlign="${this.isLeft}"
       >
       </cc-editor>
-      <cc-frame
-        roomId="${this.roomId}"
-        frameWidth="${this.width}"
-        leftAlign="${this.isLeft}"
-      ></cc-frame>
     `;
   }
+
+  static styles = css``;
 }
 
 window.customElements.define("cc-room", RoomView);

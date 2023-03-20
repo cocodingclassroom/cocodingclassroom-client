@@ -10,6 +10,43 @@ export class Room extends YSyncModel {
   roomName;
   roomType;
   codeContent;
+  l_changedPositions;
+  l_editorForRoom;
+  l_iframeForRoom;
+  l_iframeMeta = `
+		// catch mouse focus
+		document.addEventListener("mouseup", function(){
+			parent.focus()
+		})
+
+		// forward mouse/key events to parent
+		document.addEventListener('mousemove', forwardMouse);
+		document.addEventListener('mouseup', forwardMouse);
+		document.addEventListener('mousedown', forwardMouse);
+
+		function forwardMouse(event){
+			//ccSelf.passMouse(event);
+		}
+
+		document.addEventListener('keydown', forwardKey);
+		document.addEventListener('keyup', forwardKey);
+
+		function forwardKey(event){
+			// ccSelf.sendKey(event); // *** needed??
+		}
+
+		// pass errors to parent
+		window.onerror = function myErrorHandler(errorMsg) {
+			// ccSelf.validCode = false
+			// ccSelf.consoleMessage('👀 window: ' + errorMsg)
+			// ccSelf.windowError()
+			return false
+		}
+
+		console.log = function(m){
+			ccSelf.consoleMessage(m)
+		}
+	`;
 
   constructor(id) {
     super(`room_${id}`);
@@ -19,6 +56,7 @@ export class Room extends YSyncModel {
       let activeBinding = BindingService.get().binding;
       this.codeContent = new Y.Text(activeBinding.codeTemplate ?? "");
     }
+    this.l_changedPositions = [];
   }
 }
 
