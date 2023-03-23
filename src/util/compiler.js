@@ -2,7 +2,7 @@ import { BindingService } from "../services/binding-service";
 import loopBreaker from "loop-breaker";
 
 export const interpret = (
-  softInterpretation,
+  fullRebuild,
   room,
   messageCallback,
   errorCallback,
@@ -16,31 +16,17 @@ export const interpret = (
   let activeBinding = BindingService.get().binding;
   let currentPositions = room.l_changedPositions;
 
-  // clearTimeout(this.errorTimer)
-  // if (this.collapsed) {
-  //   return;
-  // }
-
-  // if(cc.safeMode){
-  //     console.log('in safeMode! to disable, remove #bug from URL and refresh page')
-  //     return
-  // }
-
+  //TODO: variables like this should be in the specific bindings.
   let pVars = {};
   if (iframeContent.frameCount !== undefined) {
-    // p5 specific
     pVars.frameCount = iframeContent.frameCount + 1;
     pVars.mouseX = iframeContent.mouseX;
     pVars.mouseY = iframeContent.mouseY;
   }
 
   let codeNoComments = removeComments(editor.getValue());
-  // let rawLines = editor.session.getLines(0, editor.session.getLength());
 
-  // softCompile
-  if (!softInterpretation && !activeError) {
-    // && !this.windowBroken) {
-    // p5 specific
+  if (!fullRebuild && !activeError) {
     trySoftInterpretation(
       iframeContent,
       editor,
