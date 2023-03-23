@@ -6,7 +6,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
 import { AceBinding, AceCursors } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
-import { recompile } from "../util/compiler";
+import { interpret } from "../util/compiler";
 import run from "../assets/icons/run.svg";
 import { OutputView } from "./output-view";
 
@@ -21,6 +21,7 @@ export class EditorView extends LitElement {
 
   room;
   editor;
+  activeError = false;
 
   connectedCallback() {
     this.editorIdentifier = `editor-${this.roomId}`;
@@ -51,6 +52,7 @@ export class EditorView extends LitElement {
       showGutter: true,
       tabSize: 4,
       useSoftTabs: false,
+      fontSize: "13pt",
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
     this.editor.commands.removeCommands([
@@ -69,19 +71,34 @@ export class EditorView extends LitElement {
       this.onEditorChange(x);
     });
     this.room.l_editorForRoom = this.editor;
-    this.compile();
+    this.interpretCode();
   }
 
   onEditorChange = (delta) => {
     this.room.l_changedPositions.push(delta.start);
   };
 
-  compile() {
-    recompile(false, this.room, (message) => {
-      this.message = message;
-      console.log(this.message);
-      this.requestUpdate();
-    });
+  interpretCode() {
+    interpret(
+      false,
+      this.room,
+      (message) => {
+        this.message = message;
+        console.log(this.message);
+        this.requestUpdate();
+      },
+      (message) => {
+        this.message = message;
+        console.log(this.message);
+        this.requestUpdate();
+        this.activeError = true;
+      },
+      () => {
+        this.activeError = false;
+        this.message = "✅ No Interpreter Errors ";
+      },
+      this.activeError
+    );
   }
 
   render() {
@@ -93,7 +110,7 @@ export class EditorView extends LitElement {
       <button
         class="run-button"
         style="${styleMap(buttonStyle)}"
-        @click="${() => this.compile()}"
+        @click="${() => this.interpretCode()}"
       >
         <img width="8" height="8" src="${run}" alt="run button" />
       </button>

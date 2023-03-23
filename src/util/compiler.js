@@ -1,7 +1,14 @@
 import { BindingService } from "../services/binding-service";
 import loopBreaker from "loop-breaker";
 
-export const recompile = (forceCompile, room, consoleCallback) => {
+export const interpret = (
+  softInterpretation,
+  room,
+  messageCallback,
+  errorCallback,
+  compilationOkayCallback,
+  activeError = false
+) => {
   let iframeContent = room.l_iframeForRoom.contentWindow;
   let iframe = room.l_iframeForRoom;
   let iframeMeta = room.l_iframeMeta;
@@ -31,139 +38,46 @@ export const recompile = (forceCompile, room, consoleCallback) => {
   // let rawLines = editor.session.getLines(0, editor.session.getLength());
 
   // softCompile
-  if (!forceCompile) {
+  if (!softInterpretation && !activeError) {
     // && !this.windowBroken) {
     // p5 specific
-    if (iframeContent.frameCount !== undefined) {
-      let drawPos = []; //{};
-      let drawPosSel = -1;
-      let countBrackets = false;
-      let braces = 0;
-      let softFunction = false;
-      let softClass = false;
-
-      let allLines = codeNoComments.split("\n");
-
-      // sandbox
-      let sandboxMatch = editor
-        .getValue()
-        .match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n/ims);
-      if (sandboxMatch !== null) {
-        let currline = editor.getSelectionRange().start.row;
-
-        let currCode = editor.session.getLine(currline);
-        let sandboxParts = sandboxMatch[0].split("\n");
-        if (sandboxParts.indexOf(currCode) > -1) {
-          iframeContent.eval(sandboxMatch[0]);
-          if (!forceCompile) {
-            return false;
-          }
-        }
-      }
-
-      // test purging of comments
-      // let offLines = 6;
-      // console.log(rawLines[offLines]);
-      // console.log(allLines[offLines]);
-
-      // extract all functions and their line number
-      for (let i = 0; i < allLines.length; i++) {
-        // catch function or class
-        if (allLines[i].includes("function ") && !countBrackets) {
-          countBrackets = true;
-          let functionName = allLines[i]
-            .match(/function ([\w\d]*)\(/)[1]
-            .trim();
-          drawPos.push({ type: "function", name: functionName, start: i });
-        } else if (allLines[i].includes("class ") && !countBrackets) {
-          countBrackets = true;
-          let className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
-          drawPos.push({ type: "class", name: className, start: i });
-        }
-
-        // count {} and mark where class/function ends
-        if (countBrackets) {
-          if (allLines[i].includes("{")) {
-            braces += (allLines[i].match(/{/g) || []).length;
-          }
-          if (allLines[i].includes("}")) {
-            braces -= (allLines[i].match(/}/g) || []).length;
-            if (braces === 0) {
-              drawPos[drawPos.length - 1].end = i;
-              countBrackets = false;
-            }
-          }
-        }
-      }
-
-      // check all changed positions + if custom function
-      let funName = "";
-      for (let i = 0; i < drawPos.length; i++) {
-        for (let j = 0; j < currentPositions.length; j++) {
-          let cPos = currentPositions[j];
-          if (cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end) {
-            // console.log(drawPos[i].name); // debug where change occured
-            if (
-              drawPos[i].name !== "setup" &&
-              drawPos[i].name !== "preload" &&
-              drawPos[i].type === "function"
-            ) {
-              softFunction = true;
-              drawPosSel = i;
-              funName = drawPos[i].name;
-            } else if (drawPos[i].type === "class") {
-              softClass = true;
-              drawPosSel = i;
-            }
-          }
-        }
-      }
-
-      // if custom function, grab where it's used
-      let functionPos = [];
-      for (let j = 0; j < drawPos.length; j++) {
-        if (funName === drawPos[j].name) {
-          // find lines where drawPos[i].name sits
-          for (let i = 0; i < allLines.length; i++) {
-            if (allLines[i].includes(drawPos[j].name + "(")) {
-              functionPos.push(i);
-            }
-          }
-        }
-      }
-
-      // catch custom functions in preload + setup
-      for (let i = 0; i < functionPos.length; i++) {
-        let fPos = functionPos[i];
-        for (let j = 0; j < drawPos.length; j++) {
-          if (fPos >= drawPos[j].start && fPos <= drawPos[j].end) {
-            // console.log(drawPos[i].name); // debug where chage occured
-            if (drawPos[j].name === "setup" || drawPos[j].name === "preload") {
-              // && !settings.cocoding.active
-              softFunction = false;
-            }
-          }
-        }
-      }
-
-      // if possible, only overwrite function/class for softCompile
-      if (softClass || softFunction) {
-        softCompile(
-          drawPos[drawPosSel].type,
-          drawPos[drawPosSel].name,
-          drawPos[drawPosSel].start,
-          drawPos[drawPosSel].end,
-          editor,
-          iframe,
-          consoleCallback
-        );
-        // this.curPositions = [];
-        return false; // prevent complete rebuild
-      }
-    }
+    trySoftInterpretation(
+      iframeContent,
+      editor,
+      codeNoComments,
+      iframe,
+      currentPositions,
+      errorCallback,
+      compilationOkayCallback
+    );
   }
 
-  // base template
+  fullRebuildOfIframe(
+    activeBinding,
+    iframeMeta,
+    codeNoComments,
+    editor,
+    errorCallback,
+    iframe,
+    iframeContent,
+    messageCallback,
+    pVars,
+    compilationOkayCallback
+  );
+};
+
+const fullRebuildOfIframe = (
+  activeBinding,
+  iframeMeta,
+  codeNoComments,
+  editor,
+  errorCallback,
+  iframe,
+  iframeContent,
+  messageCallback,
+  pVars,
+  compilationOkayCallback
+) => {
   let el = document.createElement("html");
   el.innerHTML = activeBinding.iframeTemplate;
   let iFrameHead = el.getElementsByTagName("head")[0]; //el.document.getElementsByTagName('body')[0];
@@ -200,16 +114,15 @@ export const recompile = (forceCompile, room, consoleCallback) => {
       sketchCode = loopBreaker(sketchCode).code;
     } catch (e) {
       // validCode = false;
-      consoleCallback(
-        `👀 error found near line ~ ${e.lineNumber}, ${e.description}`
+      errorCallback(
+        `❌ error found near line ~ ${e.lineNumber}, ${e.description}`
       );
       console.log(e.description); // debug full message
       return;
     }
   }
 
-  let fullCode = sketchCode + "\n\n" + activeBinding.codeCustom;
-  s.innerHTML = fullCode;
+  s.innerHTML = sketchCode + "\n\n" + activeBinding.codeCustom;
 
   // set template as iframe srcdoc
   iframe.srcdoc = el.innerHTML;
@@ -219,7 +132,10 @@ export const recompile = (forceCompile, room, consoleCallback) => {
     // windowBroken = false;
     iframeContent.ccSelf = {};
     iframeContent.ccSelf.consoleMessage = (message) => {
-      consoleCallback(message);
+      messageCallback(message);
+    };
+    iframeContent.ccSelf.errorCallback = (message) => {
+      errorCallback(message);
     };
 
     iframeContent.document.body.appendChild(s);
@@ -232,18 +148,154 @@ export const recompile = (forceCompile, room, consoleCallback) => {
       iframeContent.mouseX = pVars.mouseX;
       iframeContent.mouseY = pVars.mouseY;
     }
-    // this.curPositions = [];
+    compilationOkayCallback();
   };
 };
 
-const softCompile = (
+const trySoftInterpretation = (
+  iframeContent,
+  editor,
+  codeNoComments,
+  iframe,
+  currentPositions,
+  errorCallback,
+  compilationOkayCallback
+) => {
+  if (iframeContent.frameCount !== undefined) {
+    let drawPos = []; //{};
+    let drawPosSel = -1;
+    let countBrackets = false;
+    let braces = 0;
+    let softFunction = false;
+    let softClass = false;
+
+    let allLines = codeNoComments.split("\n");
+
+    // sandbox
+    // let sandboxMatch = editor
+    //     .getValue()
+    //     .match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n/ims);
+    // if (sandboxMatch !== null) {
+    //   let currline = editor.getSelectionRange().start.row;
+    //
+    //   let currCode = editor.session.getLine(currline);
+    //   let sandboxParts = sandboxMatch[0].split("\n");
+    //   if (sandboxParts.indexOf(currCode) > -1) {
+    //     iframeContent.eval(sandboxMatch[0]);
+    //     if (!forceCompile) {
+    //       return false;
+    //     }
+    //   }
+    // }
+
+    // test purging of comments
+    // let offLines = 6;
+    // console.log(rawLines[offLines]);
+    // console.log(allLines[offLines]);
+
+    // extract all functions and their line number
+    for (let i = 0; i < allLines.length; i++) {
+      // catch function or class
+      if (allLines[i].includes("function ") && !countBrackets) {
+        countBrackets = true;
+        let functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
+        drawPos.push({ type: "function", name: functionName, start: i });
+      } else if (allLines[i].includes("class ") && !countBrackets) {
+        countBrackets = true;
+        let className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
+        drawPos.push({ type: "class", name: className, start: i });
+      }
+
+      // count {} and mark where class/function ends
+      if (countBrackets) {
+        if (allLines[i].includes("{")) {
+          braces += (allLines[i].match(/{/g) || []).length;
+        }
+        if (allLines[i].includes("}")) {
+          braces -= (allLines[i].match(/}/g) || []).length;
+          if (braces === 0) {
+            drawPos[drawPos.length - 1].end = i;
+            countBrackets = false;
+          }
+        }
+      }
+    }
+
+    // check all changed positions + if custom function
+    let funName = "";
+    for (let i = 0; i < drawPos.length; i++) {
+      for (let j = 0; j < currentPositions.length; j++) {
+        let cPos = currentPositions[j];
+        if (cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end) {
+          // console.log(drawPos[i].name); // debug where change occured
+          if (
+            drawPos[i].name !== "setup" &&
+            drawPos[i].name !== "preload" &&
+            drawPos[i].type === "function"
+          ) {
+            softFunction = true;
+            drawPosSel = i;
+            funName = drawPos[i].name;
+          } else if (drawPos[i].type === "class") {
+            softClass = true;
+            drawPosSel = i;
+          }
+        }
+      }
+    }
+
+    // if custom function, grab where it's used
+    let functionPos = [];
+    for (let j = 0; j < drawPos.length; j++) {
+      if (funName === drawPos[j].name) {
+        // find lines where drawPos[i].name sits
+        for (let i = 0; i < allLines.length; i++) {
+          if (allLines[i].includes(drawPos[j].name + "(")) {
+            functionPos.push(i);
+          }
+        }
+      }
+    }
+
+    // catch custom functions in preload + setup
+    for (let i = 0; i < functionPos.length; i++) {
+      let fPos = functionPos[i];
+      for (let j = 0; j < drawPos.length; j++) {
+        if (fPos >= drawPos[j].start && fPos <= drawPos[j].end) {
+          // console.log(drawPos[i].name); // debug where chage occured
+          if (drawPos[j].name === "setup" || drawPos[j].name === "preload") {
+            // && !settings.cocoding.active
+            softFunction = false;
+          }
+        }
+      }
+    }
+
+    // if possible, only overwrite function/class for softCompile
+    if (softClass || softFunction) {
+      softInterpretation(
+        drawPos[drawPosSel].type,
+        drawPos[drawPosSel].name,
+        drawPos[drawPosSel].start,
+        drawPos[drawPosSel].end,
+        editor,
+        iframe,
+        errorCallback
+      );
+      // this.curPositions = [];
+      compilationOkayCallback();
+    }
+  }
+};
+
+const softInterpretation = (
   codeType,
   codeName,
   codeStart,
   codeEnd,
   editor,
   iframe,
-  consoleCallback
+  errorCallback
 ) => {
   let curCodeTemp = "";
   if (codeType === "function") {
@@ -264,7 +316,7 @@ const softCompile = (
     } catch (e) {
       // console.log(e.description)
       // this.validCode = false
-      consoleCallback(
+      errorCallback(
         `👀 error found near line ~ ${e.lineNumber}, "${e.description}"`
       );
       console.log(e.description); // debug full message
