@@ -1,5 +1,4 @@
-import "/src/components/setup.js";
-import "/src/components/classroom-view";
+import "./components/register";
 import { Router } from "@vaadin/router";
 
 const routes = [

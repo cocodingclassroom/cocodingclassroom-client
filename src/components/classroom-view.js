@@ -4,7 +4,6 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ClassroomService } from "/src/services/classroom-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
-import { RoomView } from "./room-view";
 import { getSplitScreenWidthAndAlignStyle } from "../util/util";
 
 export class ClassRoomView extends LitElement {

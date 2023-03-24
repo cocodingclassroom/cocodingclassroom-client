@@ -4,11 +4,10 @@ import "ace-builds/src-noconflict/theme-cobalt";
 import "ace-builds/src-noconflict/mode-javascript";
 import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
-import { AceBinding, AceCursors } from "../util/y-ace";
+import { AceBinding } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
-import { interpret } from "../util/compiler";
+import { formatCode, interpret } from "../util/compiler";
 import run from "../assets/icons/run.svg";
-import { OutputView } from "./output-view";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -55,10 +54,21 @@ export class EditorView extends LitElement {
       fontSize: "13pt",
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
-    this.editor.commands.removeCommands([
-      "gotolineend", // ctrl + e
-      "transposeletters", // ctrl + t (totally removed)
-    ]);
+
+    for (var x in this.editor.commands.commands) {
+      if (x.bindkey === "ctrl-enter") {
+        console.log(x);
+      }
+    }
+    console.log();
+    // this.editor.commands.removeCommands([
+    //   this.editor.commands.commands["enterfullscreen"], // ctrl + e
+    //   // "transposeletters", // ctrl + t (totally removed)
+    //   // "enterfullscreen",
+    // ]);
+
+    this.addEditorShortcuts();
+
     // setup binding
     let room = RoomService.get().rooms[this.roomId];
     let binding = new AceBinding(
@@ -71,16 +81,44 @@ export class EditorView extends LitElement {
       this.onEditorChange(x);
     });
     this.room.l_editorForRoom = this.editor;
-    this.interpretCode();
+    this.runCode(true);
+  }
+
+  addEditorShortcuts() {
+    this.editor.commands.addCommand({
+      name: "Format Code",
+      bindKey: {
+        win: "ctrl-alt-l",
+        mac: "ctrl-t",
+      },
+      exec: () => {
+        console.log("formatting code");
+        formatCode(this.editor);
+      },
+    });
+    this.editor.commands.addCommand({
+      name: "Run Code",
+      bindKey: "ctrl-enter",
+      exec: () => {
+        this.runCode(false);
+      },
+    });
+    this.editor.commands.addCommand({
+      name: "Run Code",
+      bindKey: "ctrl-shift-enter",
+      exec: () => {
+        this.runCode(true);
+      },
+    });
   }
 
   onEditorChange = (delta) => {
     this.room.l_changedPositions.push(delta.start);
   };
 
-  interpretCode() {
+  runCode(fullRebuild = false) {
     interpret(
-      false,
+      fullRebuild,
       this.room,
       (message) => {
         this.message = message;
@@ -110,7 +148,7 @@ export class EditorView extends LitElement {
       <button
         class="run-button"
         style="${styleMap(buttonStyle)}"
-        @click="${() => this.interpretCode()}"
+        @click="${() => this.runCode(true)}"
       >
         <img width="8" height="8" src="${run}" alt="run button" />
       </button>

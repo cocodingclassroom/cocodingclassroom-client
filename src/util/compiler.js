@@ -1,5 +1,6 @@
 import { BindingService } from "../services/binding-service";
 import loopBreaker from "loop-breaker";
+import { js as beautify } from "js-beautify";
 
 export const interpret = (
   fullRebuild,
@@ -338,4 +339,31 @@ const processLibs = (code) => {
     }
   }
   return scriptsList;
+};
+
+export const formatCode = (editor) => {
+  // beautify!
+  let beautifyOptions = {
+    indent_size: "1",
+    indent_char: "\t",
+    max_preserve_newlines: "5",
+    preserve_newlines: true,
+    keep_array_indentation: false,
+    break_chained_methods: false,
+    indent_scripts: "normal",
+    brace_style: "collapse",
+    space_before_conditional: false,
+    unescape_strings: false,
+    jslint_happy: false,
+    end_with_newline: false,
+    wrap_line_length: "0",
+    indent_inner_html: false,
+    comma_first: false,
+    e4x: false,
+  };
+
+  let tempPos = editor.getCursorPosition();
+  let tempCode = beautify(editor.getValue(), beautifyOptions);
+  editor.setValue(tempCode, -1);
+  editor.gotoLine(tempPos.row + 1, tempPos.column, false);
 };
