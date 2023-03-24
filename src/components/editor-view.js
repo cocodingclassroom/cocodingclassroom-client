@@ -8,6 +8,7 @@ import { AceBinding } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
 import { formatCode, interpret } from "../util/compiler";
 import run from "../assets/icons/run.svg";
+import { Shortcut, ShortcutExtension } from "./shortcut-extension";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -16,20 +17,29 @@ export class EditorView extends LitElement {
     leftAlign: { type: Number },
     editorIdentifier: { state: true, type: String },
     message: { type: String, state: true },
+    editorVisible: { type: Boolean, state: true },
   };
 
   room;
   editor;
   activeError = false;
+  pressedKeys;
+  shortcutExtension;
 
   connectedCallback() {
     this.editorIdentifier = `editor-${this.roomId}`;
     this.room = RoomService.get().getRoom(this.roomId);
+    this.editorVisible = true;
+    this.pressedKeys = new Set();
+    this.shortcutExtension = new ShortcutExtension();
+    this.shortcutExtension.register();
+    this.shortcutExtension.addShortcuts(this._shortCuts());
     super.connectedCallback();
   }
 
   disconnectedCallback() {
     this.editor.getSession().off("change", this.onEditorChange);
+    this.shortcutExtension.unregister();
     super.disconnectedCallback();
   }
 
@@ -54,21 +64,11 @@ export class EditorView extends LitElement {
       fontSize: "13pt",
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
-
-    for (var x in this.editor.commands.commands) {
-      if (x.bindkey === "ctrl-enter") {
-        console.log(x);
-      }
-    }
-    console.log();
     // this.editor.commands.removeCommands([
     //   this.editor.commands.commands["enterfullscreen"], // ctrl + e
     //   // "transposeletters", // ctrl + t (totally removed)
     //   // "enterfullscreen",
     // ]);
-
-    this.addEditorShortcuts();
-
     // setup binding
     let room = RoomService.get().rooms[this.roomId];
     let binding = new AceBinding(
@@ -84,33 +84,54 @@ export class EditorView extends LitElement {
     this.runCode(true);
   }
 
-  addEditorShortcuts() {
-    this.editor.commands.addCommand({
-      name: "Format Code",
-      bindKey: {
-        win: "ctrl-alt-l",
-        mac: "ctrl-t",
-      },
-      exec: () => {
-        console.log("formatting code");
-        formatCode(this.editor);
-      },
-    });
-    this.editor.commands.addCommand({
-      name: "Run Code",
-      bindKey: "ctrl-enter",
-      exec: () => {
-        this.runCode(false);
-      },
-    });
-    this.editor.commands.addCommand({
-      name: "Run Code",
-      bindKey: "ctrl-shift-enter",
-      exec: () => {
-        this.runCode(true);
-      },
-    });
-  }
+  _shortCuts = () => {
+    return [
+      new Shortcut(
+        "Toggle Editor",
+        ["Control", "e"],
+        () => {
+          this.toggleEditor();
+        },
+        () => {
+          return true;
+        }
+      ),
+      new Shortcut(
+        "Run Code",
+        ["Control", "Enter"],
+        () => {
+          this.runCode(false);
+        },
+        () => {
+          return this.isEditorFocused();
+        }
+      ),
+      new Shortcut(
+        "Rebuild",
+        ["Control", "Shift", "Enter"],
+        () => {
+          this.runCode(true);
+        },
+        () => {
+          return this.isEditorFocused();
+        }
+      ),
+      new Shortcut(
+        "Format Code",
+        ["Control", "Alt", "t"],
+        () => {
+          formatCode(this.editor);
+        },
+        () => {
+          return this.isEditorFocused();
+        }
+      ),
+    ];
+  };
+
+  isEditorFocused = () => {
+    return this.editor.isFocused();
+  };
 
   onEditorChange = (delta) => {
     this.room.l_changedPositions.push(delta.start);
@@ -133,26 +154,39 @@ export class EditorView extends LitElement {
       },
       () => {
         this.activeError = false;
-        this.message = "✅ No Interpreter Errors ";
+        this.message = "✅ No Interpreter Errors";
       },
       this.activeError
     );
   }
 
+  toggleEditor = () => {
+    this.editorVisible = !this.editorVisible;
+  };
+
   render() {
     const buttonStyle = {};
     buttonStyle.left = this.leftAlign === 1 ? this.editorWidth : 0;
 
+    const hiddenStyle = {};
+    if (!this.editorVisible) hiddenStyle.visibility = "hidden";
+
     return html`
-      <div class="editor" id=${this.editorIdentifier}></div>
-      <button
-        class="run-button"
-        style="${styleMap(buttonStyle)}"
-        @click="${() => this.runCode(true)}"
-      >
-        <img width="8" height="8" src="${run}" alt="run button" />
-      </button>
-      <cc-console message="${this.message}"></cc-console>
+      <div
+        class="editor"
+        style="${styleMap(hiddenStyle)}"
+        id=${this.editorIdentifier}
+      ></div>
+      ${this.editorVisible
+        ? html` <button
+              class="run-button"
+              style="${styleMap(buttonStyle)}"
+              @click="${() => this.runCode(true)}"
+            >
+              <img width="8" height="8" src="${run}" alt="run button" />
+            </button>
+            <cc-console message="${this.message}"></cc-console>`
+        : ""}
     `;
   }
 
