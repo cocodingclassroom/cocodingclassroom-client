@@ -27,11 +27,11 @@ export class ClassRoomView extends LitElement {
         this._setMembers();
       }
     );
-    document.addEventListener("resize", this.onResize);
+    window.addEventListener("resize", this.onResize);
   }
 
   disconnectedCallback() {
-    document.removeEventListener("resize", this.onResize);
+    window.removeEventListener("resize", this.onResize);
   }
 
   _setMembers() {
