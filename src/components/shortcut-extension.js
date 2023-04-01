@@ -47,10 +47,10 @@ export class ShortcutExtension {
 
     this._pressedKeys.add(event.key);
 
-    for (var i = 0; i < this._shortcuts.length; i++) {
+    for (let i = 0; i < this._shortcuts.length; i++) {
       let shortcut = this._shortcuts[i];
 
-      if (shortcut.preValidation != undefined && !shortcut.preValidation())
+      if (shortcut.preValidation !== undefined && !shortcut.preValidation())
         return;
 
       if (this._isWindows) {
@@ -106,7 +106,7 @@ export class Shortcut {
   ) {
     this.shortcutName = shortcutName;
     this.keyBindWin = keyBindWin;
-    this.keyBindMac = keyBindMac == undefined ? keyBindWin : keyBindMac;
+    this.keyBindMac = keyBindMac === undefined ? keyBindWin : keyBindMac;
     this.preValidation = preValidation;
     this.command = command;
   }

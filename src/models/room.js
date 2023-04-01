@@ -25,7 +25,7 @@ export class Room extends YSyncModel {
 		document.addEventListener('mousedown', forwardMouse);
 
 		function forwardMouse(event){
-			//ccSelf.passMouse(event);
+			ccSelf.passMouse(event);
 		}
 
 		document.addEventListener('keydown', forwardKey);
@@ -37,9 +37,7 @@ export class Room extends YSyncModel {
 
 		// pass errors to parent
 		window.onerror = function myErrorHandler(errorMsg) {
-			// ccSelf.validCode = false
 			ccSelf.consoleMessage('❌' + errorMsg)
-			// ccSelf.windowError()
 			return false
 		}
 

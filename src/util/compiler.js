@@ -124,6 +124,9 @@ const fullRebuildOfIframe = (
     iframeContent.ccSelf.errorCallback = (message) => {
       errorCallback(message);
     };
+    iframeContent.ccSelf.passMouse = (event) => {
+      console.log(event);
+    };
 
     iframeContent.document.body.appendChild(s);
     // this.validCode = true
