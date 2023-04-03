@@ -1,6 +1,4 @@
 import { css, html, LitElement } from "lit";
-import { getSplitScreenWidthAndAlignStyle } from "../util/util";
-import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
 
 export class FrameView extends LitElement {
@@ -24,6 +22,26 @@ export class FrameView extends LitElement {
   firstUpdated(_changedProperties) {
     this.iframeReference = this.shadowRoot.getElementById(this.frameIdentifier);
     this.room.l_iframeForRoom = this.iframeReference;
+
+    document.addEventListener("mousemove", (event) => {
+      /*      let user = UserService.get().localUser;
+      let isLeft = user.isRoomLeft(this.roomId);
+      let leftSize = (user.leftSize / 100) * window.innerWidth;
+      let x = event.x;
+      if (!isLeft) {
+        x = event.x - leftSize;
+      }
+      x = clamp(x, 0, window.innerWidth);
+      let y = clamp(event.y, 0, window.innerHeight);
+      console.log(`frame_${this.roomId} : ${x} ${event.y}`);
+      let content = this.iframeReference.contentWindow;
+      if (content !== null) {
+        content.mouseX = x;
+        content.mouseY = y;
+      }*/
+      this.iframeReference.contentWindow.dispatchEvent(event);
+    });
+
     super.firstUpdated(_changedProperties);
   }
 

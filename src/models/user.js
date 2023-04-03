@@ -21,7 +21,7 @@ export class User extends YSyncModel {
   selectedRoomRight = 1;
 
   isRoomLeft(id) {
-    return this.selectedRoomLeft === id;
+    return this.selectedRoomLeft === parseInt(id);
   }
 
   isRoomRight(id) {
