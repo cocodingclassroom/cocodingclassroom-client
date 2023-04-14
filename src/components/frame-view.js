@@ -1,5 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { RoomService } from "../services/room-service";
+import { FrameEventExtension } from "./frame-event-extension";
+import { UserService } from "../services/user-service";
 
 export class FrameView extends LitElement {
   static properties = {
@@ -11,20 +13,26 @@ export class FrameView extends LitElement {
 
   room;
   iframeReference;
+  frameEventExtension;
 
   connectedCallback() {
     this.frameIdentifier = `frame_${this.roomId}`;
     this.room = RoomService.get().getRoom(this.roomId);
-
     super.connectedCallback();
   }
 
   firstUpdated(_changedProperties) {
     this.iframeReference = this.shadowRoot.getElementById(this.frameIdentifier);
     this.room.l_iframeForRoom = this.iframeReference;
+    this.frameEventExtension = new FrameEventExtension(
+      UserService.get().localUser,
+      this.room
+    );
 
+    /*
     document.addEventListener("mousemove", (event) => {
-      /*      let user = UserService.get().localUser;
+
+      let user = UserService.get().localUser;
       let isLeft = user.isRoomLeft(this.roomId);
       let leftSize = (user.leftSize / 100) * window.innerWidth;
       let x = event.x;
@@ -38,9 +46,10 @@ export class FrameView extends LitElement {
       if (content !== null) {
         content.mouseX = x;
         content.mouseY = y;
-      }*/
+      }
       this.iframeReference.contentWindow.dispatchEvent(event);
     });
+    */
 
     super.firstUpdated(_changedProperties);
   }

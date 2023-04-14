@@ -1,9 +1,12 @@
 export class FrameEventExtension {
   user;
   room;
-  passedEvents;
 
-  static mouseFields = [
+  static _toPassMouseEvents = ["mousedown", "mouseup", "mousemove"];
+
+  static _toPassKeyEvents = ["keydown", "keypress", "keyup"];
+
+  static _toPassMouseFields = [
     "altKey",
     "clientX",
     "clientY",
@@ -30,7 +33,7 @@ export class FrameEventExtension {
     "region",
   ];
 
-  static keyFields = [
+  static _toPassKeyFields = [
     "altKey",
     "bubbles",
     "cancelBubble",
@@ -54,12 +57,29 @@ export class FrameEventExtension {
   constructor(user, room) {
     this.user = user;
     this.room = room;
-    this.passedEvents = [];
+    this._setupEventListeners();
   }
 
-  addNewEventToPass(eventName) {
-    if (!this.passedEvents.contains(eventName))
-      this.passedEvents.push(eventName);
+  _setupEventListeners() {
+    FrameEventExtension._toPassMouseEvents.forEach((eventName) => {
+      //console.log(`added listener for event ${eventName}`);
+      document.addEventListener(eventName, (event) => {
+        //console.log(`dispatched event: ${eventName}`);
+        let copy = this._copyOpts(
+          event,
+          FrameEventExtension._toPassMouseFields
+        );
+        let eventCopy = new MouseEvent(eventName, copy);
+        this.room.l_iframeForRoom.contentWindow.dispatchEvent(eventCopy);
+      });
+    });
+    // FrameEventExtension._toPassKeyEvents.forEach((eventName) => {
+    //   document.addEventListener(eventName, (event) => {
+    //     let copy = this._copyOpts(event, FrameEventExtension._toPassKeyFields);
+    //     let eventCopy = new KeyboardEvent(eventName, copy);
+    //     this.room.l_iframeForRoom.dispatchEvent(eventCopy);
+    //   });
+    // });
   }
 
   _copyOpts(event, fields) {

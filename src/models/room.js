@@ -18,22 +18,23 @@ export class Room extends YSyncModel {
 		document.addEventListener("mouseup", function(){
 			parent.focus()
 		})
-
-		// forward mouse/key events to parent
-		document.addEventListener('mousemove', forwardMouse);
-		document.addEventListener('mouseup', forwardMouse);
-		document.addEventListener('mousedown', forwardMouse);
-
-		function forwardMouse(event){
-			ccSelf.passMouse(event);
-		}
-
-		document.addEventListener('keydown', forwardKey);
-		document.addEventListener('keyup', forwardKey);
-
-		function forwardKey(event){
-			// ccSelf.sendKey(event); // *** needed??
-		}
+		
+        //
+		// // forward mouse/key events to parent
+		// document.addEventListener('mousemove', forwardMouse);
+		// document.addEventListener('mouseup', forwardMouse);
+		// document.addEventListener('mousedown', forwardMouse);
+        //
+		// function forwardMouse(event){
+		// 	ccSelf.passMouse(event);
+		// }
+        //
+		// document.addEventListener('keydown', forwardKey);
+		// document.addEventListener('keyup', forwardKey);
+        //
+		// function forwardKey(event){
+		// 	// ccSelf.sendKey(event); // *** needed??
+		// }
 
 		// pass errors to parent
 		window.onerror = function myErrorHandler(errorMsg) {
