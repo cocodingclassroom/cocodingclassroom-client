@@ -15,9 +15,13 @@ export class Room extends YSyncModel {
   l_iframeForRoom;
   l_iframeMeta = `
 		// catch mouse focus
-		document.addEventListener("mouseup", function(){
-			parent.focus()
-		})
+		// document.addEventListener("mouseup", function(){
+		// 	parent.focus()
+		// })
+		//
+		// document.addEventListener("keydown", (event) => {
+		//   console.log("In Frame Event" + event);
+		// })
 		
         //
 		// // forward mouse/key events to parent

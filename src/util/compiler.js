@@ -304,8 +304,6 @@ const softInterpretation = (
     try {
       curCodeTemp = loopBreaker(curCodeTemp).code;
     } catch (e) {
-      // console.log(e.description)
-      // this.validCode = false
       errorCallback(
         `👀 error found near line ~ ${e.lineNumber}, "${e.description}"`
       );
@@ -315,6 +313,7 @@ const softInterpretation = (
   }
   s.innerHTML = curCodeTemp;
   iframe.contentWindow.document.head.appendChild(s);
+  console.log("did soft compile");
   // this.validCode = true
   // this.consoleClear()
 };
