@@ -5,6 +5,7 @@ export class ClassroomModel extends YSyncModel {
   classRoomId;
   activeBindingType;
   roomIds;
+  teacherRoomIds;
   peopleIds;
 
   constructor(classRoomId) {
@@ -15,6 +16,7 @@ export class ClassroomModel extends YSyncModel {
     BindingService.get().setBindingByBindingType(this.activeBindingType);
     this.roomIds = this.roomIds ?? [];
     this.peopleIds = this.peopleIds ?? [];
+    this.teacherRoomIds = this.teacherRoomIds ?? [];
   }
 }
 

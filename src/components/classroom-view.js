@@ -43,13 +43,14 @@ export class ClassRoomView extends LitElement {
       this.roomRight =
         RoomService.get().rooms[this.localUser.selectedRoomRight];
       this.roomLeft = RoomService.get().rooms[this.localUser.selectedRoomLeft];
+      console.log(RoomService.get().rooms);
       this.requestUpdate();
     };
 
     this.localUser.addListener(update);
-    this.roomRight.addListener(update);
-    this.roomLeft.addListener(update);
-    this.classroom.addListener(update);
+    // this.roomRight.addListener(update);
+    // this.roomLeft.addListener(update);
+    // this.classroom.addListener(update);
   }
 
   onResize = () => {
@@ -64,6 +65,7 @@ export class ClassRoomView extends LitElement {
 
     const leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
     const rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
+    const hiddenStyle = { display: "none" };
 
     return html`
       ${this.roomLeft

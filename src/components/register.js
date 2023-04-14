@@ -6,10 +6,12 @@
 
  */
 
+import "./icons/register";
+
 import { Setup } from "./setup";
 import { EditorView } from "./editor-view";
 import { ClassRoomView } from "./classroom-view";
 import { FrameView } from "./frame-view";
 import { OutputView } from "./output-view";
-import { RoomView } from "./room-view";
 import { MenuView } from "./menu-view";
+import { RoomView } from "./room-view";

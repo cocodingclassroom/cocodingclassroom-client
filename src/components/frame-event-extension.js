@@ -4,6 +4,9 @@ export class FrameEventExtension {
   user;
   room;
 
+  registeredMouseListeners;
+  registeredKeyListeners;
+
   static _toPassMouseEvents = ["mousedown", "mouseup", "mousemove"];
 
   static _toPassKeyEvents = ["keydown", "keyup"];
@@ -59,28 +62,49 @@ export class FrameEventExtension {
   constructor(user, room) {
     this.user = user;
     this.room = room;
+    this.registeredKeyListeners = [];
+    this.registeredMouseListeners = [];
     this._setupEventListeners();
   }
 
   _setupEventListeners() {
     FrameEventExtension._toPassMouseEvents.forEach((eventName) => {
-      document.addEventListener(eventName, (event) => {
+      const f = (event) => {
         let copy = this._copyOpts(
           event,
           FrameEventExtension._toPassMouseFields
         );
         let eventCopy = new MouseEvent(eventName, copy);
         this.room.l_iframeForRoom.contentWindow.dispatchEvent(eventCopy);
-      });
+      };
+      this.registeredMouseListeners.push(f);
+      document.addEventListener(eventName, f);
     });
     FrameEventExtension._toPassKeyEvents.forEach((eventName) => {
-      document.addEventListener(eventName, (event) => {
+      const f = (event) => {
         let copy = this._copyOpts(event, FrameEventExtension._toPassKeyFields);
         let eventCopy = new KeyboardEvent(eventName, copy);
         this.room.l_iframeForRoom.contentWindow.dispatchEvent(eventCopy);
-      });
+      };
+      this.registeredKeyListeners.push(f);
+      document.addEventListener(eventName, f);
     });
   }
+
+  cleanUp = () => {
+    let i = 0;
+    FrameEventExtension._toPassMouseEvents.forEach((eventName) => {
+      let correspondingFunction = this.registeredMouseListeners[i];
+      document.removeEventListener(eventName, correspondingFunction);
+      i++;
+    });
+    i = 0;
+    FrameEventExtension._toPassKeyEvents.forEach((eventName) => {
+      let correspondingFunction = this.registeredKeyListeners[i];
+      document.removeEventListener(eventName, correspondingFunction);
+      i++;
+    });
+  };
 
   _copyOpts(event, fields) {
     let opts = {};

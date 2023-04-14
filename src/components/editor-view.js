@@ -45,6 +45,17 @@ export class EditorView extends LitElement {
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
+    this.setupEditor();
+  }
+
+  updated(_changedProperties) {
+    super.updated(_changedProperties);
+    if (_changedProperties.has("roomId")) {
+      this.setupEditor();
+    }
+  }
+
+  setupEditor = () => {
     let cont = this.shadowRoot.getElementById(this.editorIdentifier);
     this.editor = ace.edit(cont);
     this.editor.renderer.attachToShadowRoot();
@@ -82,7 +93,7 @@ export class EditorView extends LitElement {
     });
     this.room.l_editorForRoom = this.editor;
     this.runCode(true);
-  }
+  };
 
   _shortCuts = () => {
     return [

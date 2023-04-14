@@ -29,6 +29,11 @@ export class RoomService {
     }
     classroom.roomIds.forEach((id) => {
       let room = new Room(id);
+      if (classroom.teacherRoomIds.includes(id)) {
+        room.roomType = RoomType.TEACHER;
+      } else {
+        room.roomType = RoomType.STUDENT;
+      }
       this.rooms.push(room);
     });
   };
@@ -37,5 +42,6 @@ export class RoomService {
     for (let i = 0; i < numberOfRooms; i++) {
       classroom.roomIds.push(i);
     }
+    classroom.teacherRoomIds.push(0);
   };
 }

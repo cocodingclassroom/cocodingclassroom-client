@@ -23,6 +23,7 @@ export class RoomView extends LitElement {
         leftAlign="${this.isLeft}"
       >
       </cc-editor>
+      <cc-menu roomId="${this.roomId}"></cc-menu>
     `;
   }
 

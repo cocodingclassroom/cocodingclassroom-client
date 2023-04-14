@@ -15,6 +15,11 @@ export class FrameView extends LitElement {
   iframeReference;
   frameEventExtension;
 
+  disconnectedCallback() {
+    this.frameEventExtension.cleanUp();
+    super.disconnectedCallback();
+  }
+
   connectedCallback() {
     this.frameIdentifier = `frame_${this.roomId}`;
     this.room = RoomService.get().getRoom(this.roomId);
@@ -30,26 +35,26 @@ export class FrameView extends LitElement {
     );
 
     /*
-    document.addEventListener("mousemove", (event) => {
-
-      let user = UserService.get().localUser;
-      let isLeft = user.isRoomLeft(this.roomId);
-      let leftSize = (user.leftSize / 100) * window.innerWidth;
-      let x = event.x;
-      if (!isLeft) {
-        x = event.x - leftSize;
-      }
-      x = clamp(x, 0, window.innerWidth);
-      let y = clamp(event.y, 0, window.innerHeight);
-      console.log(`frame_${this.roomId} : ${x} ${event.y}`);
-      let content = this.iframeReference.contentWindow;
-      if (content !== null) {
-        content.mouseX = x;
-        content.mouseY = y;
-      }
-      this.iframeReference.contentWindow.dispatchEvent(event);
-    });
-    */
+        document.addEventListener("mousemove", (event) => {
+    
+          let user = UserService.get().localUser;
+          let isLeft = user.isRoomLeft(this.roomId);
+          let leftSize = (user.leftSize / 100) * window.innerWidth;
+          let x = event.x;
+          if (!isLeft) {
+            x = event.x - leftSize;
+          }
+          x = clamp(x, 0, window.innerWidth);
+          let y = clamp(event.y, 0, window.innerHeight);
+          console.log(`frame_${this.roomId} : ${x} ${event.y}`);
+          let content = this.iframeReference.contentWindow;
+          if (content !== null) {
+            content.mouseX = x;
+            content.mouseY = y;
+          }
+          this.iframeReference.contentWindow.dispatchEvent(event);
+        });
+        */
 
     super.firstUpdated(_changedProperties);
   }
