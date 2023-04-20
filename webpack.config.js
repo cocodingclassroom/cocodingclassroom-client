@@ -25,7 +25,7 @@ module.exports = {
     static: path.resolve(__dirname, "dist"),
     historyApiFallback: true,
   },
-  devtool: "inline-source-map",
+  devtool: "eval-source-map",
   module: {
     rules: [
       {

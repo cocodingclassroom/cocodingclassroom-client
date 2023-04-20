@@ -5,22 +5,20 @@ import { ClassroomService } from "/src/services/classroom-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle } from "../util/util";
+import { RoomType } from "../models/room";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
   static properties = {
     localUser: { type: User, state: true, attribute: false },
-    roomRight: { state: true },
-    roomLeft: { state: true },
-    classroom: { state: true },
   };
 
   constructor() {
     super();
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  firstUpdated(changes) {
+    super.firstUpdated(changes);
     ClassroomService.get().connectToExistingRoom(
       this.location.params.id,
       () => {
@@ -35,22 +33,13 @@ export class ClassRoomView extends LitElement {
   }
 
   _setMembers() {
-    this.classroom = ClassroomService.get().classroom;
     this.localUser = UserService.get().localUser;
-    this.roomRight = RoomService.get().rooms[this.localUser.selectedRoomRight];
-    this.roomLeft = RoomService.get().rooms[this.localUser.selectedRoomLeft];
+
     let update = () => {
-      this.roomRight =
-        RoomService.get().rooms[this.localUser.selectedRoomRight];
-      this.roomLeft = RoomService.get().rooms[this.localUser.selectedRoomLeft];
-      console.log(RoomService.get().rooms);
       this.requestUpdate();
     };
 
     this.localUser.addListener(update);
-    // this.roomRight.addListener(update);
-    // this.roomLeft.addListener(update);
-    // this.classroom.addListener(update);
   }
 
   onResize = () => {
@@ -58,6 +47,8 @@ export class ClassRoomView extends LitElement {
   };
 
   render() {
+    if (this.localUser === null || this.localUser === undefined) return "";
+
     let width = window.innerWidth;
     let pixelWidthPerPercent = width / 100;
     let leftWidth = (this.localUser?.leftSize ?? 50) * pixelWidthPerPercent;
@@ -67,27 +58,48 @@ export class ClassRoomView extends LitElement {
     const rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
     const hiddenStyle = { display: "none" };
 
+    let leftRooms = RoomService.get().rooms.filter(
+      (room) => room.roomType === RoomType.TEACHER
+    );
+    let rightRooms = RoomService.get().rooms.filter(
+      (room) => room.roomType === RoomType.STUDENT
+    );
+
     return html`
-      ${this.roomLeft
-        ? html` <div style="${styleMap(leftStyle)}">
-            <cc-room
-              roomId="${this.roomLeft.id}"
-              width="${leftWidth}"
-              isLeft="${0}"
-            ></cc-room>
-          </div>`
-        : ""}
-      ${this.roomRight
-        ? html`
-            <div style="${styleMap(rightStyle)}">
+      ${leftRooms.map(
+        (leftRoom) =>
+          html`
+            <div
+              style="${styleMap(
+                this.localUser.isRoomLeft(leftRoom.id) ? leftStyle : hiddenStyle
+              )}"
+            >
               <cc-room
-                roomId="${this.roomRight.id}"
+                roomId="${leftRoom.id}"
+                width="${leftWidth}"
+                isLeft="${0}"
+              ></cc-room>
+            </div>
+          `
+      )}
+      ${rightRooms.map(
+        (rightRoom) =>
+          html`
+            <div
+              style="${styleMap(
+                this.localUser.isRoomRight(rightRoom.id)
+                  ? rightStyle
+                  : hiddenStyle
+              )}"
+            >
+              <cc-room
+                roomId="${rightRoom.id}"
                 width="${rightWidth}"
                 isLeft="${1}"
               ></cc-room>
             </div>
           `
-        : ``}
+      )}
 
       <div
         style="${styleMap({ left: `${leftWidth}px` })}"

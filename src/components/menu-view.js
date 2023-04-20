@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { RoomService } from "../services/room-service";
 import { RoomType } from "../models/room";
 import { UserService } from "../services/user-service";
+import { repeat } from "lit-html/directives/repeat.js";
 
 export class MenuView extends LitElement {
   static properties = {
@@ -59,13 +60,14 @@ export class MenuView extends LitElement {
           : html` <div>
               <div class="cc-roomlist-holder">
                 <select name="rooms" @change="${this.onChangeRoomSelection}">
-                  ${RoomService.get().rooms.map(
+                  ${repeat(
+                    RoomService.get().rooms.filter(
+                      (room) => room.roomType === RoomType.STUDENT
+                    ),
+                    (e) => e,
                     (room) => html` <option
                       value="${room.id}"
-                      ${room.id ===
-                      UserService.get().localUser.selectedRoomRight
-                        ? "selected"
-                        : ""}
+                      ?selected="${this.isSelectedString(room)}"
                     >
                       ${room.roomName}
                     </option>`
@@ -78,8 +80,16 @@ export class MenuView extends LitElement {
     `;
   };
 
+  isSelectedString(room) {
+    var result = UserService.get().localUser.isRoomRight(room.id)
+      ? "true"
+      : "false";
+    return result;
+  }
+
   onChangeRoomSelection = (e) => {
-    UserService.get().localUser.selectedRoomRight = e.target.value;
+    console.log(e.target.value);
+    UserService.get().localUser.selectedRoomRight = parseInt(e.target.value);
   };
 
   static styles = css`
