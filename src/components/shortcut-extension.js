@@ -77,12 +77,14 @@ export class ShortcutExtension {
     if (this._pressedKeys.has("Control")) {
       //make special case for copy + paste
       if (
-        this._pressedKeys.size === 2 &&
-        (this._pressedKeys.has("c") ||
-          this._pressedKeys.has("v") ||
-          this._pressedKeys.has("r"))
-      )
+        (this._pressedKeys.size === 2 &&
+          (this._pressedKeys.has("c") ||
+            this._pressedKeys.has("v") ||
+            this._pressedKeys.has("r"))) ||
+        this._pressedKeys.has("AltGraph")
+      ) {
         return;
+      }
       //block any basic browser "CTRL" shortcuts
       event.stopPropagation();
       event.preventDefault();
