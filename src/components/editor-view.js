@@ -49,10 +49,10 @@ export class EditorView extends LitElement {
   }
 
   updated(_changedProperties) {
-    super.updated(_changedProperties);
-    if (_changedProperties.has("roomId")) {
-      this.setupEditor();
-    }
+    // super.updated(_changedProperties);
+    // if (_changedProperties.has("roomId")) {
+    //   this.setupEditor();
+    // }
   }
 
   setupEditor = () => {
