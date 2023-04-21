@@ -52,7 +52,7 @@ export class ClassRoomView extends LitElement {
     let width = window.innerWidth;
     let pixelWidthPerPercent = width / 100;
     let leftWidth = (this.localUser?.leftSize ?? 50) * pixelWidthPerPercent;
-    let rightWidth = width - 5 - leftWidth;
+    let rightWidth = width - 20 - leftWidth;
 
     const leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
     const rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
