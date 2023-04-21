@@ -2,6 +2,11 @@ import { css, LitElement } from "lit";
 
 export class HoverableIcon extends LitElement {
   static styles = css`
+    
+    svg {
+      height: 20px;
+      width: 20px;
+    }
     svg:hover {
       animation: pulse 1s linear infinite alternate !important;
     }
