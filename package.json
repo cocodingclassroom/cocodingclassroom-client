@@ -23,15 +23,16 @@
     "loop-breaker": "^0.1.1",
     "platform": "^1.3.6",
     "routify": "^1.2.7",
-    "style-loader": "^3.3.2",
     "unique-names-generator": "^4.7.1",
     "y-protocols": "^1.0.5",
     "y-websocket": "^1.4.5",
     "yjs": "^13.5.46"
   },
   "devDependencies": {
+    "css-loader": "^6.7.3",
     "prettier": "2.8.4",
     "process": "^0.11.10",
+    "style-loader": "^3.3.2",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"

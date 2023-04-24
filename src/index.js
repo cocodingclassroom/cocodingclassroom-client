@@ -1,5 +1,6 @@
 import "./components/register";
 import { Router } from "@vaadin/router";
+import "./assets/css/modal.css";
 
 const routes = [
   {

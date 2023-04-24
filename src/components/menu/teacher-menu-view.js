@@ -1,5 +1,7 @@
 import {css, html, LitElement} from "lit";
 import {menuRowStyles} from "../../util/shared-css";
+import { UserColorRenameModal } from "../user-color-rename-modal";
+import { UserService } from "../../services/user-service";
 
 export class TeacherMenuView extends LitElement {
 
@@ -15,7 +17,8 @@ export class TeacherMenuView extends LitElement {
                         class="cc-header-title"
                         style="cursor: help;"
                         data-tip=""
-                        onclick="${() => {
+                        @click="${() => {
+                          UserColorRenameModal(UserService.get().localUser)
                         }}"
                 >
                     COCODING Classroom

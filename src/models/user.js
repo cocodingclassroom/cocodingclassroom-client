@@ -5,6 +5,7 @@ export class User extends YSyncModel {
     super(`user_${id}`);
     this.id = id;
     this.setup();
+    this.color = this.color ?? "#f13333"
   }
 
   static fromJSON(json) {
@@ -16,6 +17,7 @@ export class User extends YSyncModel {
   id;
   role = UserRole.STUDENT;
   name;
+  color;
   leftSize = 50;
   selectedRoomLeft = 0;
   selectedRoomRight = 1;
