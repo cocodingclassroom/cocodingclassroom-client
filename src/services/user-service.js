@@ -31,12 +31,20 @@ export class UserService {
     this.localUser.addListener(() => {
       this._saveLocalUser();
     });
+    this.updateOtherUsers(classroom);
+    classroom.peopleIds.observe(() => {
+      this.updateOtherUsers(classroom);
+    })
+  };
+
+  updateOtherUsers(classroom) {
+    this.otherUsers = [];
     classroom.peopleIds.forEach((peopleId) => {
       if (peopleId === this.localUser.id) return;
       let otherUser = new User(peopleId);
       this.otherUsers.push(otherUser);
     });
-  };
+  }
 
   _createNewLocalUser = () => {
     let id = SyncService.get().getSyncId();
