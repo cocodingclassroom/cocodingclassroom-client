@@ -1,11 +1,5 @@
 import { SyncService } from "/src/services/sync-service.js";
 import { User } from "/src/models/user.js";
-import {
-  adjectives,
-  animals,
-  uniqueNamesGenerator,
-} from "unique-names-generator";
-
 export class UserService {
   static _instance;
   localUser;
@@ -27,14 +21,18 @@ export class UserService {
   }
 
   init = (classroom) => {
-    window.localStorage.clear();
     let user = this._getLocalUser();
     if (user == null) {
       user = this._createNewLocalUser();
-      classroom.peopleIds.push(user.id);
+
     }
+    classroom.addUser(user);
     this.localUser = user;
+    this.localUser.addListener(() => {
+      this._saveLocalUser();
+    });
     classroom.peopleIds.forEach((peopleId) => {
+      if (peopleId === this.localUser.id) return;
       let otherUser = new User(peopleId);
       this.otherUsers.push(otherUser);
     });
@@ -43,30 +41,22 @@ export class UserService {
   _createNewLocalUser = () => {
     let id = SyncService.get().getSyncId();
     let user = new User(id);
-    user.name = this._getRandomUserName();
     this._saveLocalUser(user);
     return user;
   };
 
-  _getRandomUserName = () => {
-    return uniqueNamesGenerator({
-      dictionaries: [adjectives, animals],
-      length: 2,
-      separator: "_",
-    });
-  };
-
-  _saveLocalUser = (user) => {
-    window.localStorage.setItem("self", JSON.stringify(user));
+  _saveLocalUser = () => {
+    if (this.localUser === undefined) return;
+    window.localStorage.setItem("self", JSON.stringify(this.localUser));
   };
 
   _getLocalUser = () => {
     let userJson = window.localStorage.getItem("self");
-    if (userJson == null) return null;
+    if (userJson === null) return null;
     return User.fromJSON(userJson);
   };
 
   getAllUsers = () => {
-    return [this.localUser, ...this.otherUsers]
-  }
+    return [this.localUser, ...this.otherUsers];
+  };
 }

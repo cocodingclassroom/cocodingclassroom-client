@@ -71,6 +71,8 @@ export class SyncService {
 
   getSharedText = (textName) => this._yDoc.getText(textName);
 
+  getSharedArray = (arrayName) => this._yDoc.getArray(arrayName);
+
   getAwareness = () => {
     return this._awareness;
   };

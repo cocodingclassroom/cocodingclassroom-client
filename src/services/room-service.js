@@ -29,7 +29,7 @@ export class RoomService {
     }
     classroom.roomIds.forEach((id) => {
       let room = new Room(id);
-      if (classroom.teacherRoomIds.includes(id)) {
+      if (classroom.teacherRoomIds.toArray().includes(id)) {
         room.roomType = RoomType.TEACHER;
       } else {
         room.roomType = RoomType.STUDENT;
@@ -40,8 +40,8 @@ export class RoomService {
 
   defineRooms = (numberOfRooms, classroom) => {
     for (let i = 0; i < numberOfRooms; i++) {
-      classroom.roomIds.push(i);
+      classroom.roomIds.push([i]);
     }
-    classroom.teacherRoomIds.push(0);
+    classroom.teacherRoomIds.push([0]);
   };
 }

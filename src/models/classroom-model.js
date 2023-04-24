@@ -11,12 +11,18 @@ export class ClassroomModel extends YSyncModel {
   constructor(classRoomId) {
     super(`classroom_${classRoomId}`);
     this.classRoomId = classRoomId;
+    this.peopleIds = [];
+    this.roomIds = [];
+    this.teacherRoomIds = [];
     this.setup();
     this.activeBindingType = this.activeBindingType ?? BindingType.P5;
     BindingService.get().setBindingByBindingType(this.activeBindingType);
-    this.roomIds = this.roomIds ?? [];
-    this.peopleIds = this.peopleIds ?? [];
-    this.teacherRoomIds = this.teacherRoomIds ?? [];
+  }
+
+  addUser(user) {
+    if (this.peopleIds === undefined) return;
+    if (!this.peopleIds.toArray().includes(user.id))
+      this.peopleIds.push([user.id]);
   }
 }
 

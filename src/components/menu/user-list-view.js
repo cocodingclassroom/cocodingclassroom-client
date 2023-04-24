@@ -5,17 +5,35 @@ import { styleMap } from "lit/directives/style-map.js";
 import { basicFlexStyles, cursorTipStyle, pulseStyle, toolTipStyle } from "../../util/shared-css";
 import { initDataTips } from "../../util/tooltips";
 import { UserColorRenameModal } from "../user-color-rename-modal";
+import { ClassroomService } from "../../services/classroom-service";
 
 export class UserListView extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    UserService.get().getAllUsers().forEach(user => user.addListener(() => this.requestUpdate()));
+    UserService.get().getAllUsers().forEach(user =>
+      user.addListener(this.listener)
+    );
+    UserService.get().localUser.addListener(this.listener);
+    ClassroomService.get().classroom.addListener(this.listener);
+  }
+
+  disconnectedCallback() {
+    UserService.get().getAllUsers().forEach(user =>
+      user.removeListener(this.listener)
+    );
+    UserService.get().localUser.removeListener(this.listener);
+    ClassroomService.get().classroom.removeListener(this.listener);
+    super.disconnectedCallback();
   }
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
     initDataTips(this.renderRoot);
+  }
+
+  listener = () => {
+    this.requestUpdate()
   }
 
   requestUpdate = () => {
@@ -40,7 +58,8 @@ export class UserListView extends LitElement {
                  }}"
             >${user.name}
             </div>
-            <div class="user-row pulse pointer" data-tip="Request Help">🖐</div>
+            ${user.isLocalUser() ? html`
+              <div class="user-row pulse pointer" data-tip="Request Help">🖐</div>` : ""}
             <div class="user-row"></div>
           </div>`;
       })
