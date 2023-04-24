@@ -1,4 +1,5 @@
 import { YSyncModel } from "./y-sync-model.js";
+import { UserService } from "../services/user-service";
 
 export class User extends YSyncModel {
   constructor(id) {
@@ -36,6 +37,10 @@ export class User extends YSyncModel {
 
   isStudent() {
     return this.role === UserRole.STUDENT;
+  }
+
+  isLocalUser = () => {
+    return this === UserService.get().localUser;
   }
 
   toJSON = () => {

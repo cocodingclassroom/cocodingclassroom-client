@@ -32,6 +32,7 @@ export class MenuView extends LitElement {
                             <cc-teacher-menu-view roomId="${this.room.id}"></cc-teacher-menu-view>`
                         : html`
                             <cc-student-menu-view roomId="${this.room.id}"></cc-student-menu-view>`}
+                <cc-user-list></cc-user-list>
             </div>
         `;
     };

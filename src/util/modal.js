@@ -1,5 +1,6 @@
 import { html, render } from 'lit-html';
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
+import "../assets/css/modal.css";
 
 export const showModal = (content, onConfirm, afterOpen) => {
 

@@ -1,26 +1,17 @@
 import { css, LitElement } from "lit";
+import { pulseStyle } from "../../util/shared-css";
 
 export class HoverableIcon extends LitElement {
-  static styles = css`
-    
+  static styles = [css`
+
     svg {
       height: 20px;
       width: 20px;
     }
-    svg:hover {
+
+    .svg:hover {
       animation: pulse 1s linear infinite alternate !important;
     }
 
-    @keyframes pulse {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.6;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  `;
+  `, pulseStyle()];
 }

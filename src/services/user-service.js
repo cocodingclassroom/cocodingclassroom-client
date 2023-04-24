@@ -65,4 +65,8 @@ export class UserService {
     if (userJson == null) return null;
     return User.fromJSON(userJson);
   };
+
+  getAllUsers = () => {
+    return [this.localUser, ...this.otherUsers]
+  }
 }

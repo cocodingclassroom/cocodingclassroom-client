@@ -1,59 +1,63 @@
-import {css, html, LitElement} from "lit";
-import {menuRowStyles} from "../../util/shared-css";
-import { UserColorRenameModal } from "../user-color-rename-modal";
-import { UserService } from "../../services/user-service";
+import { css, html, LitElement } from "lit";
+import { cursorTipStyle, menuRowStyles, toolTipStyle } from "../../util/shared-css";
+import { initDataTips } from "../../util/tooltips";
+import { version } from "../../version";
 
 export class TeacherMenuView extends LitElement {
 
-    static properties = {
-        roomId: {type: String}
-    }
+  static properties = {
+    roomId: { type: String }
+  };
 
-    render = () => {
-        return html`
+  firstUpdated(_changedProperties) {
+    super.firstUpdated(_changedProperties);
+    initDataTips(this.renderRoot);
+  }
 
-            <div class="cc-controls-row">
-                <div
-                        class="cc-header-title"
-                        style="cursor: help;"
-                        data-tip=""
-                        @click="${() => {
-                          UserColorRenameModal(UserService.get().localUser)
-                        }}"
-                >
-                    COCODING Classroom
-                </div>
+  render = () => {
+    return html`
 
-                <div
-                        style="cursor: help;"
-                        @onclick="${() => {
-                        }}"
-                        data-tip="About"
-                >
-                    <cc-about></cc-about>
-                </div>
-                <div
-                        class="cc-nav-settings"
-                        @onclick="${() => {
-                        }}"
-                        data-tip="Settings"
-                >
-                    <cc-settings></cc-settings>
-                </div>
-            </div>
-        `
-    }
+      <div class="cc-controls-row">
+        <div
+          class="cc-header-title help"
+          data-tip="${version}"
+          @click="${() => {
+          }}"
+        >
+          COCODING Classroom
+        </div>
 
-    static styles = [
-        css`
+        <div
+          class="help"
+          @click="${() => {
+          }}"
+          data-tip="About"
+        >
+          <cc-about></cc-about>
+        </div>
+        <div
+          class="cc-nav-settings"
+          @click="${() => {
+          }}"
+          data-tip="Settings"
+        >
+          <cc-settings></cc-settings>
+        </div>
+      </div>
+    `;
+  };
+
+  static styles = [
+    css`
       .cc-header-title {
         font-size: 10pt;
-        min-width: calc(100% - 56px);
-        cursor: help;
+        min-width: calc(100% - 60px);
       }
     `,
-        menuRowStyles()
-    ]
+    menuRowStyles(),
+    cursorTipStyle(),
+    toolTipStyle(),
+  ];
 }
 
 window.customElements.define("cc-teacher-menu-view", TeacherMenuView);
