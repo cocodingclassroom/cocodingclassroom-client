@@ -18,20 +18,28 @@ import { ClassroomService } from "../../services/classroom-service";
 export class UserListView extends LitElement {
   connectedCallback() {
     super.connectedCallback();
+    this.addListeners();
+  }
+
+  addListeners() {
     UserService.get()
       .getAllUsers()
       .forEach((user) => user.addListener(this.listener));
     UserService.get().localUser.addListener(this.listener);
-    ClassroomService.get().classroom.addListener(this.listener);
+    ClassroomService.get().classroom.addListener(this.classroomListener);
   }
 
   disconnectedCallback() {
+    this.removeListeners();
+    super.disconnectedCallback();
+  }
+
+  removeListeners() {
     UserService.get()
       .getAllUsers()
       .forEach((user) => user.removeListener(this.listener));
     UserService.get().localUser.removeListener(this.listener);
-    ClassroomService.get().classroom.removeListener(this.listener);
-    super.disconnectedCallback();
+    ClassroomService.get().classroom.removeListener(this.classroomListener);
   }
 
   firstUpdated(_changedProperties) {
@@ -42,6 +50,12 @@ export class UserListView extends LitElement {
   listener = () => {
     this.requestUpdate();
     initDataTips(this.renderRoot);
+  };
+
+  classroomListener = () => {
+    this.removeListeners();
+    this.addListeners();
+    this.listener();
   };
 
   render = () => {

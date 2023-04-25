@@ -31,20 +31,19 @@ export class YSyncModel {
           Object.defineProperty(this, propertyName, {
             get: () => this.map.get(propertyName),
             set: (newValue) => {
-              let array = Y.Array.from(newValue) // SyncService.get().getSharedArray(`${propertyName}_${this.mapName}`);
+              let array = Y.Array.from(newValue); // SyncService.get().getSharedArray(`${propertyName}_${this.mapName}`);
               this.map.set(propertyName, array);
               // this.map.get(propertyName).delete(0, this.map.get(propertyName).length);
               // newValue.forEach((item, index) => {
               //   this.map.get(propertyName).insert(index, item);
               // });
-            }
+            },
           });
         } else {
           initialData[propertyName] = this[propertyName];
           Object.defineProperty(this, propertyName, {
             get: () => this.get(propertyName),
-            set: (newValue) => this.set(propertyName, newValue)
-
+            set: (newValue) => this.set(propertyName, newValue),
           });
         }
       }
@@ -57,7 +56,7 @@ export class YSyncModel {
   }
 
   removeListener(listener) {
-    this.listeners.remove(listener);
+    this.listeners = this.listeners.filter((el) => el !== listener);
   }
 
   addOnceListener(listener) {
