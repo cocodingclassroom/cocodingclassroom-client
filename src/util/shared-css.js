@@ -1,7 +1,7 @@
 import { css, unsafeCSS } from "lit";
 
-export const white = () => unsafeCSS("#ffffff");
-export const black = () => unsafeCSS("#000000");
+export const white = () => unsafeCSS("#f5f5f5");
+export const black = () => unsafeCSS("#1f1f1f");
 export const secondary = () => unsafeCSS("#aaaaaa");
 
 export const menuRowStyles = () => css`
@@ -43,10 +43,17 @@ export const basicFlexStyles = () => css`
   .grow {
     flex-grow: 1;
   }
+
+  .center {
+    justify-content: center;
+  }
 `;
 
 export const pulseStyle = () => css`
   .pulse:hover {
+    animation: pulse 1s linear infinite alternate !important;
+  }
+  .pulse-on {
     animation: pulse 1s linear infinite alternate !important;
   }
 
@@ -67,8 +74,13 @@ export const cursorTipStyle = () => css`
   .pointer {
     cursor: pointer;
   }
+
   .help {
     cursor: help;
+  }
+
+  .alias {
+    cursor: alias;
   }
 `;
 
@@ -99,5 +111,4 @@ export const toolTipStyle = () => css`
     transform: rotate(45deg);
     border: 1px solid ${secondary()};
   }
-
 `;

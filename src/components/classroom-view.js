@@ -6,6 +6,7 @@ import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle } from "../util/util";
 import { RoomType } from "../models/room";
+import { clearSelection } from "../util/clear-selection";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
@@ -119,6 +120,7 @@ export class ClassRoomView extends LitElement {
     let screenWidth = window.innerWidth;
     let percentageDrag = (100 / screenWidth) * x;
     this.localUser.leftSize = this._clampPercentage(percentageDrag);
+    clearSelection();
   };
 
   _dragMiddleBarEnd = () => {

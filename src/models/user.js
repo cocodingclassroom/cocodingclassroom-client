@@ -1,6 +1,10 @@
 import { YSyncModel } from "./y-sync-model.js";
 import { UserService } from "../services/user-service";
-import { adjectives, animals, uniqueNamesGenerator } from "unique-names-generator";
+import {
+  adjectives,
+  animals,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
 
 export class User extends YSyncModel {
   constructor(id) {
@@ -8,7 +12,8 @@ export class User extends YSyncModel {
     this.id = id;
     this.setup();
     this.name = this.name ?? this._getRandomUserName();
-    this.color = this.color ?? '#'+Math.floor(Math.random()*16777215).toString(16);
+    this.color =
+      this.color ?? "#" + Math.floor(Math.random() * 16777215).toString(16);
   }
 
   static fromJSON(json) {
@@ -24,6 +29,7 @@ export class User extends YSyncModel {
   role = UserRole.STUDENT;
   name;
   color;
+  needsHelp = false;
   leftSize = 50;
   selectedRoomLeft = 0;
   selectedRoomRight = 1;
@@ -46,7 +52,7 @@ export class User extends YSyncModel {
 
   isLocalUser = () => {
     return this === UserService.get().localUser;
-  }
+  };
 
   toJSON = () => {
     return {

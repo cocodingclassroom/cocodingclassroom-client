@@ -7,6 +7,7 @@ import {
 import { initDataTips } from "../../util/tooltips";
 import { version } from "../../version";
 import { iconSvg } from "../icons/icons";
+import { UserService } from "../../services/user-service";
 
 export class TeacherMenuView extends LitElement {
   static properties = {
@@ -16,6 +17,9 @@ export class TeacherMenuView extends LitElement {
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
     initDataTips(this.renderRoot);
+    UserService.get().localUser.addListener(() => {
+      initDataTips(this.renderRoot);
+    });
   }
 
   render = () => {
