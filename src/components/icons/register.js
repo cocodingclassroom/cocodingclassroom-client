@@ -1,2 +1,1 @@
-import { AboutIcon } from "./about-icon";
-import { SettingsIcon } from "./settings-icon";
+import { HoverableIcon } from "./hoverable-icon";

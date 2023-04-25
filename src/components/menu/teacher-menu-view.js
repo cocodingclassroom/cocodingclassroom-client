@@ -1,12 +1,16 @@
 import { css, html, LitElement } from "lit";
-import { cursorTipStyle, menuRowStyles, toolTipStyle } from "../../util/shared-css";
+import {
+  cursorTipStyle,
+  menuRowStyles,
+  toolTipStyle,
+} from "../../util/shared-css";
 import { initDataTips } from "../../util/tooltips";
 import { version } from "../../version";
+import { iconSvg } from "../icons/icons";
 
 export class TeacherMenuView extends LitElement {
-
   static properties = {
-    roomId: { type: String }
+    roomId: { type: String },
   };
 
   firstUpdated(_changedProperties) {
@@ -16,32 +20,20 @@ export class TeacherMenuView extends LitElement {
 
   render = () => {
     return html`
-
       <div class="cc-controls-row">
         <div
           class="cc-header-title help"
           data-tip="${version}"
-          @click="${() => {
-          }}"
+          @click="${() => {}}"
         >
           COCODING Classroom
         </div>
 
-        <div
-          class="help"
-          @click="${() => {
-          }}"
-          data-tip="About"
-        >
-          <cc-about></cc-about>
+        <div class="help" @click="${() => {}}" data-tip="About">
+          <cc-icon svg="${iconSvg.about}"></cc-icon>
         </div>
-        <div
-          class="cc-nav-settings"
-          @click="${() => {
-          }}"
-          data-tip="Settings"
-        >
-          <cc-settings></cc-settings>
+        <div class="cc-nav-settings" @click="${() => {}}" data-tip="Settings">
+          <cc-icon svg="${iconSvg.settings}" }></cc-icon>
         </div>
       </div>
     `;
