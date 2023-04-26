@@ -70,7 +70,10 @@ export class TeacherMenuView extends LitElement {
           <div data-tip="Send message to all rooms">
             <cc-icon svg="${iconSvg.message}"></cc-icon>
           </div>
-          <div data-tip="Force split-view to all Students">
+          <div
+            data-tip="Force split-view to all Students"
+            @click="${() => this.forceSplitView()}"
+          >
             <cc-icon svg="${iconSvg.layout}"></cc-icon>
           </div>
         </div>
@@ -80,6 +83,13 @@ export class TeacherMenuView extends LitElement {
 
   addRoom = () => {
     RoomService.get().addRoom();
+  };
+
+  forceSplitView = () => {
+    let localLeftSize = UserService.get().localUser.leftSize;
+    UserService.get().otherUsers.forEach((otherUser) => {
+      otherUser.leftSize = localLeftSize;
+    });
   };
 
   static styles = [

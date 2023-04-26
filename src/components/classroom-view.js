@@ -25,6 +25,7 @@ export class ClassRoomView extends LitElement {
       () => {
         this._setMembers();
         ClassroomService.get().classroom.addListener(this.localUpdate);
+        UserService.get().localUser.addListener(this.localUpdate);
       }
     );
     window.addEventListener("resize", this.onResize);
@@ -33,6 +34,7 @@ export class ClassRoomView extends LitElement {
   disconnectedCallback() {
     window.removeEventListener("resize", this.onResize);
     ClassroomService.get().classroom.removeListener(this.localUpdate);
+    UserService.get().localUser.addListener(this.localUpdate);
   }
 
   localUpdate = () => {
