@@ -10,6 +10,9 @@ import { formatCode, interpret } from "../util/compiler";
 import run from "../assets/icons/run.svg";
 import { Shortcut, ShortcutExtension } from "./shortcut-extension";
 import { safeRegister } from "../util/util";
+import { UserService } from "../services/user-service";
+import { UserRole } from "../models/user";
+import { RoomType } from "../models/room";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -76,6 +79,14 @@ export class EditorView extends LitElement {
       fontSize: "13pt",
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
+
+    if (
+      this.room.roomType === RoomType.TEACHER &&
+      UserService.get().localUser.role === UserRole.STUDENT
+    ) {
+      this.editor.setReadOnly(true);
+    }
+
     // this.editor.commands.removeCommands([
     //   this.editor.commands.commands["enterfullscreen"], // ctrl + e
     //   // "transposeletters", // ctrl + t (totally removed)
