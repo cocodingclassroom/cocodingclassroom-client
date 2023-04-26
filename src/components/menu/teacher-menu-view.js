@@ -48,17 +48,14 @@ export class TeacherMenuView extends LitElement {
           </div>
         </div>
         <div class="cc-controls-row">
-          <div data-tip="New Sketch" @click="${() => this.setNewSketch()}">
-            <cc-icon svg="${iconSvg.new}"></cc-icon>
+          <div data-tip="New Sketch">
+            <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
           </div>
-          <div
-            data-tip="Push code to all rooms"
-            @click="${() => this.syncCode()}"
-          >
-            <cc-icon svg="${iconSvg.code}"></cc-icon>
+          <div data-tip="Push code to all rooms">
+            <cc-sync-code roomId="${this.roomId}"></cc-sync-code>
           </div>
           <div data-tip="Export Code">
-            <cc-icon svg="${iconSvg.save}"></cc-icon>
+            <cc-export-code roomId="${this.roomId}"></cc-export-code>
           </div>
           <div data-tip="Compare Code">
             <cc-icon svg="${iconSvg.merge}"></cc-icon>
@@ -80,44 +77,6 @@ export class TeacherMenuView extends LitElement {
         </div>
       </div>
     `;
-  };
-
-  setNewSketch = () => {
-    showModal(
-      `
-        <div>
-          Replace code with new sketch?
-        </div>
-      `,
-      () => {
-        let room = RoomService.get().getRoom(this.roomId);
-        let template = BindingService.get().binding.codeTemplate;
-        room.codeContent.delete(0, room.codeContent.length);
-        room.codeContent.insert(0, template);
-      },
-      () => {}
-    );
-  };
-
-  syncCode = () => {
-    showModal(
-      `
-        <div>
-          Push this rooms code to all rooms?
-        </div>
-      `,
-      () => {
-        let room = RoomService.get().getRoom(this.roomId);
-        let template = room.codeContent.toString();
-        RoomService.get().rooms.forEach((otherRoom) => {
-          if (otherRoom === room) return;
-
-          otherRoom.codeContent.delete(0, otherRoom.codeContent.length);
-          otherRoom.codeContent.insert(0, template);
-        });
-      },
-      () => {}
-    );
   };
 
   addRoom = () => {
