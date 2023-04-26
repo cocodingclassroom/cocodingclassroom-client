@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { tree } = require("lib0");
 
 module.exports = {
   mode: "development",
@@ -24,6 +25,7 @@ module.exports = {
     port: 3000,
     static: path.resolve(__dirname, "dist"),
     historyApiFallback: true,
+    hot: false,
   },
   devtool: "eval-source-map",
   module: {

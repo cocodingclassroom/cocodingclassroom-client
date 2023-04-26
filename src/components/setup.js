@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { ClassroomService } from "/src/services/classroom-service.js";
 import { Router } from "@vaadin/router";
+import { safeRegister } from "../util/util";
 
 export class Setup extends LitElement {
   initialRoomNumbers = 5;
@@ -174,4 +175,4 @@ export class Setup extends LitElement {
   `;
 }
 
-window.customElements.define("cc-setup", Setup);
+safeRegister("cc-setup", Setup);

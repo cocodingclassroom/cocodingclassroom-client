@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { ClassroomService } from "/src/services/classroom-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
-import { getSplitScreenWidthAndAlignStyle } from "../util/util";
+import { getSplitScreenWidthAndAlignStyle, safeRegister } from "../util/util";
 import { RoomType } from "../models/room";
 import { clearSelection } from "../util/clear-selection";
 
@@ -26,21 +26,23 @@ export class ClassRoomView extends LitElement {
         this._setMembers();
       }
     );
+    ClassroomService.get().classroom.addListener(this.localUpdate);
     window.addEventListener("resize", this.onResize);
   }
 
   disconnectedCallback() {
     window.removeEventListener("resize", this.onResize);
+    ClassroomService.get().classroom.removeListener(this.localUpdate);
   }
+
+  localUpdate = () => {
+    this.requestUpdate();
+  };
 
   _setMembers() {
     this.localUser = UserService.get().localUser;
 
-    let update = () => {
-      this.requestUpdate();
-    };
-
-    this.localUser.addListener(update);
+    this.localUser.addListener(this.localUpdate);
   }
 
   onResize = () => {
@@ -146,4 +148,4 @@ export class ClassRoomView extends LitElement {
   `;
 }
 
-window.customElements.define("cc-classroom", ClassRoomView);
+safeRegister("cc-classroom", ClassRoomView);

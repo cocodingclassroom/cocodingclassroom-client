@@ -3,7 +3,6 @@
  */
 
 import { createMutex } from "lib0/mutex.js";
-import * as Y from "yjs"; // eslint-disable-line
 import { Awareness } from "y-protocols/awareness.js"; // eslint-disable-line
 import Ace from "ace-builds/src-min-noconflict/ace";
 const Range = Ace.require("ace/range").Range;

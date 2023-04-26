@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { RoomService } from "../services/room-service";
 import { FrameEventExtension } from "./frame-event-extension";
 import { UserService } from "../services/user-service";
+import { safeRegister } from "../util/util";
 
 export class FrameView extends LitElement {
   static properties = {
@@ -54,4 +55,4 @@ export class FrameView extends LitElement {
   `;
 }
 
-window.customElements.define("cc-frame", FrameView);
+safeRegister("cc-frame", FrameView);

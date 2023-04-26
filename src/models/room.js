@@ -1,5 +1,5 @@
 import { YSyncModel } from "/src/models/y-sync-model.js";
-import * as Y from "yjs";
+import { Text as YText } from "yjs";
 import { BindingService } from "../services/binding-service";
 
 export class Room extends YSyncModel {
@@ -55,7 +55,7 @@ export class Room extends YSyncModel {
     this.roomName = this.roomName ?? this.id + "_Room";
     if (this.codeContent === null || this.codeContent === undefined) {
       let activeBinding = BindingService.get().binding;
-      this.codeContent = new Y.Text(activeBinding.codeTemplate ?? "");
+      this.codeContent = new YText(activeBinding.codeTemplate ?? "");
     }
     this.l_changedPositions = [];
   }

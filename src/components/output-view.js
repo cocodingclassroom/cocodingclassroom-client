@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { safeRegister } from "../util/util";
 
 export class OutputView extends LitElement {
   static properties = {
@@ -30,4 +31,4 @@ export class OutputView extends LitElement {
   `;
 }
 
-window.customElements.define("cc-console", OutputView);
+safeRegister("cc-console", OutputView);

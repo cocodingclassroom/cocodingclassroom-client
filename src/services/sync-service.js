@@ -1,4 +1,4 @@
-import * as Y from "yjs";
+import { Doc as YDoc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { murmurhash3_32_gc } from "/src/util/cc-auth.js";
 
@@ -35,7 +35,7 @@ export class SyncService {
     //   `opts: authId: ${options.params.authID} authSet: ${options.params.authSet} authToken: ${options.params.authToken} auth: ${options.params.auth}`
     // );
 
-    this._instance._yDoc = new Y.Doc();
+    this._instance._yDoc = new YDoc();
     let websocketProvider = new WebsocketProvider(
       url,
       classroomID,

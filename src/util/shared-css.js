@@ -9,23 +9,27 @@ export const menuRowStyles = () => css`
     display: flex;
     flex-direction: row;
     flex-grow: 1;
-    height: 24px;
+    height: 26px;
     border-bottom: 1px solid #aaa;
     width: 100%;
   }
 
   .cc-controls-row div {
-    height: 90%;
     width: 90%;
     padding: 2px;
     background: #444;
     border: 1px solid #aaa;
+    border-top: none;
     text-align: center;
     cursor: pointer;
   }
 
   .cc-controls-row div:hover {
     background: #555;
+  }
+
+  .cc-controls-row-container {
+    border-top: 1px solid #aaa;
   }
 `;
 

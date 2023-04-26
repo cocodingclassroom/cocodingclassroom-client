@@ -1,7 +1,6 @@
 {
   "name": "cocoding2",
   "version": "0.0.0",
-  "main": "index.js",
   "private": true,
   "files": [
     "dist"

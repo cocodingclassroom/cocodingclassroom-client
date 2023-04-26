@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { safeRegister } from "../util/util";
 
 export class RoomView extends LitElement {
   static properties = {
@@ -30,4 +31,4 @@ export class RoomView extends LitElement {
   static styles = css``;
 }
 
-window.customElements.define("cc-room", RoomView);
+safeRegister("cc-room", RoomView);

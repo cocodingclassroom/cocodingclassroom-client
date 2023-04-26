@@ -1,6 +1,6 @@
 import { css, html, LitElement, unsafeCSS } from "lit";
 import { UserService } from "../../services/user-service";
-import { isColorLight } from "../../util/util";
+import { isColorLight, safeRegister } from "../../util/util";
 import { styleMap } from "lit/directives/style-map.js";
 import {
   basicFlexStyles,
@@ -177,4 +177,4 @@ export class UserListView extends LitElement {
   ];
 }
 
-window.customElements.define("cc-user-list", UserListView);
+safeRegister("cc-user-list", UserListView);

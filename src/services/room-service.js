@@ -1,4 +1,5 @@
 import { Room, RoomType } from "/src/models/room.js";
+import { ClassroomService } from "./classroom-service";
 
 export class RoomService {
   static _instance;
@@ -23,10 +24,19 @@ export class RoomService {
     if (roomId >= 0 && roomId < this.rooms.length) return this.rooms[roomId];
   };
 
+  addRoom() {
+    let roomAmountAsNewId = this.rooms.length;
+    let newRoom = new Room(roomAmountAsNewId);
+
+    ClassroomService.get().classroom.roomIds.push([newRoom.id]);
+    this.init(ClassroomService.get().classroom);
+  }
+
   init = (classroom, numberOfRooms) => {
     if (classroom.roomIds.length === 0) {
       this.defineRooms(numberOfRooms, classroom);
     }
+    this.rooms = [];
     classroom.roomIds.forEach((id) => {
       let room = new Room(id);
       if (classroom.teacherRoomIds.toArray().includes(id)) {

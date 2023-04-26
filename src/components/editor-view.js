@@ -9,6 +9,7 @@ import { SyncService } from "../services/sync-service";
 import { formatCode, interpret } from "../util/compiler";
 import run from "../assets/icons/run.svg";
 import { Shortcut, ShortcutExtension } from "./shortcut-extension";
+import { safeRegister } from "../util/util";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -264,4 +265,4 @@ export class EditorView extends LitElement {
   `;
 }
 
-window.customElements.define("cc-editor", EditorView);
+safeRegister("cc-editor", EditorView);

@@ -1,6 +1,7 @@
 import { css, html, LitElement, unsafeCSS } from "lit";
 import { pulseStyle } from "../../util/shared-css";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
+import { safeRegister } from "../../util/util";
 
 export class HoverableIcon extends LitElement {
   static properties = {
@@ -28,4 +29,4 @@ export class HoverableIcon extends LitElement {
   ];
 }
 
-window.customElements.define("cc-icon", HoverableIcon);
+safeRegister("cc-icon", HoverableIcon);
