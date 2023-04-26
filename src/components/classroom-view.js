@@ -24,9 +24,9 @@ export class ClassRoomView extends LitElement {
       this.location.params.id,
       () => {
         this._setMembers();
+        ClassroomService.get().classroom.addListener(this.localUpdate);
       }
     );
-    ClassroomService.get().classroom.addListener(this.localUpdate);
     window.addEventListener("resize", this.onResize);
   }
 

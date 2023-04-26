@@ -4,7 +4,6 @@ const { tree } = require("lib0");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.js",
   output: {
     publicPath: "/",
     filename: "bundle.js",
@@ -19,6 +18,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: "Cocoding Classroom",
       template: "./src/index.html",
+      inject: false,
     }),
   ],
   devServer: {

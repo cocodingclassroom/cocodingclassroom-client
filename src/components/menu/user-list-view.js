@@ -14,6 +14,7 @@ import {
 import { initDataTips } from "../../util/tooltips";
 import { UserColorRenameModal } from "../user-color-rename-modal";
 import { ClassroomService } from "../../services/classroom-service";
+import { RoomService } from "../../services/room-service";
 
 export class UserListView extends LitElement {
   connectedCallback() {
@@ -40,6 +41,9 @@ export class UserListView extends LitElement {
       .forEach((user) => user.removeListener(this.listener));
     UserService.get().localUser.removeListener(this.listener);
     ClassroomService.get().classroom.removeListener(this.classroomListener);
+    RoomService.get().rooms.forEach((room) =>
+      room.removeListener(this.listener)
+    );
   }
 
   firstUpdated(_changedProperties) {

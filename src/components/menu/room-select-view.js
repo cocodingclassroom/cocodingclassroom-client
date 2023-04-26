@@ -23,6 +23,11 @@ export class RoomSelectView extends LitElement {
       this._setSelectedOption();
       this.requestUpdate();
     });
+    RoomService.get().rooms.forEach((room) =>
+      room.addListener(() => {
+        this.requestUpdate();
+      })
+    );
     super.connectedCallback();
   }
 
