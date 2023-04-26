@@ -39,7 +39,6 @@ export class TeacherMenuView extends LitElement {
           >
             COCODING Classroom
           </div>
-
           <div class="help" @click="${() => {}}" data-tip="About">
             <cc-icon svg="${iconSvg.about}"></cc-icon>
           </div>
@@ -66,7 +65,7 @@ export class TeacherMenuView extends LitElement {
             <cc-icon svg="${iconSvg.layers}"></cc-icon>
           </div>
           <div data-tip="Walk rooms">
-            <cc-icon svg="${iconSvg.person}"></cc-icon>
+            <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
           </div>
           <div data-tip="Send message to all rooms">
             <cc-icon svg="${iconSvg.message}"></cc-icon>
