@@ -69,6 +69,6 @@ export class ClassroomService {
   _setupData(classroomId, numberOfRooms) {
     this.classroom = new ClassroomModel(classroomId);
     RoomService.get().init(this.classroom, numberOfRooms);
-    UserService.get().init(this.classroom);
+    UserService.get().init(this.classroom, numberOfRooms !== null);
   }
 }

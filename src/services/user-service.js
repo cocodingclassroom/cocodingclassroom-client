@@ -1,5 +1,5 @@
 import { SyncService } from "/src/services/sync-service.js";
-import { User } from "/src/models/user.js";
+import { User, UserRole } from "/src/models/user.js";
 export class UserService {
   static _instance;
   localUser;
@@ -20,12 +20,22 @@ export class UserService {
     return UserService._instance;
   }
 
-  init = (classroom) => {
+  init = (classroom, isRoomCreation) => {
     let user = this._getLocalUser();
     if (user == null) {
       user = this._createNewLocalUser();
-
     }
+
+    if (classroom.teacherIds.toArray().includes(user.id)) {
+      user.role = UserRole.TEACHER;
+    } else if (isRoomCreation) {
+      //make the new user to a teacher
+      user.role = UserRole.TEACHER;
+      classroom.teacherIds.push([user.id]);
+    } else {
+      user.role = UserRole.STUDENT;
+    }
+
     classroom.addUser(user);
     this.localUser = user;
     this.localUser.addListener(() => {
@@ -34,7 +44,7 @@ export class UserService {
     this.updateOtherUsers(classroom);
     classroom.peopleIds.observe(() => {
       this.updateOtherUsers(classroom);
-    })
+    });
   };
 
   updateOtherUsers(classroom) {

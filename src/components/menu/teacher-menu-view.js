@@ -9,10 +9,6 @@ import { version } from "../../version";
 import { iconSvg } from "../icons/icons";
 import { UserService } from "../../services/user-service";
 import { RoomService } from "../../services/room-service";
-import { BindingService } from "../../services/binding-service";
-import { showModal } from "../../util/modal";
-import { Room } from "../../models/room";
-import { ClassroomService } from "../../services/classroom-service";
 import { safeRegister } from "../../util/util";
 
 export class TeacherMenuView extends LitElement {
@@ -46,37 +42,56 @@ export class TeacherMenuView extends LitElement {
             <cc-icon svg="${iconSvg.settings}" }></cc-icon>
           </div>
         </div>
-        <div class="cc-controls-row">
-          <div data-tip="New Sketch">
-            <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
-          </div>
-          <div data-tip="Push code to all rooms">
-            <cc-sync-code roomId="${this.roomId}"></cc-sync-code>
-          </div>
-          <div data-tip="Export Code">
-            <cc-export-code roomId="${this.roomId}"></cc-export-code>
-          </div>
-          <div data-tip="Compare Code">
-            <cc-icon svg="${iconSvg.merge}"></cc-icon>
-          </div>
+        ${
+          UserService.get().localUser.isTeacher()
+            ? this._renderActionsForTeacher()
+            : html`<div class="cc-controls-row">
+                ${this._renderActionsForStudents()}
+              </div>`
+        }
+      </div>
+      </div>
+    `;
+  };
+
+  _renderActionsForTeacher = () => {
+    return html`
+      <div class="cc-controls-row">
+        <div data-tip="New Sketch">
+          <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
         </div>
-        <div class="cc-controls-row">
-          <div data-tip="Add room" @click="${() => this.addRoom()}">
-            <cc-icon svg="${iconSvg.layers}"></cc-icon>
-          </div>
-          <div data-tip="Walk rooms">
-            <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
-          </div>
-          <div data-tip="Send message to all rooms">
-            <cc-icon svg="${iconSvg.message}"></cc-icon>
-          </div>
-          <div
-            data-tip="Force split-view to all Students"
-            @click="${() => this.forceSplitView()}"
-          >
-            <cc-icon svg="${iconSvg.layout}"></cc-icon>
-          </div>
+        <div data-tip="Push code to all rooms">
+          <cc-sync-code roomId="${this.roomId}"></cc-sync-code>
         </div>
+        ${this._renderActionsForStudents()}
+      </div>
+      <div class="cc-controls-row">
+        <div data-tip="Add room" @click="${() => this.addRoom()}">
+          <cc-icon svg="${iconSvg.layers}"></cc-icon>
+        </div>
+        <div data-tip="Walk rooms">
+          <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
+        </div>
+        <div data-tip="Send message to all rooms">
+          <cc-icon svg="${iconSvg.message}"></cc-icon>
+        </div>
+        <div
+          data-tip="Force split-view to all Students"
+          @click="${() => this.forceSplitView()}"
+        >
+          <cc-icon svg="${iconSvg.layout}"></cc-icon>
+        </div>
+      </div>
+    `;
+  };
+
+  _renderActionsForStudents = () => {
+    return html`
+      <div data-tip="Export Code">
+        <cc-export-code roomId="${this.roomId}"></cc-export-code>
+      </div>
+      <div data-tip="Compare Code">
+        <cc-icon svg="${iconSvg.merge}"></cc-icon>
       </div>
     `;
   };

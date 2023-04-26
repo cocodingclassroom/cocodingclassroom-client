@@ -7,12 +7,14 @@ export class ClassroomModel extends YSyncModel {
   roomIds;
   teacherRoomIds;
   peopleIds;
+  teacherIds;
 
   constructor(classRoomId) {
     super(`classroom_${classRoomId}`);
     this.classRoomId = classRoomId;
     this.peopleIds = [];
     this.roomIds = [];
+    this.teacherIds = [];
     this.teacherRoomIds = [];
     this.setup();
     this.activeBindingType = this.activeBindingType ?? BindingType.P5;
