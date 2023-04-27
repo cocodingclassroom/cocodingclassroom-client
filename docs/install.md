@@ -9,5 +9,5 @@ synchronisation between the clients.
 * Domain name pointing to the server.
 
 ## Configuration
-//TODO: TD, add current config 
+//TODO: TD, add config 
 
