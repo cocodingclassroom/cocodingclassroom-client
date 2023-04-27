@@ -17,7 +17,8 @@ import showdown from "showdown";
 
 export class TeacherMenuView extends LitElement {
   static properties = {
-    roomId: { type: String }
+    roomId: { type: String },
+    settingsOpen: { type: Boolean, state: true }
   };
 
   firstUpdated(_changedProperties) {
@@ -42,14 +43,19 @@ export class TeacherMenuView extends LitElement {
             COCODING Classroom
           </div>
           <div class="help" @click="${() => {
+            this._showAbout();
           }}" data-tip="About">
             <cc-icon svg="${iconSvg.about}"></cc-icon>
           </div>
           <div class="cc-nav-settings" @click="${() => {
+            this.settingsOpen = !this.settingsOpen;
           }}" data-tip="Settings">
             <cc-icon svg="${iconSvg.settings}" }></cc-icon>
           </div>
         </div>
+        ${this.settingsOpen ? html`
+            <cc-settings></cc-settings>` :
+          ""}
         ${
           UserService.get().localUser.isTeacher()
             ? this._renderActionsForTeacher()
@@ -59,6 +65,7 @@ export class TeacherMenuView extends LitElement {
               </div>`
         }
       </div>
+
       </div>
     `;
   };
@@ -116,7 +123,7 @@ export class TeacherMenuView extends LitElement {
     <div>
     `, () => {
     }, () => {
-    });
+    }, false);
   };
 
   _addRoom = () => {

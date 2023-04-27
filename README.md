@@ -77,7 +77,7 @@ Type `CTRL + ENTER` to force recompile everyone within given workspace.
 
 - <img class="svg" src="src/assets/resource/file-plus.svg" height="15px"> Start a new sketch. 
 - <img class="svg" src="src/assets/resource/git-merge.svg" height="15px"> to see a *diff* between left and right codes. Auto merge snippets or copy and paste manually to update the right-side code.  
-Click <img class="svg" src="includes/icons/check-circle.svg" height="15px"> to accept changes, or <img class="svg" src="includes/icons/minus-circle.svg" height="15px"> to cancel and close the popup.
+Click <img class="svg" src="src/assets/resource/check-circle.svg" height="15px"> to accept changes, or <img class="svg" src="src/assets/resource/minus-circle.svg" height="15px"> to cancel and close the popup.
 - <img class="svg" src="src/assets/resource/code.svg" height="15px"> 'Sync Code' to apply teacher's code as template on all workspaces (*Teacher only*).
  
 ### CHAT

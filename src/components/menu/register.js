@@ -6,4 +6,5 @@ import { NewSketchView } from "./new-sketch-view";
 import { SyncCodeView } from "./sync-code-view";
 import { ExportCodeView } from "./export-code-view";
 import { WalkRoomView } from "./walk-room-view";
+import { SettingsView } from "./settings-view";
 import { MenuView } from "./menu-view";

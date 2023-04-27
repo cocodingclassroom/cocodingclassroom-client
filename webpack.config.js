@@ -24,7 +24,7 @@ module.exports = {
     port: 3000,
     static: path.resolve(__dirname, "dist"),
     historyApiFallback: true,
-    hot: false
+    hot: true
   },
   devtool: "eval-source-map",
   module: {

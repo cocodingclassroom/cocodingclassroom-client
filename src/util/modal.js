@@ -2,7 +2,7 @@ import { html, render } from 'lit-html';
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import "../assets/css/modal.css";
 
-export const showModal = (content, onConfirm, afterOpen) => {
+export const showModal = (content, onConfirm, afterOpen, showCancel = true) => {
 
   const oldModal = document.getElementById("single-modal");
   if (oldModal != null) {
@@ -47,7 +47,7 @@ export const showModal = (content, onConfirm, afterOpen) => {
     <div class="modal">
       ${modalContent}
       <div class="modal-button-row">
-        ${closeButton}
+        ${showCancel ? closeButton : ""}
         ${okayButton}
       </div>
     </div>
