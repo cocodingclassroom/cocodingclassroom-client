@@ -7,9 +7,8 @@ Cocoding Classroom II (cc-II) relies on a couple of third-party technologies:
 * **nodejs** – Server to run
 
 
-
 ### Development dependendencies
-* **[Yarn](https://yarnpkg.com/)** – Package (and project) manager by Facebook (alternative to npm). 
+* **[npm](https://www.npmjs.com/)** – Package (and project) manager. 
 * **[prettier](https://prettier.io/)** – Code formatter
 * **[process]()** – TODO: is this required?
 * **[webpack](https://webpack.js.org/)** – Bundler for web deployment. 
@@ -36,7 +35,12 @@ The code is divided into the following core modules:
 All code is structured in [Javascript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules). The modules of cc-II embrace some rules.
 
 ### Models
-cc-II provides means to synchronise models between all connected clients. If a model class extends from YSyncModel ([`y-sync-models.js`](../src/models/y-sync-model.js)) all its properties are synchronised automatically. The following snippet describes this approach.
+The following diagram shows the core components of the cc-II datamodel.
+<img src="figures/model.png" alt="Class diagram of cc-II core models" />
+
+The model classes are synched between all clients through YSync. 
+If a model class extends from YSyncModel ([`y-sync-models.js`](../src/models/y-sync-model.js)) 
+all its properties are synchronised automatically. The following snippet outlines this approach.
 
 ```javascript
 import { YSyncModel } from "/src/models/y-sync-model.js";
@@ -137,9 +141,11 @@ Services serve several tasks:
 
 Services should follow the **singelton-pattern**. Use ``service.get()`` to obtain a reference to a service. When implementing a new service, copy the 'get()"-logic from an existing service. 
 
-
 ### Util
 Collection of static utility functions and some utility classes, which have not been transformed to a service-class yet. 
 
 ### Binding
 see [binding.md](binding.md)
+
+## Shortcuts
+
