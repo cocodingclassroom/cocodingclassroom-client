@@ -12,6 +12,8 @@ import { RoomService } from "../../services/room-service";
 import { safeRegister } from "../../util/util";
 import { showModal } from "../../util/modal";
 import { ChatMessage } from "../../models/chat-message";
+import md from "../../../README.md";
+import showdown from "showdown";
 
 export class TeacherMenuView extends LitElement {
   static properties = {
@@ -34,6 +36,7 @@ export class TeacherMenuView extends LitElement {
             class="cc-header-title help"
             data-tip="${version}"
             @click="${() => {
+              this._showAbout();
             }}"
           >
             COCODING Classroom
@@ -104,6 +107,18 @@ export class TeacherMenuView extends LitElement {
     `;
   };
 
+  _showAbout = () => {
+    let converter = new showdown.Converter();
+    let html = converter.makeHtml(md);
+    showModal(`
+    <div>
+    ${html}
+    <div>
+    `, () => {
+    }, () => {
+    });
+  };
+
   _addRoom = () => {
     RoomService.get().addRoom();
   };
@@ -121,8 +136,8 @@ export class TeacherMenuView extends LitElement {
       if (messageContent.value.length === 0) return;
       let newMessage = new ChatMessage(UserService.get().localUser.id, messageContent.value);
       RoomService.get().rooms.forEach(room => {
-        room.messages.push([JSON.stringify(newMessage)])
-      })
+        room.messages.push([JSON.stringify(newMessage)]);
+      });
     }, () => {
       let messageContent = document.getElementById("to-all-message");
       messageContent.focus();

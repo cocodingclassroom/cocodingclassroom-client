@@ -75,10 +75,10 @@ If students have a bug/issue/question, anyone can `Request Help` by clicking the
 By default live-coding (auto compile on keyup) is activated.    
 Type `CTRL + ENTER` to force recompile everyone within given workspace. 
 
-- <img class="svg" src="src/assets/icons/file-plus.svg" height="15px"> Start a new sketch. 
-- <img class="svg" src="src/assets/icons/git-merge.svg" height="15px"> to see a *diff* between left and right codes. Auto merge snippets or copy and paste manually to update the right-side code.  
+- <img class="svg" src="src/assets/resource/file-plus.svg" height="15px"> Start a new sketch. 
+- <img class="svg" src="src/assets/resource/git-merge.svg" height="15px"> to see a *diff* between left and right codes. Auto merge snippets or copy and paste manually to update the right-side code.  
 Click <img class="svg" src="includes/icons/check-circle.svg" height="15px"> to accept changes, or <img class="svg" src="includes/icons/minus-circle.svg" height="15px"> to cancel and close the popup.
-- <img class="svg" src="src/assets/icons/code.svg" height="15px"> 'Sync Code' to apply teacher's code as template on all workspaces (*Teacher only*).
+- <img class="svg" src="src/assets/resource/code.svg" height="15px"> 'Sync Code' to apply teacher's code as template on all workspaces (*Teacher only*).
  
 ### CHAT
 Each workspace has it's own chat. Use the left chat for messages to the entire group. Keep in mind chat is visible for anyone who visits workspace.      
@@ -91,29 +91,29 @@ Each workspace has it's own chat. Use the left chat for messages to the entire g
 
 ### LEFT SIDE
 #### TEACHER
-- <img class="svg" src="src/assets/icons/file-plus.svg" height="15px"> New Sketch, reset to template.
-- <img class="svg" src="src/assets/icons/code.svg" height="15px"> Sync Code, apply teacher code to all rooms.
-- <img class="svg" src="src/assets/icons/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
-- <img class="svg" src="src/assets/icons/cast.svg" height="15px"> Broadcast mouse/keyboard, syncs with all users.
-- <img class="svg" src="src/assets/icons/git-merge.svg" height="15px"> Compare Code, merge code from teacher to student room.
-- <img class="svg" src="src/assets/icons/layers.svg" height="15px"> Add Room, for additional rooms.
-- <img class="svg" src="src/assets/icons/users.svg" height="15px"> Walk Classroom, auto jumps between users to follow process.
-- <img class="svg" src="src/assets/icons/message-square.svg" height="15px"> Broadcast Message, announcement popup to all users.
-- <img class="svg" src="src/assets/icons/layout.svg" height="15px"> Sync Split-Screen, sets the ratio for all users.
+- <img class="svg" src="src/assets/resource/file-plus.svg" height="15px"> New Sketch, reset to template.
+- <img class="svg" src="src/assets/resource/code.svg" height="15px"> Sync Code, apply teacher code to all rooms.
+- <img class="svg" src="src/assets/resource/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
+- <img class="svg" src="src/assets/resource/cast.svg" height="15px"> Broadcast mouse/keyboard, syncs with all users.
+- <img class="svg" src="src/assets/resource/git-merge.svg" height="15px"> Compare Code, merge code from teacher to student room.
+- <img class="svg" src="src/assets/resource/layers.svg" height="15px"> Add Room, for additional rooms.
+- <img class="svg" src="src/assets/resource/users.svg" height="15px"> Walk Classroom, auto jumps between users to follow process.
+- <img class="svg" src="src/assets/resource/message-square.svg" height="15px"> Broadcast Message, announcement popup to all users.
+- <img class="svg" src="src/assets/resource/layout.svg" height="15px"> Sync Split-Screen, sets the ratio for all users.
 
 #### STUDENT
-- <img class="svg" src="src/assets/icons/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
-- <img class="svg" src="src/assets/icons/git-merge.svg" height="15px"> Compare Code, merge code from teacher to student room.
+- <img class="svg" src="src/assets/resource/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
+- <img class="svg" src="src/assets/resource/git-merge.svg" height="15px"> Compare Code, merge code from teacher to student room.
 
 ### RIGHT SIDE
 #### TEACHER
-- <img class="svg" src="src/assets/icons/file-plus.svg" height="15px"> New Sketch, reset to template.
-- <img class="svg" src="src/assets/icons/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
-- <img class="svg" src="src/assets/icons/cast.svg" height="15px"> Broadcast mouse/keyboard, syncs with all users.
+- <img class="svg" src="src/assets/resource/file-plus.svg" height="15px"> New Sketch, reset to template.
+- <img class="svg" src="src/assets/resource/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
+- <img class="svg" src="src/assets/resource/cast.svg" height="15px"> Broadcast mouse/keyboard, syncs with all users.
 
 #### STUDENT
-- <img class="svg" src="src/assets/icons/file-plus.svg" height="15px"> New Sketch, reset to template.
-- <img class="svg" src="src/assets/icons/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
+- <img class="svg" src="src/assets/resource/file-plus.svg" height="15px"> New Sketch, reset to template.
+- <img class="svg" src="src/assets/resource/save.svg" height="15px"> Export Code, save sketch for P5LIVE.
 
 
 ## SETTINGS PANEL

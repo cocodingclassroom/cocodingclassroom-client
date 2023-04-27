@@ -7,12 +7,13 @@ import { RoomService } from "../services/room-service";
 import { AceBinding } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
 import { formatCode, interpret } from "../util/compiler";
-import run from "../assets/icons/run.svg";
+import run from "../assets/resource/run.svg";
 import { Shortcut, ShortcutExtension } from "./shortcut-extension";
 import { safeRegister } from "../util/util";
 import { UserService } from "../services/user-service";
 import { UserRole } from "../models/user";
 import { RoomType } from "../models/room";
+import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -198,17 +199,19 @@ export class EditorView extends LitElement {
       <div
         class="editor"
         style="${styleMap(hiddenStyle)}"
-        id=${this.editorIdentifier}
+        id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html` <button
-              class="run-button"
-              style="${styleMap(buttonStyle)}"
-              @click="${() => this.runCode(true)}"
-            >
-              <img width="8" height="8" src="${run}" alt="run button" />
-            </button>
-            <cc-console message="${this.message}"></cc-console>`
+        ? html`
+          <button
+            class="run-button"
+            style="${styleMap(buttonStyle)}"
+            @click="${() => this.runCode(true)}"
+          >
+            <lit-icon icon="add" iconset="iconset"></lit-icon>
+            <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
+          </button>
+          <cc-console message="${this.message}"></cc-console>`
         : ""}
     `;
   }
@@ -220,6 +223,11 @@ export class EditorView extends LitElement {
       top: 0;
       bottom: 0;
       width: 100%;
+    }
+    
+    svg {
+      width: 10px;
+      height: 10px;
     }
 
     .run-button {
