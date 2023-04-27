@@ -65,7 +65,10 @@ export class StudentMenuView extends LitElement {
         let nameInput = document.getElementById("roomname");
         room.roomName = nameInput.value;
       },
-      () => {}
+      () => {
+        let nameInput = document.getElementById("roomname");
+        nameInput.select();
+      }
     );
   };
 

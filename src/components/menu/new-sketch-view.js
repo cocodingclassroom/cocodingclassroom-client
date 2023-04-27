@@ -4,9 +4,6 @@ import { showModal } from "../../util/modal";
 import { RoomService } from "../../services/room-service";
 import { BindingService } from "../../services/binding-service";
 import { safeRegister } from "../../util/util";
-import { initDataTips } from "../../util/tooltips";
-import { UserService } from "../../services/user-service";
-
 export class NewSketchView extends LitElement {
   static properties = {
     roomId: { type: String },
