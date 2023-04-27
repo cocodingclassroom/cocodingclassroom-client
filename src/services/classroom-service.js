@@ -3,6 +3,7 @@ import { getRandomID } from "/src/util/util.js";
 import { ClassroomModel } from "/src/models/classroom-model.js";
 import { RoomService } from "/src/services/room-service.js";
 import { UserService } from "/src/services/user-service.js";
+import { live } from "lit-html/directives/live.js";
 
 export class ClassroomService {
   static _instance;
@@ -25,16 +26,27 @@ export class ClassroomService {
     return ClassroomService._instance;
   }
 
-  createNewRoom(callback, numberOfRooms) {
+  createNewRoom(
+    callback,
+    numberOfRooms,
+    liveCoding,
+    liveCodingDelay,
+    lineNumbers
+  ) {
     let newClassroomId = getRandomID();
-    console.log(newClassroomId);
     SyncService.connectAndSetup(
       "ws://localhost:1234",
       true,
       newClassroomId,
       "",
       () => {
-        this.syncNewSharedData(newClassroomId, numberOfRooms);
+        this.syncNewSharedData(
+          newClassroomId,
+          numberOfRooms,
+          liveCoding,
+          liveCodingDelay,
+          lineNumbers
+        );
         callback();
       }
     );
@@ -58,16 +70,41 @@ export class ClassroomService {
 
   syncWithExistingRoomData(classroomId) {
     console.log("Sync with existing data");
-    this._setupData(classroomId, null);
+    this._setupData(classroomId, null, null, null, null);
   }
 
-  syncNewSharedData(classroomId, numberOfRooms) {
+  syncNewSharedData(
+    classroomId,
+    numberOfRooms,
+    liveCoding,
+    liveCodingDelay,
+    lineNumbers
+  ) {
     console.log("sync with new data");
-    this._setupData(classroomId, numberOfRooms);
+    this._setupData(
+      classroomId,
+      numberOfRooms,
+      liveCoding,
+      liveCodingDelay,
+      lineNumbers
+    );
   }
 
-  _setupData(classroomId, numberOfRooms) {
-    this.classroom = new ClassroomModel(classroomId);
+  _setupData(
+    classroomId,
+    numberOfRooms,
+    liveCoding,
+    liveCodingDelay,
+    lineNumbers
+  ) {
+    this.classroom = new ClassroomModel(
+      classroomId,
+      liveCoding,
+      liveCodingDelay,
+      lineNumbers,
+      false,
+      2
+    );
     RoomService.get().init(this.classroom, numberOfRooms);
     UserService.get().init(this.classroom, numberOfRooms !== null);
   }

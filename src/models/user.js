@@ -7,6 +7,16 @@ import {
 } from "unique-names-generator";
 
 export class User extends YSyncModel {
+  id;
+  role = UserRole.STUDENT;
+  name;
+  color;
+  needsHelp = false;
+  leftSize = 50;
+  selectedRoomLeft = 0;
+  selectedRoomRight = 1;
+  editorFontSize = 12;
+
   constructor(id) {
     super(`user_${id}`);
     this.id = id;
@@ -25,14 +35,9 @@ export class User extends YSyncModel {
     return user;
   }
 
-  id;
-  role = UserRole.STUDENT;
-  name;
-  color;
-  needsHelp = false;
-  leftSize = 50;
-  selectedRoomLeft = 0;
-  selectedRoomRight = 1;
+  getEditorFontSize = () => {
+    return `${UserService.get().localUser.editorFontSize}pt`;
+  };
 
   isRoomLeft(id) {
     return this.selectedRoomLeft === parseInt(id);

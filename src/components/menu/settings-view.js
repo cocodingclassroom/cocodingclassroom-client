@@ -1,30 +1,50 @@
 import { css, html, LitElement } from "lit";
 import { safeRegister } from "../../util/util";
 import { basicFlexStyles } from "../../util/shared-css";
+import { ClassroomMode } from "../../models/classroom-model";
+import { ClassroomService } from "../../services/classroom-service";
+import { UserService } from "../../services/user-service";
 
 export class SettingsView extends LitElement {
+  firstUpdated(_changedProperties) {
+    super.firstUpdated(_changedProperties);
+    this._setSelectedMode();
+  }
 
   render = () => {
     return html`
       <div class="settings-panel col">
-        <div>
-          Classroom Settings
-        </div>
+        <div>Classroom Settings</div>
         <div class="row">
-          <div class="grow">
-            Mode
-          </div>
+          <div class="grow">Mode</div>
           <div>
-            <input name="mode" id="editInput" type="radio" value="Edit">
+            <input
+              @change="${() => this._setModeInModel()}"
+              name="mode"
+              id="editInput"
+              type="radio"
+              value="Edit"
+            />
             <label for="editInput">Edit</label>
-            <input name="mode" id="galleryInput" type="radio" value="Gallery">
+            <input
+              @change="${() => this._setModeInModel()}"
+              name="mode"
+              id="galleryInput"
+              type="radio"
+              value="Gallery"
+            />
             <label for="galleryInput">Gallery</label>
           </div>
         </div>
         <div class="row">
-          <input id="live-coding" type="checkbox">
-          <label for="live-coding">Live Coding
-            <select>
+          <input
+            id="live-coding"
+            type="checkbox"
+            .checked="${ClassroomService.get().classroom.liveCoding}"
+          />
+          <label for="live-coding" class="grow"
+            >Live Coding
+            <select id="seconds-delay">
               <option value="0.5">0.5</option>
               <option value="1">1</option>
               <option value="1.5">1.5</option>
@@ -34,48 +54,89 @@ export class SettingsView extends LitElement {
           </label>
         </div>
         <div>
-          <input id="line-numbers" type="checkbox">
+          <input
+            id="line-numbers"
+            type="checkbox"
+            .checked="${ClassroomService.get().classroom.lineNumbers}"
+          />
           <label for="line-numbers">Line Numbers</label>
         </div>
         <div>
-          <input id="room-locks" type="checkbox">
+          <input
+            id="room-locks"
+            type="checkbox"
+            .checked="${ClassroomService.get().classroom.roomLocks}"
+          />
           <label for="room-locks">Room Locks</label>
         </div>
         <div class="row">
           <label for="walk-delay">Walk Delay:</label>
-          <input id="walk-delay" type="number">
-          <div>
-            sec
-          </div>
+          <input
+            id="walk-delay"
+            type="number"
+            value="${ClassroomService.get().classroom.walkDelay}"
+          />
+          <div>sec</div>
         </div>
-        <div>
-          Editor Settings
-        </div>
+        <div>Editor Settings</div>
         <div class="row">
           <label for="font-size">Font Size:</label>
-          <input id="font-size" type="number">
-          <div>
-            pt
-          </div>
+          <input
+            id="font-size"
+            type="number"
+            min="5"
+            max="60"
+            value="${UserService.get().localUser.editorFontSize}"
+            @change="${() => {
+              this._onChangeEditorFontSize();
+            }}"
+          />
+          <div>pt</div>
         </div>
       </div>
     `;
   };
 
-  static styles = [css`
-    .settings-panel {
-      min-height: 50px;
-      max-height: 500px;
-      width: 100%;
-    }
-    
-    .settings-panel div {
-      font-size: 8pt;
-      padding: 2px;
-    }
-    
-  `, basicFlexStyles()];
+  _onChangeEditorFontSize() {
+    let fontSizeValue = this.renderRoot.getElementById("font-size").value;
+    UserService.get().localUser.editorFontSize = fontSizeValue;
+    this.requestUpdate();
+  }
 
+  _setSelectedMode = () => {
+    if (ClassroomService.get().classroom.mode === ClassroomMode.EDIT) {
+      this.renderRoot.getElementById("editInput").checked = true;
+      this.renderRoot.getElementById("galleryInput").checked = false;
+    }
+    if (ClassroomService.get().classroom.mode === ClassroomMode.GALLERY) {
+      this.renderRoot.getElementById("editInput").checked = false;
+      this.renderRoot.getElementById("galleryInput").checked = true;
+    }
+  };
+
+  _getSelectedMode = () => {
+    return this.renderRoot.querySelector('input[name="mode"]:checked').value;
+  };
+
+  _setModeInModel = () => {
+    ClassroomService.get().classroom.mode = this._getSelectedMode();
+  };
+
+  static styles = [
+    css`
+      .settings-panel {
+        min-height: 50px;
+        max-height: 500px;
+        width: 100%;
+      }
+
+      .settings-panel div {
+        font-size: 8pt;
+        padding: 2px;
+      }
+    `,
+    basicFlexStyles(),
+  ];
 }
 
 safeRegister("cc-settings", SettingsView);

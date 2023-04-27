@@ -39,6 +39,10 @@ export class EditorView extends LitElement {
     this.shortcutExtension = new ShortcutExtension();
     this.shortcutExtension.register();
     this.shortcutExtension.addShortcuts(this._shortCuts());
+    let localUser = UserService.get().localUser;
+    localUser.addListener(() => {
+      this.editor.setOptions({ fontSize: localUser.getEditorFontSize() });
+    });
     super.connectedCallback();
   }
 
@@ -77,7 +81,7 @@ export class EditorView extends LitElement {
       showGutter: true,
       tabSize: 4,
       useSoftTabs: false,
-      fontSize: "13pt",
+      fontSize: UserService.get().localUser.getEditorFontSize(),
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
 
@@ -202,16 +206,15 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html`
-          <button
-            class="run-button"
-            style="${styleMap(buttonStyle)}"
-            @click="${() => this.runCode(true)}"
-          >
-            <lit-icon icon="add" iconset="iconset"></lit-icon>
-            <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
-          </button>
-          <cc-console message="${this.message}"></cc-console>`
+        ? html` <button
+              class="run-button"
+              style="${styleMap(buttonStyle)}"
+              @click="${() => this.runCode(true)}"
+            >
+              <lit-icon icon="add" iconset="iconset"></lit-icon>
+              <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
+            </button>
+            <cc-console message="${this.message}"></cc-console>`
         : ""}
     `;
   }
@@ -224,7 +227,7 @@ export class EditorView extends LitElement {
       bottom: 0;
       width: 100%;
     }
-    
+
     svg {
       width: 10px;
       height: 10px;

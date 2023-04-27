@@ -133,10 +133,16 @@ export class Setup extends LitElement {
 
   onSubmit = () => {
     console.log("submitted");
-    let newClassroomId = ClassroomService.get().createNewRoom(() => {
-      console.log("created new room");
-      Router.go(`/classroom/${newClassroomId}`);
-    }, this.initialRoomNumbers);
+    let newClassroomId = ClassroomService.get().createNewRoom(
+      () => {
+        console.log("created new room");
+        Router.go(`/classroom/${newClassroomId}`);
+      },
+      this.initialRoomNumbers,
+      this.liveCodingOn,
+      this.secondsDelay,
+      this.lineNumbersVisible
+    );
   };
 
   static styles = css`
