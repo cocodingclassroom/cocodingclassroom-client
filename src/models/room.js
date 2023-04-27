@@ -7,6 +7,7 @@ export class Room extends YSyncModel {
   roomName;
   roomType;
   codeContent;
+  messages;
   l_changedPositions;
   l_editorForRoom;
   l_iframeForRoom;
@@ -51,6 +52,7 @@ export class Room extends YSyncModel {
   constructor(id) {
     super(`room_${id}`);
     this.id = id;
+    this.messages = [];
     this.setup();
     this.roomName = this.roomName ?? this.id + "_Room";
     if (this.codeContent === null || this.codeContent === undefined) {

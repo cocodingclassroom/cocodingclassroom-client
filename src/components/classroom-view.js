@@ -11,7 +11,7 @@ import { clearSelection } from "../util/clear-selection";
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
   static properties = {
-    localUser: { type: User, state: true, attribute: false },
+    localUser: { type: User, state: true, attribute: false }
   };
 
   constructor() {
@@ -58,10 +58,15 @@ export class ClassRoomView extends LitElement {
     let pixelWidthPerPercent = width / 100;
     let leftWidth = (this.localUser?.leftSize ?? 50) * pixelWidthPerPercent;
     let rightWidth = width - leftWidth;
+    leftWidth = width - rightWidth;
 
-    const leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
-    const rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
-    const hiddenStyle = { display: "none" };
+    let leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
+    let rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
+    let hiddenStyle = { display: "none" };
+
+    if (this.localUser?.leftSize < 1) {
+      leftStyle = hiddenStyle;
+    }
 
     let leftRooms = RoomService.get().rooms.filter(
       (room) => room.roomType === RoomType.TEACHER
@@ -107,7 +112,7 @@ export class ClassRoomView extends LitElement {
       )}
 
       <div
-        style="${styleMap({ left: `${leftWidth}px` })}"
+        style="${styleMap({ right: `${rightWidth}px` })}"
         class="middle-bar"
         .onmousedown="${(e) => this._dragMiddleBarStart(e)}"
       ></div>
@@ -128,12 +133,13 @@ export class ClassRoomView extends LitElement {
   };
 
   _dragMiddleBarEnd = () => {
-    document.onmousemove = () => {};
+    document.onmousemove = () => {
+    };
   };
 
   _clampPercentage = (percentage) => {
     if (percentage < ClassRoomView.MIN_WIDTH) {
-      percentage = 0;
+      percentage = 0.5;
     }
     return percentage;
   };
@@ -145,7 +151,6 @@ export class ClassRoomView extends LitElement {
       height: 100vh;
       top: 0;
       width: 6px;
-      margin-left: -2px;
       background-color: grey;
       cursor: e-resize;
     }

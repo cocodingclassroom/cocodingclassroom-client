@@ -41,9 +41,6 @@ export class UserListView extends LitElement {
       .forEach((user) => user.removeListener(this.listener));
     UserService.get().localUser.removeListener(this.listener);
     ClassroomService.get().classroom.removeListener(this.classroomListener);
-    RoomService.get().rooms.forEach((room) =>
-      room.removeListener(this.listener)
-    );
   }
 
   firstUpdated(_changedProperties) {

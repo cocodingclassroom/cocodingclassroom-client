@@ -17,8 +17,8 @@ export class HoverableIcon extends LitElement {
   static styles = [
     css`
       svg {
-        height: 20px;
-        width: 20px;
+        height: 18px;
+        width: 18px;
       }
 
       .svg:hover {

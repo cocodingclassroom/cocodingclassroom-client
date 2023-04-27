@@ -77,4 +77,8 @@ export class UserService {
   getAllUsers = () => {
     return [this.localUser, ...this.otherUsers];
   };
+
+  getUserByID = (id) => {
+    return this.getAllUsers().find(user => user.id === id);
+  }
 }

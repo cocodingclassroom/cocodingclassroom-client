@@ -9,16 +9,18 @@ export const getRandomID = () => {
 export const getSplitScreenWidthAndAlignStyle = (width, leftAlign) => {
   const styles = {};
   styles.width = `${width}px`;
-  styles.height = "100%";
   styles.position = "absolute";
   styles.top = 0;
+  styles.bottom = "1px";
 
   // styles.set("width", );
   if (leftAlign === 0) {
     styles.left = 0;
+    if (width){}
   } else {
     styles.right = 0;
   }
+
   return styles;
 };
 
@@ -33,4 +35,9 @@ export const isColorLight = (color) => {
 
 export const safeRegister = (name, element) => {
   customElements.get(name) || customElements.define(name, element);
+};
+
+export const linkifyText = (text) => {
+  let urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  return text.replace(urlRegex, url => "<a href=\"" + url + "\" target=\"_blank\">" + url + "</a>");
 };
