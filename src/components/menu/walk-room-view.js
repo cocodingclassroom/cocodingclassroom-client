@@ -5,12 +5,24 @@ import { pulseStyle } from "../../util/shared-css";
 import { UserService } from "../../services/user-service";
 import { RoomService } from "../../services/room-service";
 import { RoomType } from "../../models/room";
+import { ClassroomService } from "../../services/classroom-service";
 
 export class WalkRoomView extends LitElement {
   static properties = {
     roomId: { type: String },
     isWalking: { type: Boolean, state: true },
   };
+
+  firstUpdated(_changedProperties) {
+    super.firstUpdated(_changedProperties);
+
+    ClassroomService.get().classroom.addListener(() => {
+      if (this.isWalking) {
+        this._stopWalking();
+        this.walkRooms();
+      }
+    });
+  }
 
   render = () => {
     return html` <div
@@ -37,10 +49,14 @@ export class WalkRoomView extends LitElement {
           );
         }
         UserService.get().localUser.selectedRoomRight = nextRoom.id;
-      }, 2000); //TODO: change timout to a defined value in the settings
+      }, 1000 * ClassroomService.get().classroom.walkDelay);
     } else {
-      clearInterval(this.interval);
+      this._stopWalking();
     }
+  };
+
+  _stopWalking = () => {
+    clearInterval(this.interval);
   };
 
   static styles = [

@@ -14,6 +14,7 @@ import { UserService } from "../services/user-service";
 import { UserRole } from "../models/user";
 import { RoomType } from "../models/room";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
+import { ClassroomService } from "../services/classroom-service";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -43,6 +44,11 @@ export class EditorView extends LitElement {
     localUser.addListener(() => {
       this.editor.setOptions({ fontSize: localUser.getEditorFontSize() });
     });
+    let classroom = ClassroomService.get().classroom;
+    classroom.addListener(() => {
+      this.editor.setOptions({ showLineNumbers: classroom.lineNumbers });
+      this.editor.setOptions({ showGutter: classroom.lineNumbers });
+    });
     super.connectedCallback();
   }
 
@@ -71,14 +77,15 @@ export class EditorView extends LitElement {
     this.editor.setTheme("ace/theme/cobalt");
     this.editor.getSession().setMode("ace/mode/javascript");
     this.editor.session.setMode("ace/mode/javascript");
+    let classroom = ClassroomService.get().classroom;
     this.editor.setOptions({
       showPrintMargin: false,
       animatedScroll: true,
       displayIndentGuides: false,
       useWorker: false,
       scrollPastEnd: 1,
-      showLineNumbers: true,
-      showGutter: true,
+      showLineNumbers: classroom.lineNumbers,
+      showGutter: classroom.lineNumbers,
       tabSize: 4,
       useSoftTabs: false,
       fontSize: UserService.get().localUser.getEditorFontSize(),

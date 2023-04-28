@@ -1,6 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { safeRegister } from "../../util/util";
-import { basicFlexStyles } from "../../util/shared-css";
+import { basicFlexStyles, black, white } from "../../util/shared-css";
 import { ClassroomMode } from "../../models/classroom-model";
 import { ClassroomService } from "../../services/classroom-service";
 import { UserService } from "../../services/user-service";
@@ -15,11 +15,12 @@ export class SettingsView extends LitElement {
     return html`
       <div class="settings-panel col">
         <div>Classroom Settings</div>
+        <div class="line"></div>
         <div class="row">
           <div class="grow">Mode</div>
           <div>
             <input
-              @change="${() => this._setModeInModel()}"
+              @change="${() => this._onChangeMode()}"
               name="mode"
               id="editInput"
               type="radio"
@@ -27,7 +28,7 @@ export class SettingsView extends LitElement {
             />
             <label for="editInput">Edit</label>
             <input
-              @change="${() => this._setModeInModel()}"
+              @change="${() => this._onChangeMode()}"
               name="mode"
               id="galleryInput"
               type="radio"
@@ -44,11 +45,11 @@ export class SettingsView extends LitElement {
           />
           <label for="live-coding" class="grow"
             >Live Coding
-            <select id="seconds-delay">
-              <option value="0.5">0.5</option>
-              <option value="1">1</option>
-              <option value="1.5">1.5</option>
-              <option value="2">2</option>
+            <select id="seconds-delay" class="input">
+              <option class="option" value="0.5">0.5</option>
+              <option class="option" value="1">1</option>
+              <option class="option" value="1.5">1.5</option>
+              <option class="option" value="2">2</option>
             </select>
             /s Delay
           </label>
@@ -58,6 +59,9 @@ export class SettingsView extends LitElement {
             id="line-numbers"
             type="checkbox"
             .checked="${ClassroomService.get().classroom.lineNumbers}"
+            @change="${() => {
+              this._onChangeLineNumbers();
+            }}"
           />
           <label for="line-numbers">Line Numbers</label>
         </div>
@@ -66,22 +70,31 @@ export class SettingsView extends LitElement {
             id="room-locks"
             type="checkbox"
             .checked="${ClassroomService.get().classroom.roomLocks}"
+            @change="${() => {
+              this._onChangeRoomLocks();
+            }}"
           />
           <label for="room-locks">Room Locks</label>
         </div>
         <div class="row">
           <label for="walk-delay">Walk Delay:</label>
           <input
+            class="input"
             id="walk-delay"
             type="number"
             value="${ClassroomService.get().classroom.walkDelay}"
+            @change="${() => {
+              this._onChangeWalkDelay();
+            }}"
           />
           <div>sec</div>
         </div>
         <div>Editor Settings</div>
+        <div class="line"></div>
         <div class="row">
           <label for="font-size">Font Size:</label>
           <input
+            class="input"
             id="font-size"
             type="number"
             min="5"
@@ -97,9 +110,27 @@ export class SettingsView extends LitElement {
     `;
   };
 
+  _onChangeWalkDelay() {
+    ClassroomService.get().classroom.walkDelay =
+      this.renderRoot.getElementById("walk-delay").value;
+    this.requestUpdate();
+  }
+
+  _onChangeLineNumbers() {
+    ClassroomService.get().classroom.lineNumbers =
+      this.renderRoot.getElementById("line-numbers").checked;
+    this.requestUpdate();
+  }
+
+  _onChangeRoomLocks() {
+    ClassroomService.get().classroom.roomLocks =
+      this.renderRoot.getElementById("room-locks").checked;
+    this.requestUpdate();
+  }
+
   _onChangeEditorFontSize() {
-    let fontSizeValue = this.renderRoot.getElementById("font-size").value;
-    UserService.get().localUser.editorFontSize = fontSizeValue;
+    UserService.get().localUser.editorFontSize =
+      this.renderRoot.getElementById("font-size").value;
     this.requestUpdate();
   }
 
@@ -118,7 +149,7 @@ export class SettingsView extends LitElement {
     return this.renderRoot.querySelector('input[name="mode"]:checked').value;
   };
 
-  _setModeInModel = () => {
+  _onChangeMode = () => {
     ClassroomService.get().classroom.mode = this._getSelectedMode();
   };
 
@@ -127,12 +158,31 @@ export class SettingsView extends LitElement {
       .settings-panel {
         min-height: 50px;
         max-height: 500px;
-        width: 100%;
+        padding: 5px;
+        border: 1px solid ${white()};
       }
 
       .settings-panel div {
         font-size: 8pt;
         padding: 2px;
+      }
+
+      .line {
+        height: 5px;
+        width: 90%;
+        border-top: solid 1px ${white()};
+      }
+
+      .input {
+        border: none;
+        width: 20%;
+        border-bottom: solid 1px ${white()};
+        background-color: transparent;
+        color: ${white()};
+      }
+
+      .option {
+        color: ${black()};
       }
     `,
     basicFlexStyles(),
