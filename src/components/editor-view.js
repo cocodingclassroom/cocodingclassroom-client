@@ -94,12 +94,6 @@ export class EditorView extends LitElement {
     ) {
       this.editor.setReadOnly(true);
     }
-
-    // this.editor.commands.removeCommands([
-    //   this.editor.commands.commands["enterfullscreen"], // ctrl + e
-    //   // "transposeletters", // ctrl + t (totally removed)
-    //   // "enterfullscreen",
-    // ]);
     // setup binding
     let room = RoomService.get().rooms[this.roomId];
     let binding = new AceBinding(

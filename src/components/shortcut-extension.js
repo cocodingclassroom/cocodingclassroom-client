@@ -45,7 +45,7 @@ export class ShortcutExtension {
       return;
     }
 
-    this._pressedKeys.add(event.key);
+    this._pressedKeys.add(event.key.toLowerCase());
 
     for (let i = 0; i < this._shortcuts.length; i++) {
       let shortcut = this._shortcuts[i];
@@ -55,7 +55,7 @@ export class ShortcutExtension {
 
       if (this._isWindows) {
         let allKeys = shortcut.keyBindWin.every((key) =>
-          this._pressedKeys.has(key)
+          this._pressedKeys.has(key.toLowerCase())
         );
 
         if (allKeys) {
@@ -74,14 +74,14 @@ export class ShortcutExtension {
   };
 
   handleSpecialEvents = (event) => {
-    if (this._pressedKeys.has("Control")) {
+    if (this._pressedKeys.has("control")) {
       //make special case for copy + paste
       if (
         (this._pressedKeys.size === 2 &&
           (this._pressedKeys.has("c") ||
             this._pressedKeys.has("v") ||
             this._pressedKeys.has("r"))) ||
-        this._pressedKeys.has("AltGraph")
+        this._pressedKeys.has("altgraph")
       ) {
         return;
       }
