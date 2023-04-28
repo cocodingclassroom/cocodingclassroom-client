@@ -15,6 +15,7 @@ export const menuRowStyles = () => css`
   }
 
   .cc-controls-row div {
+    font-size: 12px;
     width: 100%;
     padding: 2px;
     background: #444;

@@ -4,6 +4,7 @@ import { basicFlexStyles, black, white } from "../../util/shared-css";
 import { ClassroomMode } from "../../models/classroom-model";
 import { ClassroomService } from "../../services/classroom-service";
 import { UserService } from "../../services/user-service";
+import { RoomService } from "../../services/room-service";
 
 export class SettingsView extends LitElement {
   firstUpdated(_changedProperties) {
@@ -14,90 +15,93 @@ export class SettingsView extends LitElement {
   render = () => {
     return html`
       <div class="settings-panel col">
-        <div>Classroom Settings</div>
-        <div class="line"></div>
-        <div class="row">
-          <div class="grow">Mode</div>
-          <div>
-            <input
-              @change="${() => this._onChangeMode()}"
-              name="mode"
-              id="editInput"
-              type="radio"
-              value="Edit"
-            />
-            <label for="editInput">Edit</label>
-            <input
-              @change="${() => this._onChangeMode()}"
-              name="mode"
-              id="galleryInput"
-              type="radio"
-              value="Gallery"
-            />
-            <label for="galleryInput">Gallery</label>
-          </div>
-        </div>
-        <div class="row">
-          <input
-            id="live-coding"
-            type="checkbox"
-            .checked="${ClassroomService.get().classroom.liveCoding}"
-            @change="${() => {
-              this._onChangeLiveCoding();
-            }}"
-          />
-          <label for="live-coding" class="grow"
-            >Live Coding
-            <select
-              id="seconds-delay"
-              class="input"
-              @change="${() => {
-                this._onChangeLiveCodingDelay();
-              }}"
-            >
-              <option class="option" value="0.5">0.5</option>
-              <option class="option" value="1">1</option>
-              <option class="option" value="1.5">1.5</option>
-              <option class="option" value="2">2</option>
-            </select>
-            /s Delay
-          </label>
-        </div>
-        <div>
-          <input
-            id="line-numbers"
-            type="checkbox"
-            .checked="${ClassroomService.get().classroom.lineNumbers}"
-            @change="${() => {
-              this._onChangeLineNumbers();
-            }}"
-          />
-          <label for="line-numbers">Line Numbers</label>
-        </div>
-        <div>
-          <input
-            id="room-locks"
-            type="checkbox"
-            .checked="${ClassroomService.get().classroom.roomLocks}"
-            @change="${() => {
-              this._onChangeRoomLocks();
-            }}"
-          />
-          <label for="room-locks">Room Locks</label>
-        </div>
-        <div class="row">
-          <label for="walk-delay">Walk Delay:</label>
-          <input
-            class="input"
-            id="walk-delay"
-            type="number"
-            value="${ClassroomService.get().classroom.walkDelay}"
-            @change="${() => {
-              this._onChangeWalkDelay();
-            }}"
-          />
-          <div>sec</div>
-        </div>
+        ${UserService.get().localUser.isTeacher()
+          ? html` <div>Classroom Settings</div>
+              <div class="line"></div>
+              <div class="row">
+                <div class="grow">Mode</div>
+                <div>
+                  <input
+                    @change="${() => this._onChangeMode()}"
+                    name="mode"
+                    id="editInput"
+                    type="radio"
+                    value="Edit"
+                  />
+                  <label for="editInput">Edit</label>
+                  <input
+                    @change="${() => this._onChangeMode()}"
+                    name="mode"
+                    id="galleryInput"
+                    type="radio"
+                    value="Gallery"
+                  />
+                  <label for="galleryInput">Gallery</label>
+                </div>
+              </div>
+              <div class="row">
+                <input
+                  id="live-coding"
+                  type="checkbox"
+                  .checked="${ClassroomService.get().classroom.liveCoding}"
+                  @change="${() => {
+                    this._onChangeLiveCoding();
+                  }}"
+                />
+                <label for="live-coding" class="grow"
+                  >Live Coding
+                  <select
+                    id="seconds-delay"
+                    class="input"
+                    @change="${() => {
+                      this._onChangeLiveCodingDelay();
+                    }}"
+                  >
+                    <option class="option" value="0.5">0.5</option>
+                    <option class="option" value="1">1</option>
+                    <option class="option" value="1.5">1.5</option>
+                    <option class="option" value="2">2</option>
+                  </select>
+                  /s Delay
+                </label>
+              </div>
+              <div>
+                <input
+                  id="line-numbers"
+                  type="checkbox"
+                  .checked="${ClassroomService.get().classroom.lineNumbers}"
+                  @change="${() => {
+                    this._onChangeLineNumbers();
+                  }}"
+                />
+                <label for="line-numbers">Line Numbers</label>
+              </div>
+              <div>
+                <input
+                  id="room-locks"
+                  type="checkbox"
+                  .checked="${ClassroomService.get().classroom.roomLocks}"
+                  @change="${() => {
+                    this._onChangeRoomLocks();
+                  }}"
+                />
+                <label for="room-locks">Room Locks</label>
+              </div>
+              <div class="row">
+                <label for="walk-delay">Walk Delay:</label>
+                <input
+                  class="input"
+                  id="walk-delay"
+                  type="number"
+                  value="${ClassroomService.get().classroom.walkDelay}"
+                  @change="${() => {
+                    this._onChangeWalkDelay();
+                  }}"
+                />
+                <div>sec</div>
+              </div>`
+          : ""}
+
         <div>Editor Settings</div>
         <div class="line"></div>
         <div class="row">
@@ -147,6 +151,11 @@ export class SettingsView extends LitElement {
   _onChangeRoomLocks() {
     ClassroomService.get().classroom.roomLocks =
       this.renderRoot.getElementById("room-locks").checked;
+    if (!ClassroomService.get().classroom.roomLocks) {
+      RoomService.get().rooms.forEach((room) =>
+        room.clearAllAuthorizationOnRoom()
+      );
+    }
     this.requestUpdate();
   }
 

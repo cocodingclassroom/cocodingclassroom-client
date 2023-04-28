@@ -9,10 +9,11 @@ import {
   basicFlexStyles,
   black,
   cursorTipStyle,
-  menuRowStyles, pulseStyle,
+  menuRowStyles,
+  pulseStyle,
   secondary,
   toolTipStyle,
-  white
+  white,
 } from "../../util/shared-css";
 import { styleMap } from "lit/directives/style-map.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
@@ -22,7 +23,7 @@ import { showModal } from "../../util/modal";
 export class MenuView extends LitElement {
   static properties = {
     roomId: { type: String },
-    isTeacherRoom: { type: Boolean, state: true }
+    isTeacherRoom: { type: Boolean, state: true },
   };
 
   room;
@@ -35,10 +36,12 @@ export class MenuView extends LitElement {
       initDataTips(this.renderRoot);
     });
     super.connectedCallback();
-    RoomService.get().getRoom(this.roomId).addListener(() => {
-      this.requestUpdate();
-      this._scrollToBottom();
-    });
+    RoomService.get()
+      .getRoom(this.roomId)
+      .addListener(() => {
+        this.requestUpdate();
+        this._scrollToBottom();
+      });
   }
 
   firstUpdated = (change) => {
@@ -51,51 +54,65 @@ export class MenuView extends LitElement {
     return html`
       <div class="cc-meta">
         ${this.isTeacherRoom
-          ? html`
-            <cc-teacher-menu-view
+          ? html` <cc-teacher-menu-view
               roomId="${this.room.id}"
             ></cc-teacher-menu-view>`
-          : html`
-            <cc-student-menu-view
+          : html` <cc-student-menu-view
               roomId="${this.room.id}"
-            ></cc-student-menu-view>`
-        }
-        <cc-user-list></cc-user-list>
+            ></cc-student-menu-view>`}
+        <cc-user-list roomId="${this.room.id}"></cc-user-list>
         ${this._renderChat()}
       </div>
     `;
   };
 
   _renderChat = () => {
-    return html`
-      <div class="border-left-right background-dark">
-        <div class="row chat-header">
-          <div class="grow grey-text">CHAT</div>
-          <div data-tip="Clear Chat" class="pointer pulse" @click="${() => this._clearChat()}">
-            <cc-icon class="grey-text" svg="${iconSvg.trash}"></cc-icon>
-          </div>
+    return html` <div class="border-left-right background-dark">
+      <div class="row chat-header">
+        <div class="grow grey-text">CHAT</div>
+        <div
+          data-tip="Clear Chat"
+          class="pointer pulse"
+          @click="${() => this._clearChat()}"
+        >
+          <cc-icon class="grey-text" svg="${iconSvg.trash}"></cc-icon>
         </div>
-        <div id="message_container" class="messages">
-          ${RoomService.get().getRoom(this.roomId).messages.toArray().map(message => this._renderMessage(message))}
-        </div>
-        <div class="cc-controls-row">
-          <input id="chatInput" placeholder="Send message ..." class="chat-input grow" type="text"
-                 @keydown="${(event) => {
-                   this._sendMessageIfEnter(event);
-                 }}" />
-        </div>
-      </div>`;
+      </div>
+      <div id="message_container" class="messages">
+        ${RoomService.get()
+          .getRoom(this.roomId)
+          .messages.toArray()
+          .map((message) => this._renderMessage(message))}
+      </div>
+      <div class="cc-controls-row">
+        <input
+          id="chatInput"
+          placeholder="Send message ..."
+          class="chat-input grow"
+          type="text"
+          @keydown="${(event) => {
+            this._sendMessageIfEnter(event);
+          }}"
+        />
+      </div>
+    </div>`;
   };
 
   _renderMessage = (message) => {
     let chatMessage = ChatMessage.fromJSON(message);
     var user = UserService.get().getUserByID(chatMessage.userid);
-    let messageNameStyle = { "background-color": user.color, "color": isColorLight(user.color) ? black() : white() };
-    return html`
-      <div class="message row">
-        <div class="message-name" style="${styleMap(messageNameStyle)}"> ${user.name.substring(0, 10)}</div>
-        <div class="message-text grow"> ${unsafeHTML(linkifyText(chatMessage.text))}</div>
-      </div>`;
+    let messageNameStyle = {
+      "background-color": user.color,
+      color: isColorLight(user.color) ? black() : white(),
+    };
+    return html` <div class="message row">
+      <div class="message-name" style="${styleMap(messageNameStyle)}">
+        ${user.name.substring(0, 10)}
+      </div>
+      <div class="message-text grow">
+        ${unsafeHTML(linkifyText(chatMessage.text))}
+      </div>
+    </div>`;
   };
 
   _sendMessageIfEnter = (event) => {
@@ -108,13 +125,19 @@ export class MenuView extends LitElement {
   _sendNewMessageToChat = () => {
     let messageContent = this.renderRoot.getElementById("chatInput");
     if (messageContent.value.length === 0) return;
-    let newMessage = new ChatMessage(UserService.get().localUser.id, messageContent.value);
-    RoomService.get().getRoom(this.roomId).messages.push([JSON.stringify(newMessage)]);
+    let newMessage = new ChatMessage(
+      UserService.get().localUser.id,
+      messageContent.value
+    );
+    RoomService.get()
+      .getRoom(this.roomId)
+      .messages.push([JSON.stringify(newMessage)]);
     messageContent.value = "";
   };
 
   _clearChat = () => {
-    showModal(`
+    showModal(
+      `
         <div>
          Clear all Chat Messages in this room?
         </div>
@@ -123,8 +146,8 @@ export class MenuView extends LitElement {
         let messages = RoomService.get().getRoom(this.roomId).messages;
         messages.delete(0, messages.length);
       },
-      () => {
-      });
+      () => {}
+    );
   };
 
   _scrollToBottom() {
@@ -134,7 +157,8 @@ export class MenuView extends LitElement {
     }, 20);
   }
 
-  static styles = [css`
+  static styles = [
+    css`
     .cc-meta {
       position: absolute;
       z-index: 4;
@@ -213,14 +237,13 @@ export class MenuView extends LitElement {
     }
 
   ,
-  `, menuRowStyles(),
+  `,
+    menuRowStyles(),
     basicFlexStyles(),
     cursorTipStyle(),
     toolTipStyle(),
-    pulseStyle()
+    pulseStyle(),
   ];
-
-
 }
 
 safeRegister("cc-menu", MenuView);

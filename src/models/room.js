@@ -1,6 +1,7 @@
 import { YSyncModel } from "/src/models/y-sync-model.js";
 import { Text as YText } from "yjs";
 import { BindingService } from "../services/binding-service";
+import { UserService } from "../services/user-service";
 
 export class Room extends YSyncModel {
   id;
@@ -8,6 +9,9 @@ export class Room extends YSyncModel {
   roomType;
   codeContent;
   messages;
+  ownerId;
+  writersIds;
+  requestIds;
   l_changedPositions;
   l_editorForRoom;
   l_iframeForRoom;
@@ -53,6 +57,8 @@ export class Room extends YSyncModel {
     super(`room_${id}`);
     this.id = id;
     this.messages = [];
+    this.writersIds = [];
+    this.requestIds = [];
     this.setup();
     this.roomName = this.roomName ?? this.id + "_Room";
     if (this.codeContent === null || this.codeContent === undefined) {
@@ -61,6 +67,71 @@ export class Room extends YSyncModel {
     }
     this.l_changedPositions = [];
   }
+
+  clearAllAuthorizationOnRoom = () => {
+    this.requestIds.delete(0, this.requestIds.length);
+    this.writersIds.delete(0, this.writersIds.length);
+    this.ownerId = null;
+  };
+
+  claimRoomToLocalUser = () => {
+    this.ownerId = UserService.get().localUser.id;
+  };
+
+  removeClaim = () => {
+    this.ownerId = null;
+  };
+
+  isOwnedByLocalUser = () => {
+    return this.ownerId === UserService.get().localUser.id;
+  };
+
+  isOwnedBy = (userId) => {
+    return this.ownerId === userId;
+  };
+
+  getOwnerAsUser = () => {
+    return UserService.get()
+      .getAllUsers()
+      .find((user) => user.id === this.ownerId);
+  };
+
+  requestAccess = () => {
+    let id = UserService.get().localUser.id;
+    this.isRequesting() || this.requestIds.push([id]);
+  };
+
+  isWriter = (userId) => {
+    return this.writersIds.toArray().includes(userId);
+  };
+
+  stopRequestAccessOfLocalUser = () => {
+    this.stopRequestAccess(UserService.get().localUser.id);
+  };
+
+  stopRequestAccess = (userId) => {
+    const index = this.requestIds.toArray().indexOf(userId);
+    if (index !== -1) {
+      this.requestIds.delete(index);
+    }
+  };
+
+  isRequesting = () => {
+    let id = UserService.get().localUser.id;
+    return this.requestIds.toArray().includes(id);
+  };
+
+  giveAccess = (userId) => {
+    this.writersIds.push([userId]);
+    this.stopRequestAccess(userId);
+  };
+
+  removeAccess = (userId) => {
+    const index = this.writersIds.toArray().indexOf(userId);
+    if (index !== -1) {
+      this.writersIds.delete(index);
+    }
+  };
 }
 
 export class RoomType {

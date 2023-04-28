@@ -15,8 +15,14 @@ import { initDataTips } from "../../util/tooltips";
 import { UserColorRenameModal } from "../user-color-rename-modal";
 import { ClassroomService } from "../../services/classroom-service";
 import { RoomService } from "../../services/room-service";
+import { iconSvg } from "../icons/icons";
+import { RoomType } from "../../models/room";
 
 export class UserListView extends LitElement {
+  static properties = {
+    roomId: { type: String },
+  };
+
   connectedCallback() {
     super.connectedCallback();
     this.addListeners();
@@ -28,6 +34,7 @@ export class UserListView extends LitElement {
       .forEach((user) => user.addListener(this.listener));
     UserService.get().localUser.addListener(this.listener);
     ClassroomService.get().classroom.addListener(this.classroomListener);
+    RoomService.get().getRoom(this.roomId).addListener(this.listener);
   }
 
   disconnectedCallback() {
@@ -41,6 +48,7 @@ export class UserListView extends LitElement {
       .forEach((user) => user.removeListener(this.listener));
     UserService.get().localUser.removeListener(this.listener);
     ClassroomService.get().classroom.removeListener(this.classroomListener);
+    RoomService.get().getRoom(this.roomId).removeListener(this.listener);
   }
 
   firstUpdated(_changedProperties) {
@@ -73,6 +81,7 @@ export class UserListView extends LitElement {
             class="row border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
+            ${this._renderRoomAccess(user)}
             ${this._renderNameAndRoom(textColorStyle, user)}
             ${this._renderNeedsHelp(user)}
             <div class="user-row"></div>
@@ -176,6 +185,51 @@ export class UserListView extends LitElement {
     cursorTipStyle(),
     toolTipStyle(),
   ];
+
+  _renderRoomAccess(user) {
+    if (RoomService.get().getRoom(this.roomId).roomType === RoomType.TEACHER)
+      return "";
+    if (!ClassroomService.get().classroom.roomLocks) return html``;
+    return html` <div>
+      ${this._renderAccessIdentifier(user)}
+      ${RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)
+        ? html`
+            <cc-icon
+              class="pointer"
+              data-tip="Claimed this room"
+              svg="${iconSvg.lock}"
+            ></cc-icon>
+          `
+        : ""}
+    </div>`;
+  }
+
+  _renderAccessIdentifier = (user) => {
+    if (
+      RoomService.get().getRoom(this.roomId).isWriter(user.id) &&
+      (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser() ||
+        user.id === UserService.get().localUser.id)
+    ) {
+      return html`
+        <cc-icon
+          class="pointer"
+          data-tip="Revoke Access"
+          svg="${iconSvg.rename}"
+          @click="${() => {
+            RoomService.get().getRoom(this.roomId).removeAccess(user.id);
+          }}"
+        ></cc-icon>
+      `;
+    } else if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
+      return html`
+        <cc-icon
+          class="pointer"
+          data-tip="Has Access"
+          svg="${iconSvg.rename}"
+        ></cc-icon>
+      `;
+    }
+  };
 }
 
 safeRegister("cc-user-list", UserListView);

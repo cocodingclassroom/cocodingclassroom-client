@@ -16,6 +16,7 @@ import { RoomType } from "../models/room";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { ClassroomService } from "../services/classroom-service";
 import { NotificationType, NotifyService } from "../services/notify-service";
+import { YArrayEvent } from "yjs";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -49,6 +50,11 @@ export class EditorView extends LitElement {
     classroom.addListener(() => {
       this.editor.setOptions({ showLineNumbers: classroom.lineNumbers });
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
+    });
+    this.room.addListener((changes) => {
+      changes.forEach((change) => {
+        this.#updateOnRoomAccess();
+      });
     });
     NotifyService.get().addListener(this.#interpretNotification);
     super.connectedCallback();
@@ -94,6 +100,9 @@ export class EditorView extends LitElement {
     ) {
       this.editor.setReadOnly(true);
     }
+
+    this.#updateOnRoomAccess();
+
     // setup binding
     let room = RoomService.get().rooms[this.roomId];
     let binding = new AceBinding(
@@ -125,6 +134,17 @@ export class EditorView extends LitElement {
         }
       });
     });
+  };
+
+  #updateOnRoomAccess = () => {
+    if (ClassroomService.get().classroom.roomLocks) {
+      let localId = UserService.get().localUser.id;
+      if (this.room.isWriter(localId) || this.room.isOwnedByLocalUser()) {
+        this.editor.setReadOnly(false);
+      } else {
+        this.editor.setReadOnly(true);
+      }
+    }
   };
 
   #stopLiveCoding = () => {

@@ -36,7 +36,7 @@ export class ClassroomModel extends YSyncModel {
     this.liveCoding = liveCoding ?? this.liveCoding;
     this.liveCodingDelay = liveCodingDelay ?? this.liveCodingDelay;
     this.lineNumbers = lineNumbers ?? this.lineNumbers;
-    this.roomLocks = roomLocks ?? this.roomLocks;
+    this.roomLocks = this.roomLocks ? this.roomLocks : roomLocks;
     this.walkDelay = walkDelay ?? this.walkDelay;
   }
 
