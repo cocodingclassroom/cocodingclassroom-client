@@ -10,8 +10,8 @@ export class YSyncModel {
     this.mapName = mapName;
     this.listeners = [];
     this.map = SyncService.get().getSharedMap(mapName);
-    this.map.observeDeep(() => {
-      this.notifyListeners();
+    this.map.observeDeep((changes) => {
+      this.notifyListeners(changes);
     });
   }
 
@@ -69,7 +69,6 @@ export class YSyncModel {
 
   set(key, value) {
     this.map.set(key, value);
-    this.notifyListeners();
   }
 
   get(key) {
@@ -78,19 +77,13 @@ export class YSyncModel {
 
   delete(key) {
     this.map.delete(key);
-    this.notifyListeners();
   }
 
-  notifyListeners = () => {
+  notifyListeners = (changes) => {
     this.listeners.forEach((listener) => {
-      listener();
+      listener(changes);
     });
   };
-
-  clear() {
-    this.map.clear();
-    this.notifyListeners();
-  }
 
   populateWithDefaults(defaults) {
     Object.entries(defaults).forEach(([key, value]) => {

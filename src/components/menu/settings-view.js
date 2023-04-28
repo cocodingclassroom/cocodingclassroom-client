@@ -42,10 +42,19 @@ export class SettingsView extends LitElement {
             id="live-coding"
             type="checkbox"
             .checked="${ClassroomService.get().classroom.liveCoding}"
+            @change="${() => {
+              this._onChangeLiveCoding();
+            }}"
           />
           <label for="live-coding" class="grow"
             >Live Coding
-            <select id="seconds-delay" class="input">
+            <select
+              id="seconds-delay"
+              class="input"
+              @change="${() => {
+                this._onChangeLiveCodingDelay();
+              }}"
+            >
               <option class="option" value="0.5">0.5</option>
               <option class="option" value="1">1</option>
               <option class="option" value="1.5">1.5</option>
@@ -108,6 +117,19 @@ export class SettingsView extends LitElement {
         </div>
       </div>
     `;
+  };
+
+  _onChangeLiveCodingDelay = () => {
+    ClassroomService.get().classroom.liveCodingDelay = parseInt(
+      this.renderRoot.getElementById("seconds-delay").value
+    );
+    this.requestUpdate();
+  };
+
+  _onChangeLiveCoding = () => {
+    ClassroomService.get().classroom.liveCoding =
+      this.renderRoot.getElementById("live-coding").checked;
+    this.requestUpdate();
   };
 
   _onChangeWalkDelay() {

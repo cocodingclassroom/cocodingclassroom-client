@@ -37,6 +37,7 @@ export const interpret = (
       errorCallback,
       compilationOkayCallback
     );
+    return;
   }
 
   fullRebuildOfIframe(

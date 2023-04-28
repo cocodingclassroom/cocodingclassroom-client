@@ -4,6 +4,11 @@ import { ClassroomModel } from "/src/models/classroom-model.js";
 import { RoomService } from "/src/services/room-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { live } from "lit-html/directives/live.js";
+import {
+  NotificationType,
+  NotifyService,
+  Notification,
+} from "./notify-service";
 
 export class ClassroomService {
   static _instance;
@@ -107,5 +112,9 @@ export class ClassroomService {
     );
     RoomService.get().init(this.classroom, numberOfRooms);
     UserService.get().init(this.classroom, numberOfRooms !== null);
+    // this.#startLiveCoding();
+    // this.classroom.addListener((changes) => {
+    //
+    // });
   }
 }

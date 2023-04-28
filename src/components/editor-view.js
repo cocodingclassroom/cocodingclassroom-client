@@ -15,6 +15,7 @@ import { UserRole } from "../models/user";
 import { RoomType } from "../models/room";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { ClassroomService } from "../services/classroom-service";
+import { NotificationType, NotifyService } from "../services/notify-service";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -49,25 +50,20 @@ export class EditorView extends LitElement {
       this.editor.setOptions({ showLineNumbers: classroom.lineNumbers });
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
     });
+    NotifyService.get().addListener(this.#interpretNotification);
     super.connectedCallback();
   }
 
   disconnectedCallback() {
     this.editor.getSession().off("change", this.onEditorChange);
     this.shortcutExtension.unregister();
+    NotifyService.get().removeListener(this.#interpretNotification);
     super.disconnectedCallback();
   }
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
     this.setupEditor();
-  }
-
-  updated(_changedProperties) {
-    // super.updated(_changedProperties);
-    // if (_changedProperties.has("roomId")) {
-    //   this.setupEditor();
-    // }
   }
 
   setupEditor = () => {
@@ -117,6 +113,37 @@ export class EditorView extends LitElement {
     });
     this.room.l_editorForRoom = this.editor;
     this.runCode(true);
+
+    this.editor.commands.on("afterExec", (data) => {
+      if (data.command.name === "insertstring") {
+        this.#stopLiveCoding();
+        this.#startLiveCoding();
+      }
+    });
+    ClassroomService.get().classroom.addListener((changes) => {
+      changes.forEach((change) => {
+        if (
+          change.keysChanged.has("liveCoding") ||
+          change.keysChanged.has("liveCodingDelay")
+        ) {
+          this.#stopLiveCoding();
+          this.#startLiveCoding();
+        }
+      });
+    });
+  };
+
+  #stopLiveCoding = () => {
+    clearTimeout(this.liveCodingInterval);
+  };
+
+  #startLiveCoding = () => {
+    let classroom = ClassroomService.get().classroom;
+    if (classroom.liveCoding) {
+      this.liveCodingInterval = setTimeout(() => {
+        this.runCode(false);
+      }, classroom.liveCodingDelay * 1000);
+    }
   };
 
   _shortCuts = () => {
@@ -197,6 +224,12 @@ export class EditorView extends LitElement {
 
   toggleEditor = () => {
     this.editorVisible = !this.editorVisible;
+  };
+
+  #interpretNotification = (notification) => {
+    if (notification.type === NotificationType.FULLREBUILDOFFRAME) {
+      this.runCode(true);
+    }
   };
 
   render() {
