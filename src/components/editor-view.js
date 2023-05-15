@@ -15,8 +15,7 @@ import { UserRole } from "../models/user";
 import { RoomType } from "../models/room";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { ClassroomService } from "../services/classroom-service";
-import { NotificationType, NotifyService } from "../services/notify-service";
-import { YArrayEvent } from "yjs";
+import { NotificationType, NotifyService, Notification } from "../services/notify-service";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -25,20 +24,18 @@ export class EditorView extends LitElement {
     leftAlign: { type: Number },
     editorIdentifier: { state: true, type: String },
     message: { type: String, state: true },
-    editorVisible: { type: Boolean, state: true },
+    editorVisible: { type: Boolean, state: true }
   };
 
   room;
   editor;
   activeError = false;
-  pressedKeys;
   shortcutExtension;
 
   connectedCallback() {
     this.editorIdentifier = `editor-${this.roomId}`;
     this.room = RoomService.get().getRoom(this.roomId);
     this.editorVisible = true;
-    this.pressedKeys = new Set();
     this.shortcutExtension = new ShortcutExtension();
     this.shortcutExtension.register();
     this.shortcutExtension.addShortcuts(this._shortCuts());
@@ -55,6 +52,12 @@ export class EditorView extends LitElement {
       changes.forEach((change) => {
         this.#updateOnRoomAccess();
       });
+    });
+    NotifyService.get().addListener((notification) => {
+      if (notification.type !== NotificationType.FULLREBUILDOFFRAME) return;
+      if (notification.message === this.room.id) {
+        this.runCode(true, false);
+      }
     });
     super.connectedCallback();
   }
@@ -88,7 +91,7 @@ export class EditorView extends LitElement {
       showGutter: classroom.lineNumbers,
       tabSize: 4,
       useSoftTabs: false,
-      fontSize: UserService.get().localUser.getEditorFontSize(),
+      fontSize: UserService.get().localUser.getEditorFontSize()
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
 
@@ -211,7 +214,7 @@ export class EditorView extends LitElement {
         () => {
           return this.isEditorFocused();
         }
-      ),
+      )
     ];
   };
 
@@ -223,7 +226,7 @@ export class EditorView extends LitElement {
     this.room.l_changedPositions.push(delta.start);
   };
 
-  runCode(fullRebuild = false) {
+  runCode(fullRebuild = false, onRebuildSuccessfulShare = true) {
     console.log("RunCode");
     interpret(
       fullRebuild,
@@ -242,6 +245,11 @@ export class EditorView extends LitElement {
       () => {
         this.activeError = false;
         this.message = "✅ No Interpreter Errors";
+        if (fullRebuild && onRebuildSuccessfulShare) {
+          NotifyService.get().notify(
+            new Notification(NotificationType.FULLREBUILDOFFRAME, UserService.get().localUser, this.room.id)
+          );
+        }
       },
       this.activeError
     );
@@ -271,15 +279,16 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html` <button
-              class="run-button"
-              style="${styleMap(buttonStyle)}"
-              @click="${() => this.runCode(true)}"
-            >
-              <lit-icon icon="add" iconset="iconset"></lit-icon>
-              <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
-            </button>
-            <cc-console message="${this.message}"></cc-console>`
+        ? html`
+          <button
+            class="run-button"
+            style="${styleMap(buttonStyle)}"
+            @click="${() => this.runCode(true)}"
+          >
+            <lit-icon icon="add" iconset="iconset"></lit-icon>
+            <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
+          </button>
+          <cc-console message="${this.message}"></cc-console>`
         : ""}
     `;
   }
