@@ -3,13 +3,13 @@ import { WebsocketProvider } from "y-websocket";
 import { murmurhash3_32_gc } from "/src/util/cc-auth.js";
 
 export class SyncService {
-  static _instance;
+  static #instance;
 
-  _yDoc;
-  _awareness;
+  #yDoc;
+  #awareness;
 
   constructor() {
-    if (SyncService._instance !== undefined && SyncService._instance !== null) {
+    if (SyncService.#instance !== undefined && SyncService.#instance !== null) {
       throw new Error(
         `${this.constructor.name} Singleton already has an instance. Do not instantiate, but use the defined one with get()`
       );
@@ -17,7 +17,7 @@ export class SyncService {
   }
 
   static get() {
-    return SyncService._instance;
+    return SyncService.#instance;
   }
 
   static connectAndSetup(
@@ -27,23 +27,23 @@ export class SyncService {
     password,
     connectedCallback
   ) {
-    if (SyncService._instance === undefined)
-      SyncService._instance = new SyncService();
+    if (SyncService.#instance === undefined)
+      SyncService.#instance = new SyncService();
     let options = this._getOptions(classroomID, password, createRoom);
 
     // console.log(
     //   `opts: authId: ${options.params.authID} authSet: ${options.params.authSet} authToken: ${options.params.authToken} auth: ${options.params.auth}`
     // );
 
-    this._instance._yDoc = new YDoc();
+    this.#instance.#yDoc = new YDoc();
     let websocketProvider = new WebsocketProvider(
       url,
       classroomID,
-      this._instance._yDoc,
+      this.#instance.#yDoc,
       options
     );
     websocketProvider.on("synced", () => {
-      this._instance._awareness = websocketProvider.awareness;
+      this.#instance.#awareness = websocketProvider.awareness;
       connectedCallback();
     });
   }
@@ -67,17 +67,17 @@ export class SyncService {
     return options;
   }
 
-  getSharedMap = (mapName) => this._yDoc.getMap(mapName);
+  getSharedMap = (mapName) => this.#yDoc.getMap(mapName);
 
-  getSharedText = (textName) => this._yDoc.getText(textName);
+  getSharedText = (textName) => this.#yDoc.getText(textName);
 
-  getSharedArray = (arrayName) => this._yDoc.getArray(arrayName);
+  getSharedArray = (arrayName) => this.#yDoc.getArray(arrayName);
 
   getAwareness = () => {
-    return this._awareness;
+    return this.#awareness;
   };
 
   getSyncId = () => {
-    return this._yDoc.clientID;
+    return this.#yDoc.clientID;
   };
 }

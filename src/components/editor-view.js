@@ -56,14 +56,12 @@ export class EditorView extends LitElement {
         this.#updateOnRoomAccess();
       });
     });
-    NotifyService.get().addListener(this.#interpretNotification);
     super.connectedCallback();
   }
 
   disconnectedCallback() {
     this.editor.getSession().off("change", this.onEditorChange);
     this.shortcutExtension.unregister();
-    NotifyService.get().removeListener(this.#interpretNotification);
     super.disconnectedCallback();
   }
 
@@ -164,40 +162,52 @@ export class EditorView extends LitElement {
     return [
       new Shortcut(
         "Toggle Editor",
-        ["Control", "e"],
+        ["e"],
         () => {
           this.toggleEditor();
         },
+        true,
+        false,
+        false,
         () => {
           return true;
         }
       ),
       new Shortcut(
         "Run Code",
-        ["Control", "Enter"],
+        ["Enter"],
         () => {
           this.runCode(false);
         },
+        true,
+        false,
+        false,
         () => {
           return this.isEditorFocused();
         }
       ),
       new Shortcut(
         "Rebuild",
-        ["Control", "Shift", "Enter"],
+        ["Enter"],
         () => {
           this.runCode(true);
         },
+        true,
+        false,
+        true,
         () => {
           return this.isEditorFocused();
         }
       ),
       new Shortcut(
         "Format Code",
-        ["Control", "Alt", "t"],
+        ["t"],
         () => {
           formatCode(this.editor);
         },
+        true,
+        true,
+        false,
         () => {
           return this.isEditorFocused();
         }
@@ -214,6 +224,7 @@ export class EditorView extends LitElement {
   };
 
   runCode(fullRebuild = false) {
+    console.log("RunCode");
     interpret(
       fullRebuild,
       this.room,

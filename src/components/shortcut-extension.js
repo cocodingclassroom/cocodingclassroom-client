@@ -37,7 +37,7 @@ export class ShortcutExtension {
   };
 
   keyLifted = (event) => {
-    this._pressedKeys.delete(event.key);
+    this._pressedKeys.delete(event.key.toLowerCase());
   };
 
   keyPressed = (event) => {
@@ -53,24 +53,28 @@ export class ShortcutExtension {
       if (shortcut.preValidation !== undefined && !shortcut.preValidation())
         return;
 
-      if (this._isWindows) {
-        let allKeys = shortcut.keyBindWin.every((key) =>
-          this._pressedKeys.has(key.toLowerCase())
-        );
+      let usedKeyBind = this._isWindows ? shortcut.keyBindWin : shortcut.keyBindMac;
 
-        if (allKeys) {
-          console.log("done command");
-          shortcut.command();
-          this._pressedKeys.delete(event.key);
-          this.handleSpecialEvents(event);
-          return;
-        }
-      } else {
-        //mac ?? linux
+      let allKeys = usedKeyBind.every((key) =>
+        this._pressedKeys.has(key.toLowerCase())
+      );
+
+      let ctrlActiveIfNeeded = shortcut.ctrlKey ? event.ctrlKey : true;
+      let altActiveIfNeeded = shortcut.altKey ? event.altKey : true;
+      let shiftActiveIfNeeded = shortcut.shiftKey ? event.shiftKey : true;
+
+      if (allKeys && ctrlActiveIfNeeded && altActiveIfNeeded && shiftActiveIfNeeded) {
+        console.log("done command");
+        shortcut.command();
+        this._pressedKeys.delete(event.key);
+        event.stopPropagation();
+        //event.preventDefault();
+        //this.handleSpecialEvents(event);
+        return;
       }
     }
 
-    this.handleSpecialEvents(event);
+    //this.handleSpecialEvents(event);
   };
 
   handleSpecialEvents = (event) => {
@@ -96,6 +100,9 @@ export class Shortcut {
   shortcutName;
   keyBindWin;
   keyBindMac;
+  ctrlKey;
+  altKey;
+  shiftKey;
   command;
   preValidation;
 
@@ -103,11 +110,17 @@ export class Shortcut {
     shortcutName,
     keyBindWin,
     command,
+    ctrlKey,
+    altKey,
+    shiftKey,
     preValidation = undefined,
     keyBindMac = undefined
   ) {
     this.shortcutName = shortcutName;
     this.keyBindWin = keyBindWin;
+    this.ctrlKey = ctrlKey;
+    this.altKey = altKey;
+    this.shiftKey = shiftKey;
     this.keyBindMac = keyBindMac === undefined ? keyBindWin : keyBindMac;
     this.preValidation = preValidation;
     this.command = command;

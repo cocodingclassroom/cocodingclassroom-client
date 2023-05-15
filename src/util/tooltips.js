@@ -62,8 +62,7 @@ export const initDataTips = renderRoot => {
     // toggle with mouse
     el.onmouseover = e => {
       tip.style.opacity = 1;
-      tip.style.visibility = "visible";
-      e.stopPropagation(); // stop parent
+      tip.style.visibility = "visible";// stop parent
     };
     el.onmouseout = e => {
       tip.style.opacity = 0;

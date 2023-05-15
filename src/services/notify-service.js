@@ -1,57 +1,83 @@
 import { UserService } from "./user-service";
+import { SyncService } from "./sync-service";
 
 export class NotifyService {
-  static _instance;
+  static #instance;
 
-  #listeners;
+  #localListeners;
+  #array;
 
   constructor() {
     if (
-      NotifyService._instance !== undefined &&
-      NotifyService._instance !== null
+      NotifyService.#instance !== undefined &&
+      NotifyService.#instance !== null
     ) {
       throw new Error(
         `${this.constructor.name} Singleton already has an instance. Do not instantiate, but use the defined one with get()`
       );
     }
-    this.#listeners = [];
+
+    this.#localListeners = [];
+    this.#array = SyncService.get().getSharedArray("notifications");
+    this.#array.observeDeep((change) => {
+      let allNotifications = this.#array.toArray();
+      if (allNotifications.length > 0) {
+        let newest = allNotifications[0];
+        this.#notifyLocalListeners(JSON.parse(newest));
+      }
+    });
   }
 
   static get() {
-    if (NotifyService._instance === undefined)
-      NotifyService._instance = new NotifyService();
-    return NotifyService._instance;
+    if (NotifyService.#instance === undefined)
+      NotifyService.#instance = new NotifyService();
+    return NotifyService.#instance;
   }
 
   addListener(listener) {
-    this.#listeners.push(listener);
+    this.#localListeners.push(listener);
   }
 
   removeListener(listener) {
-    this.#listeners = this.#listeners.filter((el) => el !== listener);
+    this.#localListeners = this.#localListeners.filter((el) => el !== listener);
   }
 
   notify(notification) {
-    this.#listeners.forEach((listener) => {
+    this.#array.delete(0, this.#array.length);
+    this.#array.insert(0, [JSON.stringify(notification)]);
+  }
+
+  notifyLocal(notification) {
+    this.#notifyLocalListeners(notification);
+  }
+
+  #notifyLocalListeners(notification) {
+    this.#localListeners.forEach((listener) => {
       listener(notification);
     });
   }
 }
 
+/***
+ * Notification Class to be used when sending notifications in the NotfiyService.
+ */
 export class Notification {
   type;
   sender; //user-object of user who sent the message
+  message; //string
 
-  constructor(type, sender) {
+  constructor(type, sender, message) {
     this.type = type;
     this.sender = sender;
+    this.message = message;
   }
 
-  isAddressedToMe = () => {
-    return UserService.get().localUser === this.sender;
+  static isSentByMe = (notification) => {
+    return UserService.get().localUser.id === notification.sender.id;
   };
 }
 
 export class NotificationType {
   static FULLREBUILDOFFRAME = 0;
+  static BROADCAST = 1;
 }

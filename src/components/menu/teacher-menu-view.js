@@ -11,9 +11,10 @@ import { UserService } from "../../services/user-service";
 import { RoomService } from "../../services/room-service";
 import { safeRegister } from "../../util/util";
 import { showModal } from "../../util/modal";
-import { ChatMessage } from "../../models/chat-message";
 import md from "../../../README.md";
 import showdown from "showdown";
+import { NotifyService, Notification, NotificationType } from "../../services/notify-service";
+import { showBroadcastViewModal } from "./broad-cast-modals";
 
 export class TeacherMenuView extends LitElement {
   static properties = {
@@ -26,6 +27,12 @@ export class TeacherMenuView extends LitElement {
     initDataTips(this.renderRoot);
     UserService.get().localUser.addListener(() => {
       initDataTips(this.renderRoot);
+    });
+    NotifyService.get().addListener((notification) => {
+      if (notification.type !== NotificationType.BROADCAST) return;
+      if (!Notification.isSentByMe(notification)) {
+        showBroadcastViewModal(notification.message)
+      }
     });
   }
 
@@ -141,10 +148,8 @@ export class TeacherMenuView extends LitElement {
     `, () => {
       let messageContent = document.getElementById("to-all-message");
       if (messageContent.value.length === 0) return;
-      let newMessage = new ChatMessage(UserService.get().localUser.id, messageContent.value);
-      RoomService.get().rooms.forEach(room => {
-        room.messages.push([JSON.stringify(newMessage)]);
-      });
+      let notification = new Notification(NotificationType.BROADCAST, UserService.get().localUser, messageContent.value);
+      NotifyService.get().notify(notification);
     }, () => {
       let messageContent = document.getElementById("to-all-message");
       messageContent.focus();
