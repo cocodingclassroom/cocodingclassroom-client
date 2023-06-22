@@ -68,6 +68,14 @@ export class Room extends YSyncModel {
     this.l_changedPositions = [];
   }
 
+  isTeacherRoom = () => {
+    return this.roomType === RoomType.TEACHER;
+  };
+
+  isStudentRoom = () => {
+    return this.roomType === RoomType.STUDENT;
+  };
+
   clearAllAuthorizationOnRoom = () => {
     this.requestIds.delete(0, this.requestIds.length);
     this.writersIds.delete(0, this.writersIds.length);
