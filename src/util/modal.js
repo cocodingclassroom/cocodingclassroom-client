@@ -34,12 +34,12 @@ export const showModal = (content, onConfirm, afterOpen, showCancel = true) => {
   }}>Close</button>
   `;
 
-  // create the okay button
-  const okayButton = html`
-    <button class="modal-okay-button modal-button" @click=${() => {
+  // create the ok button
+  const okButton = html`
+    <button class="modal-ok-button modal-button" @click=${() => {
     onConfirm();
     document.body.removeChild(backdrop);
-  }}>Okay</button>
+  }}>Ok</button>
   `;
 
   // render the modal HTML
@@ -48,7 +48,7 @@ export const showModal = (content, onConfirm, afterOpen, showCancel = true) => {
       ${modalContent}
       <div class="modal-button-row">
         ${showCancel ? closeButton : ""}
-        ${okayButton}
+        ${okButton}
       </div>
     </div>
   `;
