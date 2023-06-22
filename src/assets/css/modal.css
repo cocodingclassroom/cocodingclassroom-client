@@ -1,3 +1,21 @@
+.row {
+    flex-direction: row;
+    display: flex;
+}
+
+.col {
+    flex-direction: column;
+    display: flex;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+.center {
+    justify-content: center;
+}
+
 .modal-backdrop {
     position: absolute;
     z-index: 4;
@@ -23,27 +41,44 @@
     max-width: 60%;
     min-width: 30%;
     top: 10%;
-    border: aliceblue 1px solid;
-    padding: 25px;
+    border: 1px solid #888;    
+    background-color: #444;
+    padding: 1em;
 }
 
 .modal-content {
+    outline: none;
     overflow-y: scroll;
+    overflow-wrap: break-word;
     flex-grow: 1;
     height: 60%;
     width: 100%;
     margin-bottom: 20px;
+    text-rendering: optimizeLegibility;
+   
+}
+
+.modal-content input[type=text]  {
+    background-color: #f0f0f0;
+    color: black;
+    padding: .25em .67em;
+    font-size: 1.1em;
+    margin: 0px;
+    min-height: 2.5em;
+    outline: none;
 }
 
 .modal-button {
+    outline: none;
+    border-width: 0;
+    min-height: 2.5em;
     position: relative;
-    padding: 5px;
+    padding: .75em 2em;
     margin: 5px;
-    flex-grow: 1;
-    border: aliceblue 1px solid;
-    border-radius: 30px;
+    border-radius: 0px;
     background-color: #e0e0e0;
     color: black;
+    text-transform: uppercase;
 }
 
 .modal-button:hover {
@@ -51,23 +86,29 @@
 }
 
 .modal-button-row {
+    margin-left: auto;
+    margin-right: 0;
     position: relative;
     display: flex;
+    text-align: right;
     flex-direction: row;
     bottom: 5px;
 }
 
 .modal-ok-button {
     background-color: #3288e6;
+    color: white;
 }
 
 @keyframes modal-pulse {
     0% {
         box-shadow: inset 0 0 0 300px transparent;
     }
+
     70% {
         box-shadow: inset 0 0 0 300px rgba(255, 255, 255, 0.25);
     }
+
     100% {
         box-shadow: inset 0 0 0 300px transparent;
     }
@@ -75,15 +116,17 @@
 
 .cc-user-setting-color {
     outline: none;
+    padding: 0;
     height: 50px !important;
-    /*border: none !important;*/
+    border: none !important;
 }
 
 .cc-user-rename {
-    padding: 5px;
-    margin: 5px;
-    border: aliceblue 1px solid;
     flex-grow: 1;
+}
+
+#to-all-message{
+    width: 400px;
 }
 
 .slider {

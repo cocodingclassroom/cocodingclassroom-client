@@ -7,7 +7,7 @@ export const UserColorRenameModal = (user) => {
     <label for="color">Color</label>
     <input id="user-color-input" type="color" class="cc-user-setting-color" name="usercolor" value="${user.color}">
     </div>
-    <div class="col grow">
+    <div class="col grow" style="margin-left: 50px;">
     <label for="nick">Nickname</label>
     <input id="cocodingnick" class="cc-user-rename" name="nick" type="text" value="${user.name.replace(/["']/g, "")}">
     </div>

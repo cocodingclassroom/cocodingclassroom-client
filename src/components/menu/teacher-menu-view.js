@@ -99,7 +99,7 @@ export class TeacherMenuView extends LitElement {
           <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
         </div>
         <div
-          data-tip="Send message to all rooms"
+          data-tip="Send message to all students"
           @click="${() => {
             sendBroadCastMessage();
           }}"

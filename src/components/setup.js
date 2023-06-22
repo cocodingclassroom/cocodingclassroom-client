@@ -151,6 +151,13 @@ export class Setup extends LitElement {
       flex-direction: column;
     }
 
+    #outlet {
+      background-color: #000;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
     .container-row {
       display: flex;
       flex-direction: row;

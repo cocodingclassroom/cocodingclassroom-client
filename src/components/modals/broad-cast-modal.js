@@ -9,9 +9,10 @@ import { UserService } from "../../services/user-service";
 export const showBroadcastViewModal = (message) => {
   showModal(
     `
-<p>Broadcast message from teacher:</p>
+<p>Incoming Message</p>
+<hr>
 <h3>
-    ${message}
+    <i>${message}</i>
   </h3>`,
     () => {},
     () => {},
@@ -23,10 +24,10 @@ export const sendBroadCastMessage = () => {
   showModal(
     `
     <div>
-     Send message to all rooms?
+     Broadcast Message
     </div>
     <div>
-     <input id="to-all-message" type="text" placeholder="Send message to all ...">
+     <input id="to-all-message" type="text" placeholder="Send message to all students">
     </div>
     `,
     () => {
