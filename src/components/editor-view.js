@@ -251,7 +251,6 @@ export class EditorView extends LitElement {
       },
       () => {
         this.activeError = false;
-        this.message = "✅ No Interpreter Errors";
         this.#notifyOthersOfFullRebuild(fullRebuild, onRebuildSuccessfulShare);
       },
       this.activeError
@@ -285,14 +284,12 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html` ${this._renderRunButton()}
-
-            <cc-console message="${this.message}"></cc-console>`
+        ? html` ${this._renderRunButton()} ${this._renderConsole()} `
         : ""}
     `;
   }
 
-  _renderRunButton() {
+  _renderRunButton = () => {
     const buttonStyle = {};
     buttonStyle.left = this.leftAlign === 1 ? this.editorWidth : 0;
     let lineNumbers = ClassroomService.get().classroom.lineNumbers;
@@ -305,7 +302,12 @@ export class EditorView extends LitElement {
       <lit-icon icon="add" iconset="iconset"></lit-icon>
       <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
     </button>`;
-  }
+  };
+
+  _renderConsole = () => {
+    if (!this.activeError) return html``;
+    return html` <cc-console message="${this.message}"></cc-console>`;
+  };
 
   static styles = css`
     .editor {
