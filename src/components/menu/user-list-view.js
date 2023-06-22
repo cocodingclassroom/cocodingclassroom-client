@@ -7,7 +7,6 @@ import {
   black,
   cursorTipStyle,
   pulseStyle,
-  secondary,
   helpRotationStyle,
   toolTipStyle,
   white,
@@ -74,23 +73,22 @@ export class UserListView extends LitElement {
         .getAllUsers()
         .map((user) => {
           let backgroundColorStyle = { backgroundColor: user.color };
-          let textColorStyle = {
-            color: isColorLight(user.color) ? "black" : "white",
-          };
 
           return html` <div
             class="row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
-            ${this._renderRoomAccess(user)}
-            ${this._renderNameAndRoom(textColorStyle, user)}
+            ${this._renderRoomAccess(user)} ${this._renderNameAndRoom(user)}
             ${this._renderNeedsHelp(user)}
           </div>`;
         })}
     `;
   };
 
-  _renderNameAndRoom(textColorStyle, user) {
+  _renderNameAndRoom(user) {
+    let textColorStyle = {
+      color: isColorLight(user.color) ? "black" : "white",
+    };
     if (user.isLocalUser()) {
       return html` <div class="row user-row grow pointer">
         <div
@@ -117,15 +115,23 @@ export class UserListView extends LitElement {
   }
 
   _renderJumpToRoomElement(user) {
+    let isLight = isColorLight(user.color);
+    let backgroundStyle = {
+      backgroundColor: isLight ? white() : black(),
+    };
+    let fontStyle = {
+      color: isLight ? black() : white(),
+    };
     return html` <div
       class="little-box row center alias"
+      style="${styleMap(backgroundStyle)}"
       data-tip="Jump to Room"
       data-tip-left
       @click="${() => {
         UserService.get().localUser.selectedRoomRight = user.selectedRoomRight;
       }}"
     >
-      <div>${user.selectedRoomRight}</div>
+      <p style="${styleMap(fontStyle)}">${user.selectedRoomRight}</p>
     </div>`;
   }
 
@@ -133,7 +139,7 @@ export class UserListView extends LitElement {
     if (!user.isLocalUser()) return "";
     if (user.needsHelp) {
       return html` <div
-        class="font-emoji pulse pointer help-rotation"
+        class="font-emoji pulse pointer help-rotation rm"
         data-tip="${user.name} needs some help"
         @click="${() => {
           user.needsHelp = false;
@@ -144,7 +150,7 @@ export class UserListView extends LitElement {
       </div>`;
     }
     return html` <div
-      class="font-emoji pulse pointer"
+      class="font-emoji pulse pointer rm"
       data-tip="Request Help"
       @click="${() => {
         user.needsHelp = true;
@@ -202,6 +208,10 @@ export class UserListView extends LitElement {
 
   static styles = [
     css`
+      .rm {
+        margin-right: 2px;
+      }
+
       .font {
         font-size: 9pt;
       }
@@ -218,12 +228,10 @@ export class UserListView extends LitElement {
 
       .little-box {
         padding: 1px;
-        background-color: ${black()};
-        color: ${white()};
-        font-size: 6pt;
+        font-size: 7pt;
         border-radius: 5px;
-        height: 13px;
-        width: 13px;
+        height: 11px;
+        width: 11px;
         margin: 2px;
       }
 
