@@ -314,7 +314,6 @@ const softInterpretation = (
   }
   s.innerHTML = curCodeTemp;
   iframe.contentWindow.document.head.appendChild(s);
-  console.log("did soft compile");
   // this.validCode = true
   // this.consoleClear()
 };

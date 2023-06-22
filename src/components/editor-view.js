@@ -161,6 +161,7 @@ export class EditorView extends LitElement {
     let classroom = ClassroomService.get().classroom;
     if (classroom.liveCoding) {
       this.liveCodingInterval = setTimeout(() => {
+        console.log("live coding recompile!");
         this.runCode(false);
       }, classroom.liveCodingDelay * 1000);
     }

@@ -44,7 +44,7 @@ export class Room extends YSyncModel {
 
 		// pass errors to parent
 		window.onerror = function myErrorHandler(errorMsg) {
-			ccSelf.consoleMessage('❌' + errorMsg)
+			ccSelf.errorCallback('❌' + errorMsg)
 			return false
 		}
 
