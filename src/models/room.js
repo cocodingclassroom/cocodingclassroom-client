@@ -60,7 +60,7 @@ export class Room extends YSyncModel {
     this.writersIds = [];
     this.requestIds = [];
     this.setup();
-    this.roomName = this.roomName ?? this.id + "_Room";
+    this.roomName = this.roomName ?? "Room";
     if (this.codeContent === null || this.codeContent === undefined) {
       let activeBinding = BindingService.get().binding;
       this.codeContent = new YText(activeBinding.codeTemplate ?? "");
@@ -88,6 +88,10 @@ export class Room extends YSyncModel {
 
   removeClaim = () => {
     this.ownerId = null;
+  };
+
+  isUnclaimed = () => {
+    return this.ownerId === null || this.ownerId === undefined;
   };
 
   isOwnedByLocalUser = () => {

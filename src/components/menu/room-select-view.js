@@ -43,7 +43,10 @@ export class RoomSelectView extends LitElement {
           (room) => room.roomType === RoomType.STUDENT
         ),
         (e) => e,
-        (room) => html` <option value="${room.id}">${room.roomName}</option>`
+        (room) =>
+          html` <option value="${room.id}">
+            ${room.id}_${room.roomName} ${this._renderRoomLocks(room)}
+          </option>`
       )}
     </select>`;
   };
@@ -71,6 +74,15 @@ export class RoomSelectView extends LitElement {
 
   _getSelectDOMElement = () =>
     this.renderRoot?.querySelector(`#${this._getRoomSelectId()}`) ?? null;
+
+  _renderRoomLocks = (room) => {
+    if (!ClassroomService.get().classroom.roomLocks) return "";
+    if (room.isUnclaimed()) return "";
+    if (room.isOwnedByLocalUser()) {
+      return "🔐";
+    }
+    return "🔒";
+  };
 
   static styles = [
     css`
