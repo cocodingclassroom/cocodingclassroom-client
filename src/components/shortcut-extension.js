@@ -5,11 +5,13 @@ export class ShortcutExtension {
   _check;
   _pressedKeys;
   _isWindows;
+  _isMac;
 
   constructor() {
     this._shortcuts = [];
     this._pressedKeys = new Set();
     this._isWindows = platform.os.family === "Windows";
+    this._isMac = platform.os.family === "OS X";
     this._check = () => true;
   }
 
@@ -53,45 +55,32 @@ export class ShortcutExtension {
       if (shortcut.preValidation !== undefined && !shortcut.preValidation())
         return;
 
-      let usedKeyBind = this._isWindows ? shortcut.keyBindWin : shortcut.keyBindMac;
+      let usedKeyBind = this._isWindows
+        ? shortcut.keyBindWin
+        : shortcut.keyBindMac;
 
       let allKeys = usedKeyBind.every((key) =>
         this._pressedKeys.has(key.toLowerCase())
       );
 
       let ctrlActiveIfNeeded = shortcut.ctrlKey ? event.ctrlKey : true;
+      if (this._isMac) {
+        ctrlActiveIfNeeded = shortcut.ctrlKey ? event.metaKey : true;
+      }
       let altActiveIfNeeded = shortcut.altKey ? event.altKey : true;
       let shiftActiveIfNeeded = shortcut.shiftKey ? event.shiftKey : true;
 
-      if (allKeys && ctrlActiveIfNeeded && altActiveIfNeeded && shiftActiveIfNeeded) {
-        console.log("done command");
-        shortcut.command();
-        this._pressedKeys.delete(event.key);
-        event.stopPropagation();
-        //event.preventDefault();
-        //this.handleSpecialEvents(event);
-        return;
-      }
-    }
-
-    //this.handleSpecialEvents(event);
-  };
-
-  handleSpecialEvents = (event) => {
-    if (this._pressedKeys.has("control")) {
-      //make special case for copy + paste
       if (
-        (this._pressedKeys.size === 2 &&
-          (this._pressedKeys.has("c") ||
-            this._pressedKeys.has("v") ||
-            this._pressedKeys.has("r"))) ||
-        this._pressedKeys.has("altgraph")
+        allKeys &&
+        ctrlActiveIfNeeded &&
+        altActiveIfNeeded &&
+        shiftActiveIfNeeded
       ) {
+        shortcut.command();
+        this._pressedKeys.clear();
+        event.stopPropagation();
         return;
       }
-      //block any basic browser "CTRL" shortcuts
-      event.stopPropagation();
-      event.preventDefault();
     }
   };
 }

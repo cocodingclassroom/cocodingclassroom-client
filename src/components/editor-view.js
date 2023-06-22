@@ -182,19 +182,6 @@ export class EditorView extends LitElement {
         }
       ),
       new Shortcut(
-        "Run Code",
-        ["Enter"],
-        () => {
-          this.runCode(false);
-        },
-        true,
-        false,
-        false,
-        () => {
-          return this.isEditorFocused();
-        }
-      ),
-      new Shortcut(
         "Rebuild",
         ["Enter"],
         () => {
@@ -203,6 +190,19 @@ export class EditorView extends LitElement {
         true,
         false,
         true,
+        () => {
+          return this.isEditorFocused();
+        }
+      ),
+      new Shortcut(
+        "Run Code",
+        ["Enter"],
+        () => {
+          this.runCode(false);
+        },
+        true,
+        false,
+        false,
         () => {
           return this.isEditorFocused();
         }
