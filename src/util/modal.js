@@ -22,24 +22,34 @@ export const showModal = (content, onConfirm, afterOpen, showCancel = true) => {
 
   // create the modal content
   const modalContent = html`
-    <div class="modal-content">
+    <div class="modal-content"  @keyup=${(e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("modal-ok-button").click();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        document.getElementById("modal-cancel-button").click();
+      
+      }
+    }}>
       ${unsafeHTML(content)}
     </div>
   `;
 
   // create the cancel button
   const cancelButton = html`
-    <button class="modal-cancel-button modal-button" @click=${() => {
+    <button id="modal-cancel-button" class="modal-cancel-button modal-button" @click=${() => {
     document.body.removeChild(backdrop);
   }}>Cancel</button>
   `;
 
   // create the ok button
   const okButton = html`
-    <button class="modal-ok-button modal-button" @click=${() => {
+    <button id="modal-ok-button" class="modal-ok-button modal-button" @click=${() => {
     onConfirm();
     document.body.removeChild(backdrop);
-  }}>Ok</button>
+  }}
+  >Ok</button>
   `;
 
   // render the modal HTML
