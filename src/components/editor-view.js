@@ -130,6 +130,7 @@ export class EditorView extends LitElement {
     });
     ClassroomService.get().classroom.addListener((changes) => {
       changes.forEach((change) => {
+        if (change.keysChanged === undefined) return;
         if (
           change.keysChanged.has("liveCoding") ||
           change.keysChanged.has("liveCodingDelay")
