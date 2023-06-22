@@ -1,25 +1,37 @@
 import { css, html, LitElement } from "lit";
 import { safeRegister } from "../../util/util";
-import { basicFlexStyles, black, white } from "../../util/shared-css";
+import {
+  basicFlexStyles,
+  black,
+  toolTipStyle,
+  white,
+} from "../../util/shared-css";
 import { ClassroomMode } from "../../models/classroom-model";
 import { ClassroomService } from "../../services/classroom-service";
 import { UserService } from "../../services/user-service";
 import { RoomService } from "../../services/room-service";
+import { initDataTips } from "../../util/tooltips";
 
 export class SettingsView extends LitElement {
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
     this._setSelectedMode();
+    initDataTips(this.renderRoot);
+    UserService.get().localUser.addListener(() => {
+      initDataTips(this.renderRoot);
+    });
   }
 
   render = () => {
     return html`
       <div class="settings-panel col">
         ${UserService.get().localUser.isTeacher()
-          ? html` <div>Classroom Settings</div>
+          ? html` <div>Classroom</div>
               <div class="line"></div>
               <div class="row">
-                <div class="grow">Mode</div>
+                <div class="grow" data-tip="Set Classroom Mode" data-tip-left>
+                  Mode
+                </div>
                 <div>
                   <input
                     @change="${() => this._onChangeMode()}"
@@ -39,7 +51,7 @@ export class SettingsView extends LitElement {
                   <label for="galleryInput">Gallery</label>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" data-tip="Auto compile on keyup" data-tip-left>
                 <input
                   id="live-coding"
                   type="checkbox"
@@ -56,16 +68,17 @@ export class SettingsView extends LitElement {
                     @change="${() => {
                       this._onChangeLiveCodingDelay();
                     }}"
+                    data-tip="Keyup delay in seconds"
                   >
                     <option class="option" value="0.5">0.5</option>
                     <option class="option" value="1">1</option>
                     <option class="option" value="1.5">1.5</option>
                     <option class="option" value="2">2</option>
                   </select>
-                  /s Delay
+                  sec
                 </label>
               </div>
-              <div>
+              <div data-tip="Display code line numbers" data-tip-left>
                 <input
                   id="line-numbers"
                   type="checkbox"
@@ -76,7 +89,7 @@ export class SettingsView extends LitElement {
                 />
                 <label for="line-numbers">Line Numbers</label>
               </div>
-              <div>
+              <div data-tip="Anyone can lock their own room" data-tip-left>
                 <input
                   id="room-locks"
                   type="checkbox"
@@ -87,7 +100,11 @@ export class SettingsView extends LitElement {
                 />
                 <label for="room-locks">Room Locks</label>
               </div>
-              <div class="row">
+              <div
+                class="row"
+                data-tip="Time stayed in each room during 'Walk Rooms'"
+                data-tip-left
+              >
                 <label for="walk-delay">Walk Delay:</label>
                 <input
                   class="input"
@@ -102,9 +119,9 @@ export class SettingsView extends LitElement {
               </div>`
           : ""}
 
-        <div>Editor Settings</div>
+        <div>Editor</div>
         <div class="line"></div>
-        <div class="row">
+        <div class="row" data-tip="Set editor font-size" data-tip-left>
           <label for="font-size">Font Size:</label>
           <input
             class="input"
@@ -200,7 +217,7 @@ export class SettingsView extends LitElement {
 
       .line {
         height: 5px;
-        width: 90%;
+        width: 95%;
         border-top: solid 1px ${white()};
       }
 
@@ -217,6 +234,7 @@ export class SettingsView extends LitElement {
       }
     `,
     basicFlexStyles(),
+    toolTipStyle(),
   ];
 }
 

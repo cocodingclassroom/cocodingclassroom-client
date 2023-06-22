@@ -62,6 +62,7 @@ export class TeacherMenuView extends LitElement {
           </div>
           <div class="cc-nav-settings" @click="${() => {
             this.settingsOpen = !this.settingsOpen;
+            initDataTips(this.renderRoot);
           }}" data-tip="Settings">
             <cc-icon svg="${iconSvg.settings}" }></cc-icon>
           </div>
