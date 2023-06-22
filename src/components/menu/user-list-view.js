@@ -1,4 +1,4 @@
-import { css, html, LitElement, unsafeCSS } from "lit";
+import { css, html, LitElement } from "lit";
 import { UserService } from "../../services/user-service";
 import { isColorLight, safeRegister } from "../../util/util";
 import { styleMap } from "lit/directives/style-map.js";
@@ -79,7 +79,7 @@ export class UserListView extends LitElement {
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this._renderRoomAccess(user)} ${this._renderNameAndRoom(user)}
-            ${this._renderNeedsHelp(user)}
+            ${this._renderNeedsHelp(user)} ${this._renderTeacherSymbol(user)}
           </div>`;
         })}
     `;
@@ -158,6 +158,13 @@ export class UserListView extends LitElement {
       }}"
     >
       ✋
+    </div>`;
+  };
+
+  _renderTeacherSymbol = (user) => {
+    if (user.isStudent()) return html``;
+    return html`<div class="font-emoji pointer rm" data-tip="Is Teacher">
+      🎓
     </div>`;
   };
 
