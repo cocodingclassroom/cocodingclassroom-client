@@ -51,7 +51,11 @@ export class SettingsView extends LitElement {
                   <label for="galleryInput">Gallery</label>
                 </div>
               </div>
-              <div class="row" data-tip="Auto compile on keyup" data-tip-left>
+              <div
+                class="row center-cross-axis"
+                data-tip="Auto compile on keyup"
+                data-tip-left
+              >
                 <input
                   id="live-coding"
                   type="checkbox"
@@ -60,7 +64,7 @@ export class SettingsView extends LitElement {
                     this._onChangeLiveCoding();
                   }}"
                 />
-                <label for="live-coding" class="grow"
+                <label for="live-coding"
                   >Live Coding
                   <select
                     id="seconds-delay"
@@ -78,7 +82,11 @@ export class SettingsView extends LitElement {
                   sec
                 </label>
               </div>
-              <div data-tip="Display code line numbers" data-tip-left>
+              <div
+                class="row center-cross-axis"
+                data-tip="Display code line numbers"
+                data-tip-left
+              >
                 <input
                   id="line-numbers"
                   type="checkbox"
@@ -89,7 +97,11 @@ export class SettingsView extends LitElement {
                 />
                 <label for="line-numbers">Line Numbers</label>
               </div>
-              <div data-tip="Anyone can lock their own room" data-tip-left>
+              <div
+                class="row center-cross-axis"
+                data-tip="Anyone can lock their own room"
+                data-tip-left
+              >
                 <input
                   id="room-locks"
                   type="checkbox"
@@ -231,6 +243,10 @@ export class SettingsView extends LitElement {
 
       .option {
         color: ${black()};
+      }
+
+      #seconds-delay {
+        width: 50px;
       }
     `,
     basicFlexStyles(),

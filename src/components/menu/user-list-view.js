@@ -123,7 +123,7 @@ export class UserListView extends LitElement {
       color: isLight ? black() : white(),
     };
     return html` <div
-      class="little-box row center alias"
+      class="little-box row center alias center-cross-axis"
       style="${styleMap(backgroundStyle)}"
       data-tip="Jump to Room"
       data-tip-left

@@ -51,6 +51,9 @@ export const basicFlexStyles = () => css`
 
   .center {
     justify-content: center;
+  }
+
+  .center-cross-axis {
     align-items: center;
   }
 `;
