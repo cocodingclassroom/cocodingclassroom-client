@@ -86,3 +86,30 @@
     flex-grow: 1;
 }
 
+.slider {
+    -webkit-appearance: none;
+    width: 90%;
+    height: 25px;
+    background: #8d8d8d;
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    border: 2px solid #ffffff;
+}
+
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 25px;
+    background: #282828;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 10px;
+    height: 25px;
+    background: #232323;
+    cursor: pointer;
+}

@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import {
   cursorTipStyle,
   menuRowStyles,
-  toolTipStyle
+  toolTipStyle,
 } from "../../util/shared-css";
 import { initDataTips } from "../../util/tooltips";
 import { version } from "../../version";
@@ -10,16 +10,22 @@ import { iconSvg } from "../icons/icons";
 import { UserService } from "../../services/user-service";
 import { RoomService } from "../../services/room-service";
 import { safeRegister } from "../../util/util";
-import { showModal } from "../../util/modal";
-import md from "../../../README.md";
-import showdown from "showdown";
-import { NotifyService, Notification, NotificationType } from "../../services/notify-service";
-import { showBroadcastViewModal } from "./broad-cast-modals";
+import {
+  NotifyService,
+  Notification,
+  NotificationType,
+} from "../../services/notify-service";
+import {
+  sendBroadCastMessage,
+  showBroadcastViewModal,
+} from "../modals/broad-cast-modal";
+import { forceSplitView } from "../modals/split-view-modal";
+import { showAbout } from "../modals/about-modal";
 
 export class TeacherMenuView extends LitElement {
   static properties = {
     roomId: { type: String },
-    settingsOpen: { type: Boolean, state: true }
+    settingsOpen: { type: Boolean, state: true },
   };
 
   firstUpdated(_changedProperties) {
@@ -31,7 +37,7 @@ export class TeacherMenuView extends LitElement {
     NotifyService.get().addListener((notification) => {
       if (notification.type !== NotificationType.BROADCAST) return;
       if (!Notification.isSentByMe(notification)) {
-        showBroadcastViewModal(notification.message)
+        showBroadcastViewModal(notification.message);
       }
     });
   }
@@ -44,13 +50,13 @@ export class TeacherMenuView extends LitElement {
             class="cc-header-title help"
             data-tip="${version}"
             @click="${() => {
-              this._showAbout();
+              showAbout();
             }}"
           >
             COCODING Classroom
           </div>
           <div class="help" @click="${() => {
-            this._showAbout();
+            showAbout();
           }}" data-tip="About">
             <cc-icon svg="${iconSvg.about}"></cc-icon>
           </div>
@@ -60,14 +66,11 @@ export class TeacherMenuView extends LitElement {
             <cc-icon svg="${iconSvg.settings}" }></cc-icon>
           </div>
         </div>
-        ${this.settingsOpen ? html`
-            <cc-settings></cc-settings>` :
-          ""}
+        ${this.settingsOpen ? html` <cc-settings></cc-settings>` : ""}
         ${
           UserService.get().localUser.isTeacher()
             ? this._renderActionsForTeacher()
-            : html`
-              <div class="cc-controls-row">
+            : html` <div class="cc-controls-row">
                 ${this._renderActionsForStudents()}
               </div>`
         }
@@ -95,14 +98,17 @@ export class TeacherMenuView extends LitElement {
         <div data-tip="Walk rooms">
           <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
         </div>
-        <div data-tip="Send message to all rooms" @click="${() => {
-          this._sendMessageToAll();
-        }}">
+        <div
+          data-tip="Send message to all rooms"
+          @click="${() => {
+            sendBroadCastMessage();
+          }}"
+        >
           <cc-icon svg="${iconSvg.message}"></cc-icon>
         </div>
         <div
           data-tip="Force split-view to all Students"
-          @click="${() => this._forceSplitView()}"
+          @click="${() => forceSplitView()}"
         >
           <cc-icon svg="${iconSvg.layout}"></cc-icon>
         </div>
@@ -121,46 +127,8 @@ export class TeacherMenuView extends LitElement {
     `;
   };
 
-  _showAbout = () => {
-    let converter = new showdown.Converter();
-    let html = converter.makeHtml(md);
-    showModal(`
-    <div>
-    ${html}
-    <div>
-    `, () => {
-    }, () => {
-    }, false);
-  };
-
   _addRoom = () => {
     RoomService.get().addRoom();
-  };
-
-  _sendMessageToAll = () => {
-    showModal(`
-    <div>
-     Send message to all rooms?
-    </div>
-    <div>
-     <input id="to-all-message" type="text" placeholder="Send message to all ...">
-    </div>
-    `, () => {
-      let messageContent = document.getElementById("to-all-message");
-      if (messageContent.value.length === 0) return;
-      let notification = new Notification(NotificationType.BROADCAST, UserService.get().localUser, messageContent.value);
-      NotifyService.get().notify(notification);
-    }, () => {
-      let messageContent = document.getElementById("to-all-message");
-      messageContent.focus();
-    });
-  };
-
-  _forceSplitView = () => {
-    let localLeftSize = UserService.get().localUser.leftSize;
-    UserService.get().otherUsers.forEach((otherUser) => {
-      otherUser.leftSize = localLeftSize;
-    });
   };
 
   static styles = [
@@ -172,7 +140,7 @@ export class TeacherMenuView extends LitElement {
     `,
     menuRowStyles(),
     cursorTipStyle(),
-    toolTipStyle()
+    toolTipStyle(),
   ];
 }
 

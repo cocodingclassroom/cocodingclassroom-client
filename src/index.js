@@ -1,6 +1,7 @@
 import "./components/register";
 import { Router } from "@vaadin/router";
 
+
 window.onload = () => {
   const routes = [
     {

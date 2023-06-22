@@ -15,7 +15,11 @@ import { UserRole } from "../models/user";
 import { RoomType } from "../models/room";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { ClassroomService } from "../services/classroom-service";
-import { NotificationType, NotifyService, Notification } from "../services/notify-service";
+import {
+  NotificationType,
+  NotifyService,
+  Notification,
+} from "../services/notify-service";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -24,7 +28,7 @@ export class EditorView extends LitElement {
     leftAlign: { type: Number },
     editorIdentifier: { state: true, type: String },
     message: { type: String, state: true },
-    editorVisible: { type: Boolean, state: true }
+    editorVisible: { type: Boolean, state: true },
   };
 
   room;
@@ -49,7 +53,7 @@ export class EditorView extends LitElement {
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
     });
     this.room.addListener((changes) => {
-      changes.forEach((change) => {
+      changes.forEach(() => {
         this.#updateOnRoomAccess();
       });
     });
@@ -91,7 +95,7 @@ export class EditorView extends LitElement {
       showGutter: classroom.lineNumbers,
       tabSize: 4,
       useSoftTabs: false,
-      fontSize: UserService.get().localUser.getEditorFontSize()
+      fontSize: UserService.get().localUser.getEditorFontSize(),
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
 
@@ -214,7 +218,7 @@ export class EditorView extends LitElement {
         () => {
           return this.isEditorFocused();
         }
-      )
+      ),
     ];
   };
 
@@ -245,24 +249,26 @@ export class EditorView extends LitElement {
       () => {
         this.activeError = false;
         this.message = "✅ No Interpreter Errors";
-        if (fullRebuild && onRebuildSuccessfulShare) {
-          NotifyService.get().notify(
-            new Notification(NotificationType.FULLREBUILDOFFRAME, UserService.get().localUser, this.room.id)
-          );
-        }
+        this.#notifyOthersOfFullRebuild(fullRebuild, onRebuildSuccessfulShare);
       },
       this.activeError
     );
   }
 
+  #notifyOthersOfFullRebuild(fullRebuild, onRebuildSuccessfulShare) {
+    if (fullRebuild && onRebuildSuccessfulShare) {
+      NotifyService.get().notify(
+        new Notification(
+          NotificationType.FULLREBUILDOFFRAME,
+          UserService.get().localUser,
+          this.room.id
+        )
+      );
+    }
+  }
+
   toggleEditor = () => {
     this.editorVisible = !this.editorVisible;
-  };
-
-  #interpretNotification = (notification) => {
-    if (notification.type === NotificationType.FULLREBUILDOFFRAME) {
-      this.runCode(true);
-    }
   };
 
   render() {
@@ -279,16 +285,15 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html`
-          <button
-            class="run-button"
-            style="${styleMap(buttonStyle)}"
-            @click="${() => this.runCode(true)}"
-          >
-            <lit-icon icon="add" iconset="iconset"></lit-icon>
-            <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
-          </button>
-          <cc-console message="${this.message}"></cc-console>`
+        ? html` <button
+              class="run-button"
+              style="${styleMap(buttonStyle)}"
+              @click="${() => this.runCode(true)}"
+            >
+              <lit-icon icon="add" iconset="iconset"></lit-icon>
+              <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
+            </button>
+            <cc-console message="${this.message}"></cc-console>`
         : ""}
     `;
   }
@@ -352,7 +357,7 @@ export class EditorView extends LitElement {
     }
 
     .ace_active-line {
-      width: 0px;
+      width: 0;
     }
 
     .ace_gutter-active-line {
