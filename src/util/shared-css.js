@@ -51,6 +51,7 @@ export const basicFlexStyles = () => css`
 
   .center {
     justify-content: center;
+    align-items: center;
   }
 `;
 
@@ -58,6 +59,7 @@ export const pulseStyle = () => css`
   .pulse:hover {
     animation: pulse 1s linear infinite alternate !important;
   }
+
   .pulse-on {
     animation: pulse 1s linear infinite alternate !important;
   }
@@ -115,5 +117,23 @@ export const toolTipStyle = () => css`
     background: inherit;
     transform: rotate(45deg);
     border: 1px solid ${secondary()};
+  }
+`;
+
+export const helpRotationStyle = () => css`
+  @keyframes help-rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(25deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .help-rotation {
+    animation: help-rotation 1s infinite linear;
   }
 `;

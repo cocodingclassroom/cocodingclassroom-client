@@ -8,6 +8,7 @@ import {
   cursorTipStyle,
   pulseStyle,
   secondary,
+  helpRotationStyle,
   toolTipStyle,
   white,
 } from "../../util/shared-css";
@@ -78,13 +79,12 @@ export class UserListView extends LitElement {
           };
 
           return html` <div
-            class="row border ${user.needsHelp ? "pulse-on" : ""}"
+            class="row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this._renderRoomAccess(user)}
             ${this._renderNameAndRoom(textColorStyle, user)}
             ${this._renderNeedsHelp(user)}
-            <div class="user-row"></div>
           </div>`;
         })}
     `;
@@ -94,7 +94,7 @@ export class UserListView extends LitElement {
     if (user.isLocalUser()) {
       return html` <div class="row user-row grow pointer">
         <div
-          class="user-row"
+          class="font"
           data-tip="Set Username and Color"
           data-tip-left
           style="${styleMap(textColorStyle)}"
@@ -107,7 +107,7 @@ export class UserListView extends LitElement {
         ${this._renderJumpToRoomElement(user)}
       </div>`;
     } else {
-      return html` <div class="row user-row grow pointer">
+      return html` <div class="row font user-row grow pointer">
         <div class="user-row" data-tip-left style="${styleMap(textColorStyle)}">
           ${user.name}
         </div>
@@ -133,7 +133,7 @@ export class UserListView extends LitElement {
     if (!user.isLocalUser()) return "";
     if (user.needsHelp) {
       return html` <div
-        class="user-row pulse pointer"
+        class="font-emoji pulse pointer help-rotation"
         data-tip="${user.name} needs some help"
         @click="${() => {
           user.needsHelp = false;
@@ -144,47 +144,16 @@ export class UserListView extends LitElement {
       </div>`;
     }
     return html` <div
-      class="user-row pulse pointer"
+      class="font-emoji pulse pointer"
       data-tip="Request Help"
       @click="${() => {
         user.needsHelp = true;
         this.requestUpdate();
       }}"
     >
-      🤚
+      ✋
     </div>`;
   };
-
-  static styles = [
-    css`
-      .user-row {
-        font-size: 9pt;
-        padding: 2px;
-        min-height: 20px;
-        bottom: 0;
-      }
-
-      .little-box {
-        padding: 1px;
-        background-color: ${black()};
-        color: ${white()};
-        font-size: 6pt;
-        border-radius: 5px;
-        height: 13px;
-        width: 13px;
-        margin: 2px;
-      }
-
-      .border {
-        border: aliceblue 1px solid;
-        border-top: 0;
-      }
-    `,
-    basicFlexStyles(),
-    pulseStyle(),
-    cursorTipStyle(),
-    toolTipStyle(),
-  ];
 
   _renderRoomAccess(user) {
     if (RoomService.get().getRoom(this.roomId).roomType === RoomType.TEACHER)
@@ -230,6 +199,45 @@ export class UserListView extends LitElement {
       `;
     }
   };
+
+  static styles = [
+    css`
+      .font {
+        font-size: 9pt;
+      }
+
+      .font-emoji {
+        font-size: 12pt;
+      }
+
+      .user-row {
+        padding: 1px;
+        bottom: 0;
+        align-items: center;
+      }
+
+      .little-box {
+        padding: 1px;
+        background-color: ${black()};
+        color: ${white()};
+        font-size: 6pt;
+        border-radius: 5px;
+        height: 13px;
+        width: 13px;
+        margin: 2px;
+      }
+
+      .border {
+        border: aliceblue 1px solid;
+        border-top: 0;
+      }
+    `,
+    basicFlexStyles(),
+    pulseStyle(),
+    cursorTipStyle(),
+    toolTipStyle(),
+    helpRotationStyle(),
+  ];
 }
 
 safeRegister("cc-user-list", UserListView);

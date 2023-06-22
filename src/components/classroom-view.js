@@ -11,7 +11,7 @@ import { clearSelection } from "../util/clear-selection";
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
   static properties = {
-    localUser: { type: User, state: true, attribute: false }
+    localUser: { type: User, state: true, attribute: false },
   };
 
   constructor() {
@@ -133,8 +133,7 @@ export class ClassRoomView extends LitElement {
   };
 
   _dragMiddleBarEnd = () => {
-    document.onmousemove = () => {
-    };
+    document.onmousemove = () => {};
   };
 
   _clampPercentage = (percentage) => {
@@ -152,7 +151,7 @@ export class ClassRoomView extends LitElement {
       top: 0;
       width: 6px;
       background-color: grey;
-      cursor: e-resize;
+      cursor: col-resize;
     }
   `;
 }
