@@ -51,6 +51,7 @@ export class EditorView extends LitElement {
     classroom.addListener(() => {
       this.editor.setOptions({ showLineNumbers: classroom.lineNumbers });
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
+      this.requestUpdate();
     });
     this.room.addListener((changes) => {
       changes.forEach(() => {
@@ -274,9 +275,6 @@ export class EditorView extends LitElement {
   };
 
   render() {
-    const buttonStyle = {};
-    buttonStyle.left = this.leftAlign === 1 ? this.editorWidth : 0;
-
     const hiddenStyle = {};
     if (!this.editorVisible) hiddenStyle.visibility = "hidden";
 
@@ -287,17 +285,26 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html` <button
-              class="run-button"
-              style="${styleMap(buttonStyle)}"
-              @click="${() => this.runCode(true)}"
-            >
-              <lit-icon icon="add" iconset="iconset"></lit-icon>
-              <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
-            </button>
+        ? html` ${this._renderRunButton()}
+
             <cc-console message="${this.message}"></cc-console>`
         : ""}
     `;
+  }
+
+  _renderRunButton() {
+    const buttonStyle = {};
+    buttonStyle.left = this.leftAlign === 1 ? this.editorWidth : 0;
+    let lineNumbers = ClassroomService.get().classroom.lineNumbers;
+    if (!lineNumbers) return html``;
+    return html` <button
+      class="run-button"
+      style="${styleMap(buttonStyle)}"
+      @click="${() => this.runCode(true)}"
+    >
+      <lit-icon icon="add" iconset="iconset"></lit-icon>
+      <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
+    </button>`;
   }
 
   static styles = css`
