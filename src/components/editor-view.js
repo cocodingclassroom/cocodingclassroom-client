@@ -20,6 +20,7 @@ import {
   NotifyService,
   Notification,
 } from "../services/notify-service";
+import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -111,15 +112,17 @@ export class EditorView extends LitElement {
 
     // setup binding
     let room = RoomService.get().rooms[this.roomId];
-    let binding = new AceBinding(
+    new AceBinding(
       room.codeContent,
       this.editor,
       SyncService.get().getAwareness()
     );
-    // let cursorBinding = new AceCursors(binding);
+    new CursorSyncExtension(this.editor, this.room, this);
+
     this.editor.session.on("change", (x) => {
       this.onEditorChange(x);
     });
+
     this.room.l_editorForRoom = this.editor;
     this.runCode(true);
 
@@ -373,6 +376,12 @@ export class EditorView extends LitElement {
 
     .ace_gutter-active-line {
       background-color: rgba(150, 150, 0, 0.5) !important;
+    }
+
+    .fisch {
+      position: absolute;
+      background: rgba(100, 100, 200, 0.5);
+      z-index: 40;
     }
   `;
 }

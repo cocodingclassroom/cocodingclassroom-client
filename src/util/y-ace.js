@@ -63,19 +63,20 @@ export class AceCursors {
             cursor.row,
             cursor.col
           );
-          let aceGutter =
-            document.getElementsByClassName("ace_gutter")[0].offsetWidth;
-
-          // fixes split-screen line-number offset, especially 2-digit numbers
-          if (cursor.ace != "editor1") {
-            // aceGutter = document.getElementsByClassName('ace_gutter')[1].offsetWidth
-            document.querySelectorAll(".ace_gutter").forEach(function (gutter) {
-              // Now do something with my button
-              if (gutter.offsetWidth > 0) {
-                aceGutter = gutter.offsetWidth;
-              }
-            });
-          }
+          let aceGutter = 0;
+          // let aceGutter =
+          //   document.getElementsByClassName("ace_gutter")[0].offsetWidth;
+          //
+          // // fixes split-screen line-number offset, especially 2-digit numbers
+          // if (cursor.ace != "editor1") {
+          //   // aceGutter = document.getElementsByClassName('ace_gutter')[1].offsetWidth
+          //   document.querySelectorAll(".ace_gutter").forEach(function (gutter) {
+          //     // Now do something with my button
+          //     if (gutter.offsetWidth > 0) {
+          //       aceGutter = gutter.offsetWidth;
+          //     }
+          //   });
+          // }
 
           let height = config.lineHeight;
           let width = config.characterWidth;
