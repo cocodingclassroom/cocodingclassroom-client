@@ -378,10 +378,13 @@ export class EditorView extends LitElement {
       background-color: rgba(150, 150, 0, 0.5) !important;
     }
 
-    .fisch {
-      position: absolute;
-      background: rgba(100, 100, 200, 0.5);
-      z-index: 40;
+    .synced_cursor {
+      font-size: 9pt;
+      opacity: 0.5;
+    }
+
+    .synced_cursor:hover {
+      opacity: 1;
     }
   `;
 }
