@@ -48,12 +48,12 @@ export class TeacherMenuView extends LitElement {
         <div class="cc-controls-row">
           <div
             class="cc-header-title help"
-            data-tip="${version}"
+            data-tip="Cocoding Classroom ${version}"
             @click="${() => {
               showAbout();
             }}"
           >
-            COCODING Classroom
+            COCODING Classroom II
           </div>
           <div class="help" @click="${() => {
             showAbout();
@@ -134,9 +134,10 @@ export class TeacherMenuView extends LitElement {
 
   static styles = [
     css`
-      .cc-header-title {
+      .cc-controls-row div.cc-header-title {
         font-size: 10pt;
         min-width: calc(100% - 60px);
+        padding: 4px;
       }
     `,
     menuRowStyles(),

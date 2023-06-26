@@ -228,7 +228,7 @@ export class UserListView extends LitElement {
       }
 
       .user-row {
-        padding: 1px;
+        padding: 1px 1px 1px 3px;
         bottom: 0;
         align-items: center;
       }
