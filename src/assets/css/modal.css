@@ -18,7 +18,7 @@
 
 .modal-backdrop {
     position: absolute;
-    z-index: 4;
+    z-index: 200;
     height: 100%;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
@@ -63,7 +63,7 @@
     color: black;
     padding: .25em .67em;
     font-size: 1.1em;
-    margin: 0px;
+    margin: 0;
     min-height: 2.5em;
     outline: none;
 }
@@ -75,7 +75,7 @@
     position: relative;
     padding: .75em 2em;
     margin: 5px;
-    border-radius: 0px;
+    border-radius: 0;
     background-color: #e0e0e0;
     color: black;
     text-transform: uppercase;
