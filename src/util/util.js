@@ -65,3 +65,12 @@ export const newShade = (hexColor, magnitude) => {
     return hexColor;
   }
 };
+
+export const numberOfTabs = (text) => {
+  let count = 0;
+  let index = 0;
+  while (text.charAt(index++) === "\t") {
+    count++;
+  }
+  return count;
+};

@@ -1,6 +1,6 @@
 import { UserService } from "../services/user-service";
 import { Range } from "ace-builds";
-import { isColorLight, newShade } from "../util/util";
+import { isColorLight, newShade, numberOfTabs } from "../util/util";
 import { black, white } from "../util/shared-css";
 import { ClassroomService } from "../services/classroom-service";
 
@@ -19,22 +19,29 @@ export class CursorSyncExtension {
   }
 
   #setup() {
-    let localUser = UserService.get().localUser;
-
     UserService.get().otherUsers.forEach((otherUser) => {
       otherUser.addListener(() => {
-        this.#rerender(localUser);
+        this.#rerender();
       });
     });
     ClassroomService.get().classroom.addListener(() => {
-      this.#rerender(localUser);
+      this.#rerender();
     });
     this.editor.session.selection.on("changeSelection", () => {
-      this.#updateSelection(localUser);
-      this.#rerender(localUser);
+      this.#updateSelection();
+      this.#rerender();
     });
     this.editor.session.on("changeScrollTop", () => {
-      this.#rerender(localUser);
+      this.#rerender();
+    });
+    this.editor.commands.on("afterExec", (data) => {
+      if (data.command.name === "insertstring") {
+        this.#updateSelection();
+        this.#rerender();
+      }
+    });
+    this.room.addListener(() => {
+      this.#rerender();
     });
   }
 
@@ -45,7 +52,8 @@ export class CursorSyncExtension {
     this.#renderUserCursorsAndFlags();
   }
 
-  #updateSelection(user) {
+  #updateSelection() {
+    let user = UserService.get().localUser;
     let selection = this.editor.getSelectionRange();
     user.activeRoom = this.room.id;
     user.selection = JSON.parse(JSON.stringify(selection)); // to simple object so y-js can easily sync it.
@@ -99,7 +107,8 @@ export class CursorSyncExtension {
     let leftOffsetLineNumbers = this.#getWidthOfLineNumbers();
     let height = this.editor.renderer.lineHeight;
     let width = this.editor.renderer.characterWidth;
-    let left = user.selection.end.column * width + leftOffsetLineNumbers;
+    let left =
+      this.#adjustColumnByNumberOfTabs(user) * width + leftOffsetLineNumbers;
     let top = user.selection.end.row * height - scroll;
 
     let cursor = document.createElement("div");
@@ -123,7 +132,8 @@ export class CursorSyncExtension {
     let leftOffsetLineNumbers = this.#getWidthOfLineNumbers();
     let height = this.editor.renderer.lineHeight;
     let width = this.editor.renderer.characterWidth;
-    let left = user.selection.end.column * width + leftOffsetLineNumbers;
+    let left =
+      this.#adjustColumnByNumberOfTabs(user) * width + leftOffsetLineNumbers;
     let top = (user.selection.end.row - 1) * height - scroll;
 
     let flag = document.createElement("div");
@@ -146,6 +156,14 @@ export class CursorSyncExtension {
       "</div>";
 
     this.view.renderRoot.appendChild(flag);
+  }
+
+  #adjustColumnByNumberOfTabs(user) {
+    let line = this.editor.session.getLine(user.selection.end.row);
+    let tabSize = this.editor.session.getOption("tabSize");
+    let tabs = numberOfTabs(line);
+    let extraColumn = tabs * (tabSize - 1);
+    return user.selection.end.column + extraColumn;
   }
 
   #getWidthOfLineNumbers() {
