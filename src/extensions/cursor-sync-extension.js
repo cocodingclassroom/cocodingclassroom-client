@@ -25,9 +25,11 @@ export class CursorSyncExtension {
         this.#rerender(localUser);
       });
     });
-
     this.editor.session.selection.on("changeSelection", () => {
       this.#updateSelection(localUser);
+      this.#rerender(localUser);
+    });
+    this.editor.session.on("changeScrollTop", () => {
       this.#rerender(localUser);
     });
   }
@@ -72,6 +74,9 @@ export class CursorSyncExtension {
   }
 
   #removeAllCursorsAndFlags() {
+    this.view.renderRoot.querySelectorAll(".synced_flag").forEach((elm) => {
+      elm.remove();
+    });
     this.view.renderRoot.querySelectorAll(".synced_cursor").forEach((elm) => {
       elm.remove();
     });
@@ -80,38 +85,77 @@ export class CursorSyncExtension {
   #renderUserCursorsAndFlags() {
     UserService.get().otherUsers.forEach((user) => {
       if (user.activeRoom !== this.room.id) return;
-      let scroll = this.editor.renderer.session.getScrollTop();
-      console.log(scroll);
+      this.#renderFlag(user);
+      this.#renderCursor(user);
+    });
+  }
 
-      let height = this.editor.renderer.lineHeight;
-      let width = this.editor.renderer.characterWidth;
-      let left = user.selection.end.column * width + 5;
-      let top = (user.selection.end.row - 1) * height;
+  #renderCursor(user) {
+    let scroll = this.editor.renderer.session.getScrollTop();
+    let leftOffsetLineNumbers = this.#getWidthOfLineNumbers();
+    let height = this.editor.renderer.lineHeight;
+    let width = this.editor.renderer.characterWidth;
+    let left = user.selection.end.column * width + leftOffsetLineNumbers;
+    let top = user.selection.end.row * height - scroll;
 
-      let flag = document.createElement("div");
-      flag.id = "cursor_" + user.id;
-      flag.className = "synced_cursor";
-      flag.style = `
+    let cursor = document.createElement("div");
+    cursor.id = "cursor_" + user.id;
+    cursor.className = "synced_cursor";
+    cursor.style = `
+      	position: absolute;
+							background: ${user.color};
+							height: ${height}px;
+							width: ${width * 0.3}px;
+							top: ${top}px;
+							left: ${left + width * 0.3}px;
+							z-index: 100;
+							cursor: help;
+    `;
+    this.view.renderRoot.appendChild(cursor);
+  }
+
+  #renderFlag(user) {
+    let scroll = this.editor.renderer.session.getScrollTop();
+    let leftOffsetLineNumbers = this.#getWidthOfLineNumbers();
+    let height = this.editor.renderer.lineHeight;
+    let width = this.editor.renderer.characterWidth;
+    let left = user.selection.end.column * width + leftOffsetLineNumbers;
+    let top = (user.selection.end.row - 1) * height - scroll;
+
+    let flag = document.createElement("div");
+    flag.id = "flag_" + user.id;
+    flag.className = "synced_flag";
+    flag.style = `
 							position: absolute;
 							background: ${user.color};
 							height: ${height - 5}px;
 							width: ${user.name.length * width * 0.8}px;
-							top: ${top}px;
-							left: ${left}px;
-							border-left: 2px solid ${user.color};
+							top: ${top + 5}px;
+							left: ${left + width * 0.3}px;
 							z-index: 100;
 							color: ${isColorLight(user.color) ? black() : white()};
 							cursor: help;
 						`;
-      flag.innerHTML =
-        '<div class="cursor-label" style="background: ' +
-        user.color +
-        ';top: -1.3em;white-space: nowrap;">' +
-        user.name +
-        "</div>";
+    flag.innerHTML =
+      '<div class="cursor-label" style="white-space: nowrap;">' +
+      user.name +
+      "</div>";
 
-      this.view.renderRoot.appendChild(flag);
-    });
+    this.view.renderRoot.appendChild(flag);
+  }
+
+  #getWidthOfLineNumbers() {
+    let lineNumbers = this.editor.getOption("showLineNumbers");
+    let gutter =
+      this.editor.container.getElementsByClassName("ace_gutter-layer");
+    let leftOffsetLineNumbers = 0;
+    if (lineNumbers && gutter) {
+      let gutterElement = gutter[0];
+      let gutterWidth = gutterElement.style.width;
+      let removedPx = gutterWidth.substring(0, gutterWidth.length - 2);
+      leftOffsetLineNumbers = parseInt(removedPx);
+    }
+    return leftOffsetLineNumbers;
   }
 
   #createUserSelectionStyleIfNotExistingYet(user) {
