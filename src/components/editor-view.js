@@ -253,7 +253,9 @@ export class EditorView extends LitElement {
         this.activeError = true;
       },
       () => {
+        console.log("compiled good");
         this.activeError = false;
+        this.requestUpdate();
         this.#notifyOthersOfFullRebuild(fullRebuild, onRebuildSuccessfulShare);
       },
       this.activeError
