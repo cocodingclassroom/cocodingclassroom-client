@@ -380,11 +380,6 @@ export class EditorView extends LitElement {
 
     .synced_flag {
       font-size: 9pt;
-      opacity: 0.5;
-    }
-
-    .synced_flag:hover {
-      opacity: 1;
     }
 
     .synced_cursor {
@@ -392,14 +387,32 @@ export class EditorView extends LitElement {
       -webkit-animation: blink-animation 1s steps(5, start) infinite;
     }
 
+    .cursor-label {
+      width: 8px;
+      height: 8px;
+      color: transparent;
+    }
+
+    .cursor-label:hover {
+      width: auto;
+      height: auto;
+      color: inherit;
+    }
+
     @keyframes blink-animation {
       to {
         visibility: hidden;
       }
     }
+
     @-webkit-keyframes blink-animation {
       to {
         visibility: hidden;
+      }
+    }
+
+    @keyframes zoom-animation {
+      from {
       }
     }
   `;

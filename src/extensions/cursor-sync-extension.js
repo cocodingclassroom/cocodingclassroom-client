@@ -142,11 +142,10 @@ export class CursorSyncExtension {
     flag.style = `
 							position: absolute;
 							background: ${user.color};
-							height: ${height - 5}px;
-							width: ${user.name.length * width * 0.8}px;
-							top: ${top + 5}px;
+							display: inline-block;
+							top: ${top + 14}px;
 							left: ${left + width * 0.3}px;
-							z-index: 100;
+							z-index: 101;
 							color: ${isColorLight(user.color) ? black() : white()};
 							cursor: help;
 						`;
