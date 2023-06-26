@@ -10,23 +10,27 @@ export const menuRowStyles = () => css`
     flex-direction: row;
     flex-grow: 1;
     height: 26px;
-    border-bottom: 1px solid #aaa;
     width: 100%;
+    border-top: 1px solid #aaa;
+  }
+
+  .cc-controls-row:last-child {
+    border-bottom: 1px solid #aaa;
   }
 
   .cc-controls-row div {
     font-size: 12px;
     width: 100%;
     padding: 2px;
-    background: #444;
+    background: ${black()};
     border: 1px solid #aaa;
+    border-style: none solid none solid;
     border-top: none;
     text-align: center;
-    cursor: pointer;
   }
 
   .cc-controls-row div:hover {
-    background: #555;
+    background: #666;
   }
 
   .cc-controls-row-container {

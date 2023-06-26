@@ -219,11 +219,15 @@ export class SettingsView extends LitElement {
         min-height: 50px;
         max-height: 500px;
         padding: 5px;
-        border: 1px solid ${white()};
+        border-left: 1px solid #aaa;
+        border-right: 1px solid #aaa;
+        border-top: none;
+        border-bottom: 1.5px solid #aaa;
+        font-size: 10pt;
+        background-color: ${black()};
       }
-
+      
       .settings-panel div {
-        font-size: 8pt;
         padding: 2px;
       }
 
