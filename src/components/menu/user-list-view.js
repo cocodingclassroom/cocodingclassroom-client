@@ -139,8 +139,8 @@ export class UserListView extends LitElement {
 
   #onClickFollow(user) {
     let localUser = UserService.get().localUser;
-
     if (localUser.followingId === null) {
+      localUser.selectedRoomRight = user.selectedRoomRight;
       localUser.followingId = user.id;
     } else {
       localUser.followingId = null;
