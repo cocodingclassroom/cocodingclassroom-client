@@ -2,6 +2,7 @@ import { UserService } from "../services/user-service";
 import { Range } from "ace-builds";
 import { isColorLight, newShade } from "../util/util";
 import { black, white } from "../util/shared-css";
+import { ClassroomService } from "../services/classroom-service";
 
 export class CursorSyncExtension {
   editor;
@@ -24,6 +25,9 @@ export class CursorSyncExtension {
       otherUser.addListener(() => {
         this.#rerender(localUser);
       });
+    });
+    ClassroomService.get().classroom.addListener(() => {
+      this.#rerender(localUser);
     });
     this.editor.session.selection.on("changeSelection", () => {
       this.#updateSelection(localUser);
