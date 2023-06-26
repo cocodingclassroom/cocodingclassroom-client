@@ -143,7 +143,7 @@ export class MenuView extends LitElement {
     showModal(
       `
         <div>
-         Clear all Chat Messages in this room?
+         Clear chat for this room?
         </div>
     `,
       () => {
