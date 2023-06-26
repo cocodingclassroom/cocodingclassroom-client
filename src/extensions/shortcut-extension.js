@@ -1,4 +1,4 @@
-import platform from "platform";
+import { isMac } from "lib0/environment";
 
 export class ShortcutExtension {
   _shortcuts;
@@ -10,8 +10,8 @@ export class ShortcutExtension {
   constructor() {
     this._shortcuts = [];
     this._pressedKeys = new Set();
-    this._isWindows = platform.os.family === "Windows";
-    this._isMac = platform.os.family === "OS X";
+    this._isMac = isMac;
+    this._isWindows = !isMac;
     this._check = () => true;
   }
 

@@ -8,7 +8,7 @@ import { AceBinding } from "../util/y-ace";
 import { SyncService } from "../services/sync-service";
 import { formatCode, interpret } from "../util/compiler";
 import run from "../assets/resource/run.svg";
-import { Shortcut, ShortcutExtension } from "./shortcut-extension";
+import { Shortcut, ShortcutExtension } from "../extensions/shortcut-extension";
 import { safeRegister } from "../util/util";
 import { UserService } from "../services/user-service";
 import { UserRole } from "../models/user";
