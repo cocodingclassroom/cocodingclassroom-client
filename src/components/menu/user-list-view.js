@@ -68,9 +68,16 @@ export class UserListView extends LitElement {
   };
 
   render = () => {
+    let room = RoomService.get().getRoom(this.roomId);
     return html`
       ${UserService.get()
         .getAllUsers()
+        .filter(
+          (user) =>
+            room.isTeacherRoom() ||
+            user.isRoomRight(this.roomId) ||
+            user.isRoomLeft(this.roomId)
+        )
         .map((user) => {
           let backgroundColorStyle = { backgroundColor: user.color };
 

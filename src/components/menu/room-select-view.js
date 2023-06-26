@@ -31,6 +31,11 @@ export class RoomSelectView extends LitElement {
     super.connectedCallback();
   }
 
+  firstUpdated(_changedProperties) {
+    super.firstUpdated(_changedProperties);
+    this._setSelectedOption();
+  }
+
   render = () => {
     return html` <select
       class="cc-roomlist"
