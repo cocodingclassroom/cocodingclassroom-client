@@ -18,6 +18,7 @@ export class User extends YSyncModel {
   activeRoom = 0;
   selection = { start: { row: 0, column: 0 }, end: { row: 0, column: 0 } };
   editorFontSize = 12;
+  followingId = null;
 
   constructor(id) {
     super(`user_${id}`);
@@ -59,6 +60,16 @@ export class User extends YSyncModel {
 
   isLocalUser = () => {
     return this === UserService.get().localUser;
+  };
+
+  getSelectedRow = () => {
+    if (!this.selection) return 0;
+    return this.selection.end.row;
+  };
+
+  getSelectedColumn = () => {
+    if (!this.selection) return 0;
+    return this.selection.end.column;
   };
 
   toJSON = () => {

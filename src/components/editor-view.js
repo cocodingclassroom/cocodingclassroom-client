@@ -36,6 +36,7 @@ export class EditorView extends LitElement {
   editor;
   activeError = false;
   shortcutExtension;
+  currentlyFollowing = null;
 
   connectedCallback() {
     this.editorIdentifier = `editor-${this.roomId}`;
@@ -43,10 +44,11 @@ export class EditorView extends LitElement {
     this.editorVisible = true;
     this.shortcutExtension = new ShortcutExtension();
     this.shortcutExtension.register();
-    this.shortcutExtension.addShortcuts(this._shortCuts());
+    this.shortcutExtension.addShortcuts(this.#shortCuts());
     let localUser = UserService.get().localUser;
     localUser.addListener(() => {
       this.editor.setOptions({ fontSize: localUser.getEditorFontSize() });
+      this.#updateFollowing(localUser);
     });
     let classroom = ClassroomService.get().classroom;
     classroom.addListener(() => {
@@ -62,24 +64,46 @@ export class EditorView extends LitElement {
     NotifyService.get().addListener((notification) => {
       if (notification.type !== NotificationType.FULLREBUILDOFFRAME) return;
       if (notification.message === this.room.id) {
-        this.runCode(true, false);
+        this.#runCode(true, false);
       }
     });
     super.connectedCallback();
   }
 
+  #updateFollowing(localUser) {
+    if (localUser.followingId !== this.currentlyFollowing) {
+      let following = UserService.get().getUserByID(localUser.followingId);
+      let oldFollowUser = UserService.get().getUserByID(
+        this.currentlyFollowing
+      );
+      if (oldFollowUser) oldFollowUser.removeListener(this.#followUser);
+      if (following) {
+        following.addListener(this.#followUser);
+      }
+      this.currentlyFollowing = localUser.followingId;
+    }
+  }
+
+  #followUser = () => {
+    let following = UserService.get().getUserByID(
+      UserService.get().localUser.followingId
+    );
+    let lineToGoTo = following.getSelectedRow();
+    this.editor.scrollToLine(lineToGoTo, true, true, () => {});
+  };
+
   disconnectedCallback() {
-    this.editor.getSession().off("change", this.onEditorChange);
+    this.editor.getSession().off("change", this.#onEditorChange);
     this.shortcutExtension.unregister();
     super.disconnectedCallback();
   }
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
-    this.setupEditor();
+    this.#setupEditor();
   }
 
-  setupEditor = () => {
+  #setupEditor = () => {
     let cont = this.shadowRoot.getElementById(this.editorIdentifier);
     this.editor = ace.edit(cont);
     this.editor.renderer.attachToShadowRoot();
@@ -120,11 +144,11 @@ export class EditorView extends LitElement {
     new CursorSyncExtension(this.editor, this.room, this);
 
     this.editor.session.on("change", (x) => {
-      this.onEditorChange(x);
+      this.#onEditorChange(x);
     });
 
     this.room.l_editorForRoom = this.editor;
-    this.runCode(true);
+    this.#runCode(true);
 
     this.editor.commands.on("afterExec", (data) => {
       if (data.command.name === "insertstring") {
@@ -166,18 +190,18 @@ export class EditorView extends LitElement {
     if (classroom.liveCoding) {
       this.liveCodingInterval = setTimeout(() => {
         console.log("live coding recompile!");
-        this.runCode(false);
+        this.#runCode(false);
       }, classroom.liveCodingDelay * 1000);
     }
   };
 
-  _shortCuts = () => {
+  #shortCuts = () => {
     return [
       new Shortcut(
         "Toggle Editor",
         ["e"],
         () => {
-          this.toggleEditor();
+          this.#toggleEditor();
         },
         true,
         false,
@@ -190,26 +214,26 @@ export class EditorView extends LitElement {
         "Rebuild",
         ["Enter"],
         () => {
-          this.runCode(true);
+          this.#runCode(true);
         },
         true,
         false,
         true,
         () => {
-          return this.isEditorFocused();
+          return this.#isEditorFocused();
         }
       ),
       new Shortcut(
         "Run Code",
         ["Enter"],
         () => {
-          this.runCode(false);
+          this.#runCode(false);
         },
         true,
         false,
         false,
         () => {
-          return this.isEditorFocused();
+          return this.#isEditorFocused();
         }
       ),
       new Shortcut(
@@ -222,21 +246,21 @@ export class EditorView extends LitElement {
         true,
         false,
         () => {
-          return this.isEditorFocused();
+          return this.#isEditorFocused();
         }
       ),
     ];
   };
 
-  isEditorFocused = () => {
+  #isEditorFocused = () => {
     return this.editor.isFocused();
   };
 
-  onEditorChange = (delta) => {
+  #onEditorChange = (delta) => {
     this.room.l_changedPositions.push(delta.start);
   };
 
-  runCode(fullRebuild = false, onRebuildSuccessfulShare = true) {
+  #runCode(fullRebuild = false, onRebuildSuccessfulShare = true) {
     console.log("RunCode");
     interpret(
       fullRebuild,
@@ -274,7 +298,7 @@ export class EditorView extends LitElement {
     }
   }
 
-  toggleEditor = () => {
+  #toggleEditor = () => {
     this.editorVisible = !this.editorVisible;
   };
 
@@ -289,12 +313,12 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html` ${this._renderRunButton()} ${this._renderConsole()} `
+        ? html` ${this.#renderRunButton()} ${this.#renderConsole()} `
         : ""}
     `;
   }
 
-  _renderRunButton = () => {
+  #renderRunButton = () => {
     const buttonStyle = {};
     buttonStyle.left = this.leftAlign === 1 ? this.editorWidth : 0;
     let lineNumbers = ClassroomService.get().classroom.lineNumbers;
@@ -302,14 +326,14 @@ export class EditorView extends LitElement {
     return html` <button
       class="run-button"
       style="${styleMap(buttonStyle)}"
-      @click="${() => this.runCode(true)}"
+      @click="${() => this.#runCode(true)}"
     >
       <lit-icon icon="add" iconset="iconset"></lit-icon>
       <lit-iconset iconset="iconset"> ${unsafeHTML(run)}</lit-iconset>
     </button>`;
   };
 
-  _renderConsole = () => {
+  #renderConsole = () => {
     if (!this.activeError) return html``;
     return html` <cc-console message="${this.message}"></cc-console>`;
   };
@@ -410,11 +434,6 @@ export class EditorView extends LitElement {
     @-webkit-keyframes blink-animation {
       to {
         visibility: hidden;
-      }
-    }
-
-    @keyframes zoom-animation {
-      from {
       }
     }
   `;

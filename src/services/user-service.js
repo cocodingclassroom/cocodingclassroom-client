@@ -79,6 +79,18 @@ export class UserService {
   };
 
   getUserByID = (id) => {
-    return this.getAllUsers().find(user => user.id === id);
-  }
+    return this.getAllUsers().find((user) => user.id === id);
+  };
+
+  getFollowedBy = () => {
+    let results = [];
+    let localUser = UserService.get().localUser;
+    for (let i = 0; i < this.otherUsers.length; i++) {
+      let user = this.otherUsers[i];
+      if (user.followingId === localUser.id) {
+        results.push(user);
+      }
+    }
+    return results;
+  };
 }
