@@ -144,6 +144,15 @@ export class Room extends YSyncModel {
       this.writersIds.delete(index);
     }
   };
+
+  hasUsers = () => {
+    return (
+      UserService.get()
+        .getAllUsers()
+        .filter((user) => user.isRoomLeft(this.id) || user.isRoomRight(this.id))
+        .length > 0
+    );
+  };
 }
 
 export class RoomType {

@@ -43,7 +43,7 @@ export class WalkRoomView extends LitElement {
         let nextRoom = RoomService.get().getRoom(
           (currentRoom + 1) % RoomService.get().rooms.length
         );
-        while (nextRoom.roomType === RoomType.TEACHER) {
+        while (nextRoom.roomType === RoomType.TEACHER || !nextRoom.hasUsers()) {
           nextRoom = RoomService.get().getRoom(
             (nextRoom.id + 1) % RoomService.get().rooms.length
           );
