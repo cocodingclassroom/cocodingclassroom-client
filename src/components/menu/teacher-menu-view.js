@@ -55,28 +55,32 @@ export class TeacherMenuView extends LitElement {
           >
             COCODING Classroom II
           </div>
-          <div class="help" @click="${() => {
-            showAbout();
-          }}" data-tip="About">
+          <div
+            class="help"
+            @click="${() => {
+              showAbout();
+            }}"
+            data-tip="About"
+          >
             <cc-icon svg="${iconSvg.about}"></cc-icon>
           </div>
-          <div class="cc-nav-settings" @click="${() => {
-            this.settingsOpen = !this.settingsOpen;
-            initDataTips(this.renderRoot);
-          }}" data-tip="Settings">
+          <div
+            class="cc-nav-settings"
+            @click="${() => {
+              this.settingsOpen = !this.settingsOpen;
+              initDataTips(this.renderRoot);
+            }}"
+            data-tip="Settings"
+          >
             <cc-icon svg="${iconSvg.settings}" }></cc-icon>
           </div>
         </div>
         ${this.settingsOpen ? html` <cc-settings></cc-settings>` : ""}
-        ${
-          UserService.get().localUser.isTeacher()
-            ? this._renderActionsForTeacher()
-            : html` <div class="cc-controls-row">
-                ${this._renderActionsForStudents()}
-              </div>`
-        }
-      </div>
-
+        ${UserService.get().localUser.isTeacher()
+          ? this._renderActionsForTeacher()
+          : html` <div class="cc-controls-row">
+              ${this._renderActionsForStudents()}
+            </div>`}
       </div>
     `;
   };

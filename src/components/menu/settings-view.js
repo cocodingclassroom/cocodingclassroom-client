@@ -38,7 +38,7 @@ export class SettingsView extends LitElement {
                     name="mode"
                     id="editInput"
                     type="radio"
-                    value="Edit"
+                    value="${ClassroomMode.EDIT}"
                   />
                   <label for="editInput">Edit</label>
                   <input
@@ -46,7 +46,7 @@ export class SettingsView extends LitElement {
                     name="mode"
                     id="galleryInput"
                     type="radio"
-                    value="Gallery"
+                    value="${ClassroomMode.GALLERY}"
                   />
                   <label for="galleryInput">Gallery</label>
                 </div>

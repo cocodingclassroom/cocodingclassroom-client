@@ -93,4 +93,10 @@ export class UserService {
     }
     return results;
   };
+
+  getFirstTeacher = () => {
+    let allTeachers = this.getAllUsers().filter((user) => user.isTeacher());
+    if (allTeachers.length === 0) return this.getAllUsers()[0];
+    return allTeachers[0];
+  };
 }

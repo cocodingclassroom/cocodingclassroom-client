@@ -17,6 +17,7 @@ import { ClassroomService } from "../../services/classroom-service";
 import { RoomService } from "../../services/room-service";
 import { iconSvg } from "../icons/icons";
 import { RoomType } from "../../models/room";
+import { ClassroomMode } from "../../models/classroom-model";
 
 export class UserListView extends LitElement {
   static properties = {
@@ -75,6 +76,7 @@ export class UserListView extends LitElement {
         .filter(
           (user) =>
             room.isTeacherRoom() ||
+            ClassroomService.get().isGalleryMode() ||
             user.isRoomRight(this.roomId) ||
             user.isRoomLeft(this.roomId)
         )

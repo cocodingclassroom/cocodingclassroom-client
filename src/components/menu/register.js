@@ -8,3 +8,4 @@ import { ExportCodeView } from "./export-code-view";
 import { WalkRoomView } from "./walk-room-view";
 import { SettingsView } from "./settings-view";
 import { MenuView } from "./menu-view";
+import { GalleryModeMenuView } from "./gallery-mode-menu-view";

@@ -7,6 +7,7 @@ import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle, safeRegister } from "../util/util";
 import { RoomType } from "../models/room";
 import { clearSelection } from "../util/clear-selection";
+import { ClassroomMode } from "../models/classroom-model";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
@@ -54,6 +55,32 @@ export class ClassRoomView extends LitElement {
   render() {
     if (this.localUser === null || this.localUser === undefined) return "";
 
+    if (ClassroomService.get().isGalleryMode()) {
+      return this.#renderGalleryMode();
+    }
+
+    return this.#renderEditMode();
+  }
+
+  #renderGalleryMode() {
+    let hiddenStyle = { display: "none" };
+    let fullStyle = { width: "100%", height: "100%" };
+
+    let teacher = UserService.get().getFirstTeacher();
+    return html` ${RoomService.get().rooms.map((room) => {
+      return html`
+        <div
+          style="${styleMap(
+            teacher.isRoomRight(room.id) ? fullStyle : hiddenStyle
+          )}"
+        >
+          <cc-room roomId="${room.id}" width="${100}" isLeft="${0}"></cc-room>
+        </div>
+      `;
+    })}`;
+  }
+
+  #renderEditMode() {
     let width = window.innerWidth;
     let pixelWidthPerPercent = width / 100;
     let leftWidth = (this.localUser?.leftSize ?? 50) * pixelWidthPerPercent;
