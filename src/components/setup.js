@@ -20,7 +20,6 @@ export class Setup extends LitElement {
         <div class="container-col">
           <h3 class="p5">COCODING CLASSROOM - SETUP</h3>
           <hr />
-          <hr />
           <div class="p5">
             <select
               class="round submit"
@@ -33,7 +32,7 @@ export class Setup extends LitElement {
                 `
               )}
             </select>
-            <label for="rooms">Initial Rooms</label>
+            <label for="rooms">initial Rooms</label>
           </div>
           <hr />
           <div class="p5">
@@ -151,12 +150,6 @@ export class Setup extends LitElement {
       flex-direction: column;
     }
 
-    #outlet {
-      background-color: #000;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
 
     .container-row {
       display: flex;
@@ -166,17 +159,23 @@ export class Setup extends LitElement {
 
     .p5 {
       padding: 5px;
+      
+    }
+
+    h3 {
+      margin-bottom: 0px;
     }
 
     .round {
       padding: 5px;
-      border-radius: 10px;
-      border: white 2px;
+      border-radius: 5px;
+      border: white 1px;
     }
 
     .submit {
       font-family: roboto mono, sans-serif;
       background-color: white;
+      text-transform: uppercase;
     }
 
     hr {
@@ -185,6 +184,9 @@ export class Setup extends LitElement {
       border: none;
       width: 400px;
     }
+    
+    input, textarea, select, option { font-family:inherit; }
+
   `;
 }
 
