@@ -18,6 +18,8 @@ import { styleMap } from "lit/directives/style-map.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { initDataTips } from "../../util/tooltips";
 import { showModal } from "../../util/modal";
+import { ClassroomService } from "../../services/classroom-service";
+import { ClassroomMode } from "../../models/classroom-model";
 
 export class MenuView extends LitElement {
   static properties = {
@@ -37,17 +39,26 @@ export class MenuView extends LitElement {
       .getRoom(this.roomId)
       .addListener(() => {
         this.requestUpdate();
-        this._scrollToBottom();
+        this.#scrollToBottom();
       });
   }
 
   firstUpdated = (change) => {
     super.firstUpdated(change);
     initDataTips(this.renderRoot);
-    this._scrollToBottom();
+    this.#scrollToBottom();
   };
 
   render = () => {
+    if (ClassroomService.get().isGalleryMode())
+      return html`
+        <div class="cc-meta">
+          <cc-gallery-menu-view roomId="${this.room.id}"></cc-gallery-menu-view>
+          <cc-user-list roomId="${this.room.id}"></cc-user-list>
+          ${this.#renderChat()}
+        </div>
+      `;
+
     return html`
       <div class="cc-meta">
         ${this.room.isTeacherRoom()
@@ -58,22 +69,22 @@ export class MenuView extends LitElement {
               roomId="${this.room.id}"
             ></cc-student-menu-view>`}
         <cc-user-list roomId="${this.room.id}"></cc-user-list>
-        ${this._renderChat()}
+        ${this.#renderChat()}
       </div>
     `;
   };
 
-  _renderChat = () => {
+  #renderChat = () => {
     return html` <div class="border-left-right background-dark">
       <div class="row chat-header">
         <div class="grow grey-text">CHAT</div>
-        ${this._renderTrash()}
+        ${this.#renderTrash()}
       </div>
       <div id="message_container" class="messages">
         ${RoomService.get()
           .getRoom(this.roomId)
           .messages.toArray()
-          .map((message) => this._renderMessage(message))}
+          .map((message) => this.#renderMessage(message))}
       </div>
       <div class="cc-controls-row">
         <input
@@ -82,27 +93,27 @@ export class MenuView extends LitElement {
           class="chat-input grow"
           type="text"
           @keydown="${(event) => {
-            this._sendMessageIfEnter(event);
+            this.#sendMessageIfEnter(event);
           }}"
         />
       </div>
     </div>`;
   };
 
-  _renderTrash = () => {
+  #renderTrash = () => {
     if (this.room.isTeacherRoom() && UserService.get().localUser.isStudent())
       return html``;
 
     return html` <div
       data-tip="Clear Chat"
       class="pointer pulse"
-      @click="${() => this._clearChat()}"
+      @click="${() => this.#clearChat()}"
     >
       <cc-icon class="grey-text" svg="${iconSvg.trash}"></cc-icon>
     </div>`;
   };
 
-  _renderMessage = (message) => {
+  #renderMessage = (message) => {
     let chatMessage = ChatMessage.fromJSON(message);
     var user = UserService.get().getUserByID(chatMessage.userid);
     let messageNameStyle = {
@@ -119,14 +130,14 @@ export class MenuView extends LitElement {
     </div>`;
   };
 
-  _sendMessageIfEnter = (event) => {
+  #sendMessageIfEnter = (event) => {
     if (event.key === "Enter") {
-      this._sendNewMessageToChat();
-      this._scrollToBottom();
+      this.#sendNewMessageToChat();
+      this.#scrollToBottom();
     }
   };
 
-  _sendNewMessageToChat = () => {
+  #sendNewMessageToChat = () => {
     let messageContent = this.renderRoot.getElementById("chatInput");
     if (messageContent.value.length === 0) return;
     let newMessage = new ChatMessage(
@@ -139,7 +150,7 @@ export class MenuView extends LitElement {
     messageContent.value = "";
   };
 
-  _clearChat = () => {
+  #clearChat = () => {
     showModal(
       `
         <div>
@@ -154,7 +165,7 @@ export class MenuView extends LitElement {
     );
   };
 
-  _scrollToBottom() {
+  #scrollToBottom() {
     setTimeout(() => {
       let scrollable = this.renderRoot.getElementById("message_container");
       scrollable.scrollTop = scrollable.scrollHeight;

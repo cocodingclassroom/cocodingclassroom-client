@@ -1,6 +1,6 @@
 import { SyncService } from "/src/services/sync-service.js";
 import { getRandomID } from "/src/util/util.js";
-import { ClassroomModel } from "/src/models/classroom-model.js";
+import { ClassroomMode, ClassroomModel } from "/src/models/classroom-model.js";
 import { RoomService } from "/src/services/room-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { live } from "lit-html/directives/live.js";
@@ -30,6 +30,10 @@ export class ClassroomService {
       ClassroomService._instance = new ClassroomService();
     return ClassroomService._instance;
   }
+
+  isGalleryMode = () => {
+    return this.classroom.mode === ClassroomMode.GALLERY;
+  };
 
   createNewRoom(
     callback,
