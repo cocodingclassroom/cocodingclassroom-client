@@ -140,11 +140,13 @@ export class TeacherMenuView extends LitElement {
         padding: 4px;
         background: #666;
         cursor: help;
+        margin-bottom: -1px;
         border-bottom: 1px solid #aaa;
       }
 
       .help {
         border-bottom: 1px solid #aaa !important;
+        margin-bottom: -1px;
       }
     `,
     menuRowStyles(),

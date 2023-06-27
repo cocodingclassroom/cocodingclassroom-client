@@ -82,7 +82,7 @@ export class UserListView extends LitElement {
           let backgroundColorStyle = { backgroundColor: user.color };
 
           return html` <div
-            class="row center border ${user.needsHelp ? "pulse-on" : ""}"
+            class="cc-controlls-view row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this.#renderRoomAccess(user)} ${this._renderNameAndRoom(user)}
@@ -281,10 +281,10 @@ export class UserListView extends LitElement {
         margin: 2px;
       }
 
-      .border {
-        border: aliceblue 1px solid;
-        border-top: 0;
-      }
+//      .border {
+//        border: aliceblue 1px solid;
+//        border-top: 0;
+//      }
     `,
     basicFlexStyles(),
     pulseStyle(),

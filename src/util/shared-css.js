@@ -24,10 +24,14 @@ export const menuRowStyles = () => css`
     padding: 2px;
     background: ${black()};
     border: 1px solid #aaa;
-    border-style: none solid none solid;
-    border-top: none;
+    border-style: none solid none none;
     text-align: center;
   }
+
+  .cc-controls-row > div:first-child {
+    border-left: 1px solid #aaa;
+  }
+
 
   .cc-controls-row div:hover {
     background: #666;
