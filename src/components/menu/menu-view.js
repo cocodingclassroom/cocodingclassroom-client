@@ -244,6 +244,8 @@ export class MenuView extends LitElement {
       }
 
       .grey-text {
+        font-size: 10pt;
+        margin: auto;
         color: ${secondary()};
       }
 
