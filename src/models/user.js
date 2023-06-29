@@ -1,10 +1,6 @@
 import { YSyncModel } from "./y-sync-model.js";
 import { UserService } from "../services/user-service";
-import {
-  adjectives,
-  animals,
-  uniqueNamesGenerator,
-} from "unique-names-generator";
+import { generateName } from "/src/util/user.js";
 
 export class User extends YSyncModel {
   id;
@@ -24,7 +20,7 @@ export class User extends YSyncModel {
     super(`user_${id}`);
     this.id = id;
     this.setup();
-    this.name = this.name ?? this._getRandomUserName();
+    this.name = this.name ?? generateName();
     this.color =
       this.color ?? "#" + Math.floor(Math.random() * 16777215).toString(16);
   }

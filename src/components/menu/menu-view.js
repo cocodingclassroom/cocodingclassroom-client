@@ -34,6 +34,14 @@ export class MenuView extends LitElement {
       this.requestUpdate();
       initDataTips(this.renderRoot);
     });
+    UserService.get()
+      .getAllUsers()
+      .forEach((user) => {
+        user.addListener(() => {
+          this.requestUpdate();
+          initDataTips(this.renderRoot);
+        });
+      });
     super.connectedCallback();
     RoomService.get()
       .getRoom(this.roomId)

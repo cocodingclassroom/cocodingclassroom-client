@@ -68,7 +68,11 @@ export class CursorSyncExtension {
 
   #renderSelectionsInEditor() {
     UserService.get().otherUsers.forEach((user) => {
-      if (user.activeRoom !== this.room.id) return;
+      if (
+        user.activeRoom !== this.room.id ||
+        (!this.room.isWriter(user.id) && !user.isTeacher())
+      )
+        return;
       this.#createUserSelectionStyleIfNotExistingYet(user);
       let id = this.editor.session.addMarker(
         new Range(
@@ -96,7 +100,11 @@ export class CursorSyncExtension {
 
   #renderUserCursorsAndFlags() {
     UserService.get().otherUsers.forEach((user) => {
-      if (user.activeRoom !== this.room.id) return;
+      if (
+        user.activeRoom !== this.room.id ||
+        (!this.room.isWriter(user.id) && !user.isTeacher())
+      )
+        return;
       this.#renderFlag(user);
       this.#renderCursor(user);
     });
