@@ -203,7 +203,7 @@ export class UserListView extends LitElement {
 
   #renderTeacherSymbol = (user) => {
     if (user.isStudent()) return html``;
-    return html` <div class="font-emoji pointer rm" data-tip="Is Teacher">
+    return html` <div class="font-emoji pointer rm" data-tip="Teacher">
       🎓
     </div>`;
   };
