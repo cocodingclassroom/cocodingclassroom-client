@@ -20,7 +20,6 @@
     "lit-icon": "^1.0.1",
     "loop-breaker": "^0.1.1",
     "showdown": "^2.1.0",
-    "unique-names-generator": "^4.7.1",
     "y-protocols": "^1.0.5",
     "y-websocket": "^1.4.5",
     "yjs": "^13.5.46"
