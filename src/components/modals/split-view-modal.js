@@ -24,6 +24,8 @@ export const forceSplitView = () => {
        <input id="slider" type="range" min="0" max="100" value="50" class="slider">
       </div>`,
     () => {
+      // leftSize should not be 0 or 100. 
+      value = value == 0 ? 0.5 : value == 100 ? 99.5 : value;
       UserService.get().otherUsers.forEach((otherUser) => {
         otherUser.leftSize = value;
       });
