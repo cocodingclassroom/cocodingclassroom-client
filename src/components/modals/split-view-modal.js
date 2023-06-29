@@ -27,6 +27,7 @@ export const forceSplitView = () => {
       UserService.get().otherUsers.forEach((otherUser) => {
         otherUser.leftSize = value;
       });
+      UserService.get().localUser.leftSize = value;
     },
     () => {
       let slider = document.getElementById("slider");
