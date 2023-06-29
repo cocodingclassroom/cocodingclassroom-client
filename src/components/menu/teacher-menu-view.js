@@ -53,7 +53,7 @@ export class TeacherMenuView extends LitElement {
               showAbout();
             }}"
           >
-            COCODING Classroom II
+            COCODING Classroom
           </div>
           <div
             class="help"
@@ -112,7 +112,7 @@ export class TeacherMenuView extends LitElement {
           <cc-icon svg="${iconSvg.message}"></cc-icon>
         </div>
         <div
-          data-tip="Force split-view to all Students"
+          data-tip="Set split screen"
           @click="${() => forceSplitView()}"
         >
           <cc-icon svg="${iconSvg.layout}"></cc-icon>

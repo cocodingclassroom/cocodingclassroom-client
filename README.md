@@ -1,4 +1,4 @@
-# COCODING Classroom II
+# COCODING Classroom
 v 2.0.0  
 Live-coding collaborative classroom environment.  
 cc [teddavis.org](http://teddavis.org), christoph.voegele@fhnw.ch, marco.soldati@fhnw.ch, 2021 – 2023
@@ -117,4 +117,4 @@ You can manually switch between the rooms during a critique, or activate `Walk C
 COCODING Classroom is in its first beta stage form, this means, consider your code volatile and export/save sketches often. Rooms are kept active for 1 week after their last access, at which point they're purged for privacy and memory purposes. Currently, there is no persistance layer (storage) active for the server-websocket, so it is possible an update to the server could interrupt your work, but in-app announcements will try to warn of planned updates. COCODING Classroom is released "as-is" - without any warranty, responsibility or liability. 
 
 ## Development
-You are very welcome to contribute to Cocoding classroom II. Please check the [developers pages](./docs/develop.md) for further information 
+You are very welcome to contribute to Cocoding classroom. Please check the [developers pages](./docs/develop.md) for further information 

@@ -1,7 +1,7 @@
-# Cocoding Classroom II - high level architecture
+# Cocoding Classroom - high level architecture
 
 ## Technology
-Cocoding Classroom II (cc-II) relies on a couple of third-party technologies:
+Cocoding Classroom (cc-II) relies on a couple of third-party technologies:
 
 ### Core dependencies
 * **nodejs** – Server to run

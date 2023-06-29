@@ -34,7 +34,7 @@ export class GalleryModeMenuView extends LitElement {
             showAbout();
           }}"
         >
-          COCODING Classroom II
+          COCODING Classroom
         </div>
         <div
           class="help"

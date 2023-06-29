@@ -1,4 +1,4 @@
-# How to install Cocoding Classroom II on your server
+# How to install Cocoding Classroom on your server
 
 ## Introduction
 The Cocoding Server has been kept as lightweight as possible. It mainly consists of a Y-Websocket that handles 
