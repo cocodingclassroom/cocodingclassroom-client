@@ -49,8 +49,8 @@ export class StudentMenuView extends LitElement {
           <cc-icon svg="${iconSvg.rename}"></cc-icon>
         </div>
       </div>
-      <div class="cc-controls-row" data-tip="New Sketch">
-        <div>
+      <div class="cc-controls-row" >
+        <div data-tip="New Sketch">
           <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
         </div>
         <div data-tip="Export Code">
