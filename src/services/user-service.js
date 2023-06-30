@@ -58,9 +58,9 @@ export class UserService {
 
   _createNewLocalUser = () => {
     let id = SyncService.get().getSyncId();
-    let user = new User(id);
-    this._saveLocalUser(user);
-    return user;
+    this.localUser = new User(id);
+    this._saveLocalUser(this.localUser);
+    return this.localUser;
   };
 
   _saveLocalUser = () => {
