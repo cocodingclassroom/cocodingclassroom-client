@@ -25,8 +25,8 @@ export class UserListView extends LitElement {
   };
 
   connectedCallback() {
-    super.connectedCallback();
     this.addListeners();
+    super.connectedCallback();
   }
 
   addListeners() {
@@ -87,7 +87,7 @@ export class UserListView extends LitElement {
             class="cc-controlls-view row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
-            ${this.#renderRoomAccess(user)} ${this._renderNameAndRoom(user)}
+            ${this.#renderRoomAccess(user)} ${this.#renderNameAndRoom(user)}
             ${this.#renderFollowedBy(user)} ${this.#renderNeedsHelp(user)}
             ${this.#renderTeacherSymbol(user)}
           </div>`;
@@ -95,22 +95,24 @@ export class UserListView extends LitElement {
     `;
   };
 
-  _renderNameAndRoom(user) {
+  #renderNameAndRoom(user) {
     let textColorStyle = {
       color: isColorLight(user.color) ? black() : white(),
     };
     if (user.isLocalUser()) {
-      return html` <div class="row user-row grow pointer">
+      return html` <div
+        class="row user-row grow pointer"
+        @click="${() => {
+          UserColorRenameModal(user);
+        }}"
+      >
         <div
           class="font"
           data-tip="Set Username and Color"
           data-tip-left
           style="${styleMap(textColorStyle)}"
-          @click="${() => {
-            UserColorRenameModal(user);
-          }}"
         >
-          ${user.name}
+          ${this.#trimUserName(user)}
         </div>
         ${this.#renderJumpToRoomElement(user)}
       </div>`;
@@ -137,6 +139,12 @@ export class UserListView extends LitElement {
         ${this.#renderJumpToRoomElement(user)}
       </div>`;
     }
+  }
+
+  #trimUserName(user, maxLength = 15) {
+    return user.name.length < maxLength
+      ? user.name
+      : `${user.name.substring(0, maxLength)}...`;
   }
 
   #onClickFollow(user) {

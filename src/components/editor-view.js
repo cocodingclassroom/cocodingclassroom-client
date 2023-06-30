@@ -313,7 +313,7 @@ export class EditorView extends LitElement {
         id="${this.editorIdentifier}"
       ></div>
       ${this.editorVisible
-        ? html` ${this.#renderRunButton()} ${this.#renderConsole()} `
+        ? html`${this.#renderRunButton()} ${this.#renderConsole()}`
         : ""}
     `;
   }
