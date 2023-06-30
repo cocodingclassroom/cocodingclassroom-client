@@ -5,6 +5,7 @@ import { UserService } from "../../services/user-service";
 import { RoomType } from "../../models/room";
 import { ClassroomService } from "../../services/classroom-service";
 import { safeRegister } from "../../util/util";
+import { menuBackground2, menuBackground2Hover, menuBorder1, menuForeground1 } from "../../util/shared-css";
 
 export class RoomSelectView extends LitElement {
   static properties = {
@@ -92,11 +93,11 @@ export class RoomSelectView extends LitElement {
   static styles = [
     css`
       .cc-roomlist {
-        border: 1px solid #aaa;
+        border: 1px solid ${menuBorder1()};
         border-top: none;
         height: 26px;
-        background: #444;
-        color: #fff;
+        background: ${menuBackground2()};
+        color: ${menuForeground1()};
         padding: 2px;
         font-size: 10pt;
         cursor: pointer;
@@ -104,9 +105,16 @@ export class RoomSelectView extends LitElement {
         min-width: calc(180px);
       }
 
-      .cc-roomlist:hover {
-        background: #555;
+      .cc-roomlist > option {
+        background: ${menuBackground2()};
+        color: ${menuForeground1()};
       }
+
+      .cc-roomlist:hover {
+        background: ${menuBackground2Hover()};
+      }
+
+
     `,
   ];
 }

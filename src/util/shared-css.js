@@ -4,6 +4,20 @@ export const white = () => unsafeCSS("#f5f5f5");
 export const black = () => unsafeCSS("#1f1f1f");
 export const secondary = () => unsafeCSS("#aaaaaa");
 
+export const editorBackground = () => unsafeCSS("#000000");
+
+export const menuBorder1 = () => unsafeCSS("#aaaaaa");
+export const menuBorder2 = () => unsafeCSS("#555555");
+export const menuForeground1 = () => unsafeCSS("#f5f5f5");
+export const menuForeground2 = () => unsafeCSS();
+export const menuBackground1 = () => unsafeCSS("#222222");
+export const menuBackground1Hover = () => unsafeCSS("#222222");
+export const menuBackground2 = () => unsafeCSS("#444444");
+export const menuBackground2Hover = () => unsafeCSS("#555555");
+export const menuBackground3 = () => unsafeCSS("#666666");
+export const menuBackground3Hover = () => unsafeCSS("#555555");
+
+
 export const menuRowStyles = () => css`
   .cc-controls-row {
     display: flex;
@@ -11,34 +25,63 @@ export const menuRowStyles = () => css`
     flex-grow: 1;
     height: 26px;
     width: 100%;
-    border-top: 1px solid #aaa;
+    border-top: 1px solid ${menuBorder1()};
   }
 
   .cc-controls-row:last-child {
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid ${menuBorder1()};
   }
 
   .cc-controls-row div {
     font-size: 12px;
     width: 100%;
     padding: 2px;
-    background: ${black()};
-    border: 1px solid #aaa;
+    background: ${menuBackground1()};
+    border: 1px solid ${menuBorder1()};
     border-style: none solid none none;
     text-align: center;
+    cursor: pointer;
   }
 
   .cc-controls-row > div:first-child {
-    border-left: 1px solid #aaa;
+    border-left: 1px solid ${menuBorder1()};
   }
 
-
   .cc-controls-row div:hover {
-    background: #666;
+    background: ${menuBackground3()};
+  }
+
+  .cc-controls-row div.bg1 {
+    background: ${menuBackground1()};
+  }
+  .cc-controls-row div.bg1:hover {
+    background: ${menuBackground1Hover()};
+  }
+
+  .cc-controls-row div.bg2 {
+    background: ${menuBackground2()};
+  }
+  .cc-controls-row div.bg2:hover {
+    background: ${menuBackground2Hover()};
+  }
+  .cc-controls-row div.bg2.inactive:hover {
+    background: ${menuBackground2()};
+  }
+  
+
+  .cc-controls-row div.bg3 {
+    background: ${menuBackground3()};
+  }
+  .cc-controls-row div.bg3.active {
+    background: ${menuBackground3Hover()};
+  }
+
+  .cc-controls-row div.bg3:hover {
+    background: ${menuBackground3Hover()};
   }
 
   .cc-controls-row-container {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid ${menuBorder1()};
   }
 `;
 
@@ -109,13 +152,12 @@ export const toolTipStyle = () => css`
     font-size: 12px;
     line-height: 12px;
     padding: 5px;
-    background: #222;
+    background: ${menuBackground1()};;
     color: ${white()};
-    border: 1px solid ${secondary()};
+    border: 1px solid ${menuBorder1()};
     border-radius: 5px;
     font-family: sans-serif;
     box-sizing: border-box;
-    /*box-shadow: -1px 2px 5px rgba(0, 0, 0, 0.2);*/
     transition: opacity 0.3s, visibility 0s;
     visibility: hidden;
     opacity: 0;
@@ -127,7 +169,7 @@ export const toolTipStyle = () => css`
     height: 7px;
     background: inherit;
     transform: rotate(45deg);
-    border: 1px solid ${secondary()};
+    border: 1px solid ${menuBorder1()};
   }
 `;
 

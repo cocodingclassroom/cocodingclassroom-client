@@ -8,6 +8,9 @@ import { TeacherMenuView } from "./teacher-menu-view";
 import { safeRegister } from "../../util/util";
 import {
   cursorTipStyle,
+  menuBackground2,
+  menuBackground3,
+  menuBorder1,
   menuRowStyles,
   toolTipStyle,
 } from "../../util/shared-css";
@@ -28,7 +31,7 @@ export class GalleryModeMenuView extends LitElement {
     return html` <div class="cc-controls-row-container">
       <div class="cc-controls-row">
         <div
-          class="cc-header-title help"
+          class="cc-header-title help bg3"
           data-tip="Cocoding Classroom ${version}"
           @click="${() => {
             showAbout();
@@ -37,7 +40,7 @@ export class GalleryModeMenuView extends LitElement {
           COCODING Classroom
         </div>
         <div
-          class="help"
+          class="help bg3"
           @click="${() => {
             showAbout();
           }}"
@@ -50,6 +53,7 @@ export class GalleryModeMenuView extends LitElement {
       ${this.settingsOpen ? html` <cc-settings></cc-settings>` : ""}
       <div class="cc-controls-row">
         <cc-room-select roomId="${this.roomId}"></cc-room-select>
+        <div style="background: ${menuBackground2()}; border: 1px solid ${menuBorder1()};} border-style:solid solid none none; margin-top:-1px;"></div>
       </div>
       <div class="cc-controls-row">${this.#renderTeacherActions()}</div>
     </div>`;
@@ -57,7 +61,7 @@ export class GalleryModeMenuView extends LitElement {
 
   #renderSettings = () => {
     return html` <div
-      class="cc-nav-settings"
+      class="cc-nav-settings  ${this.settingsOpen ? 'bg3 active' : 'bg3 help'}"
       @click="${() => {
         this.settingsOpen = !this.settingsOpen;
         initDataTips(this.renderRoot);
@@ -74,13 +78,14 @@ export class GalleryModeMenuView extends LitElement {
         font-size: 10pt;
         min-width: calc(100% - 60px);
         padding: 4px;
-        background: #666;
         cursor: help;
-        border-bottom: 1px solid #aaa;
+        margin-bottom: -1px;
+        border-bottom: 1px solid ${menuBorder1()};
       }
 
       .help {
-        border-bottom: 1px solid #aaa !important;
+        border-bottom: 1px solid ${menuBorder1()} !important;
+        margin-bottom: -1px;
       }
     `,
     menuRowStyles(),
@@ -89,11 +94,12 @@ export class GalleryModeMenuView extends LitElement {
   ];
 
   #renderTeacherActions() {
-    return html` <div data-tip="Walk rooms">
+    return html` <div data-tip="Walk rooms" class="bg2">
         <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
       </div>
       <div
         data-tip="Send message to all students"
+        class="bg2"
         @click="${() => {
           sendBroadCastMessage();
         }}"
@@ -104,7 +110,7 @@ export class GalleryModeMenuView extends LitElement {
   }
 
   #renderStudentActions() {
-    return html` <div data-tip="Export Code">
+    return html` <div data-tip="Export Code" class="bg2">
       <cc-export-code roomId="${this.roomId}"></cc-export-code>
     </div>`;
   }

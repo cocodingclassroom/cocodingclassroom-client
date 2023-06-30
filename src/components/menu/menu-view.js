@@ -8,6 +8,10 @@ import {
   basicFlexStyles,
   black,
   cursorTipStyle,
+  menuBackground1,
+  menuBackground2,
+  menuBorder2,
+  menuForeground1,
   menuRowStyles,
   pulseStyle,
   secondary,
@@ -187,7 +191,7 @@ export class MenuView extends LitElement {
         z-index: 4;
         top: 6px;
         right: 15px;
-        background: #333;
+        background: ${menuBackground2()};
         width: 250px;
         height: auto;
         opacity: 0.3;
@@ -209,18 +213,18 @@ export class MenuView extends LitElement {
       }
 
       .chat-input {
-        background-color: #222;
+        background-color: ${menuBackground1()};
         border: none;
-        border-top: 1px solid #444;
+        border-top: 1px solid ${menuBorder2()};
         padding: 4px 2px 4px 4px;
         font-size: 10pt;
-        color: ${white()}
+        color: ${menuForeground1()};
       }
 
 
       .message {
         margin: 1px;
-        background-color: #222;
+        background-color: ${menuBackground1()};
         border: none;
         font-size: 10pt;
       }
@@ -235,11 +239,11 @@ export class MenuView extends LitElement {
       }
 
       .background-dark {
-        background-color: #222;
+        background-color: ${menuBackground1()};
       }
 
       .chat-header {
-        border-bottom: 1px solid #444;
+        border-bottom: 1px solid ${menuBorder2()};
       }
 
       .chat-header div {

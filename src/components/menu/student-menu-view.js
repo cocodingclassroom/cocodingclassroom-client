@@ -40,7 +40,7 @@ export class StudentMenuView extends LitElement {
       <div class="cc-controls-row">
         <cc-room-select roomId="${this.roomId}"></cc-room-select>
         <div
-          class="grow"
+          class="grow bg2"
           data-tip="Rename"
           @click="${() => {
             this.renameRoom();
@@ -50,10 +50,10 @@ export class StudentMenuView extends LitElement {
         </div>
       </div>
       <div class="cc-controls-row" >
-        <div data-tip="New Sketch">
+        <div data-tip="New Sketch" class="bg2">
           <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
         </div>
-        <div data-tip="Export Code">
+        <div data-tip="Export Code" class="bg2">
           <cc-export-code roomId="${this.roomId}"></cc-export-code>
         </div>
       </div>
@@ -77,7 +77,7 @@ export class StudentMenuView extends LitElement {
     return html`
       <div class="cc-controls-row">
         <div
-          class="row access"
+          class="row access bg1"
           @click="${() => {
             RoomService.get().getRoom(this.roomId).removeClaim();
           }}"
@@ -99,7 +99,7 @@ export class StudentMenuView extends LitElement {
                 RoomService.get().getRoom(this.roomId).giveAccess(requestId);
               }}"
             >
-              <div>
+              <div  class="bg1">
                 ${UserService.get().getUserByID(requestId).name} wants access
               </div>
             </div>
@@ -117,7 +117,7 @@ export class StudentMenuView extends LitElement {
       return html`
         <div class="cc-controls-row">
           <div
-            class="row no-access"
+            class="row no-access bg1"
             data-tip="Remove own Access"
             @click="${() => {
               RoomService.get()
@@ -135,7 +135,7 @@ export class StudentMenuView extends LitElement {
       return html`
         <div class="cc-controls-row">
           <div
-            class="row no-access pulse-on"
+            class="row no-access pulse-on bg1"
             @click="${() => {
               RoomService.get()
                 .getRoom(this.roomId)
@@ -151,7 +151,7 @@ export class StudentMenuView extends LitElement {
     return html`
       <div class="cc-controls-row">
         <div
-          class="row no-access"
+          class="row no-access bg1"
           @click="${() => {
             RoomService.get().getRoom(this.roomId).requestAccess();
           }}"
@@ -167,7 +167,7 @@ export class StudentMenuView extends LitElement {
     return html`
       <div class="cc-controls-row">
         <div
-          class="row"
+          class="row bg1"
           @click="${() => {
             RoomService.get().getRoom(this.roomId).claimRoomToLocalUser();
           }}"

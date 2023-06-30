@@ -1,6 +1,8 @@
 import { css, html, LitElement } from "lit";
 import {
   cursorTipStyle,
+  menuBackground3,
+  menuBorder1,
   menuRowStyles,
   toolTipStyle,
 } from "../../util/shared-css";
@@ -45,7 +47,7 @@ export class TeacherMenuView extends LitElement {
   render = () => {
     return html`
       <div class="cc-controls-row-container">
-        <div class="cc-controls-row">
+        <div class="cc-controls-row bg3">
           <div
             class="cc-header-title help"
             data-tip="Cocoding Classroom ${version}"
@@ -56,7 +58,7 @@ export class TeacherMenuView extends LitElement {
             COCODING Classroom
           </div>
           <div
-            class="help"
+            class="help bg3"
             @click="${() => {
               showAbout();
             }}"
@@ -65,7 +67,7 @@ export class TeacherMenuView extends LitElement {
             <cc-icon svg="${iconSvg.about}"></cc-icon>
           </div>
           <div
-            class="cc-nav-settings"
+            class="cc-nav-settings ${this.settingsOpen ? 'bg3 active' : 'bg3 help'}"
             @click="${() => {
               this.settingsOpen = !this.settingsOpen;
               initDataTips(this.renderRoot);
@@ -88,23 +90,24 @@ export class TeacherMenuView extends LitElement {
   _renderActionsForTeacher = () => {
     return html`
       <div class="cc-controls-row">
-        <div data-tip="New Sketch">
+        <div data-tip="New Sketch" class="bg2">
           <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
         </div>
-        <div data-tip="Push code to all rooms">
+        <div data-tip="Push code to all rooms"  class="bg2">
           <cc-sync-code roomId="${this.roomId}"></cc-sync-code>
         </div>
         ${this._renderActionsForStudents()}
       </div>
       <div class="cc-controls-row">
-        <div data-tip="Add room" @click="${() => this._addRoom()}">
+        <div data-tip="Add room" @click="${() => this._addRoom()}"  class="bg2">
           <cc-icon svg="${iconSvg.layers}"></cc-icon>
         </div>
-        <div data-tip="Walk rooms">
+        <div data-tip="Walk rooms" class="bg2">
           <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
         </div>
         <div
-          data-tip="Send message to all students"
+          data-tip="Send message to all students" 
+          class="bg2"
           @click="${() => {
             sendBroadCastMessage();
           }}"
@@ -114,6 +117,7 @@ export class TeacherMenuView extends LitElement {
         <div
           data-tip="Set split screen"
           @click="${() => forceSplitView()}"
+          class="bg2"
         >
           <cc-icon svg="${iconSvg.layout}"></cc-icon>
         </div>
@@ -123,10 +127,10 @@ export class TeacherMenuView extends LitElement {
 
   _renderActionsForStudents = () => {
     return html`
-      <div data-tip="Export Code">
+      <div data-tip="Export Code" class="bg2">
         <cc-export-code roomId="${this.roomId}"></cc-export-code>
       </div>
-      <div data-tip="Compare Code">
+      <div data-tip="Compare Code" class="bg2">
         <cc-icon svg="${iconSvg.merge}"></cc-icon>
       </div>
     `;
@@ -142,14 +146,14 @@ export class TeacherMenuView extends LitElement {
         font-size: 10pt;
         min-width: calc(100% - 60px);
         padding: 4px;
-        background: #666;
+        background: ${menuBackground3()};
         cursor: help;
         margin-bottom: -1px;
-        border-bottom: 1px solid #aaa;
+        border-bottom: 1px solid ${menuBorder1()};
       }
 
       .help {
-        border-bottom: 1px solid #aaa !important;
+        border-bottom: 1px solid ${menuBorder1()} !important;
         margin-bottom: -1px;
       }
     `,

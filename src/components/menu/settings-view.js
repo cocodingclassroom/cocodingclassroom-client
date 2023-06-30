@@ -3,6 +3,8 @@ import { safeRegister } from "../../util/util";
 import {
   basicFlexStyles,
   black,
+  menuBackground2,
+  menuBackground3Hover,
   toolTipStyle,
   white,
 } from "../../util/shared-css";
@@ -224,7 +226,7 @@ export class SettingsView extends LitElement {
         border-top: none;
         border-bottom: 1.5px solid #aaa;
         font-size: 10pt;
-        background-color: ${black()};
+        background-color: ${menuBackground3Hover()};
       }
       
       .settings-panel div {
