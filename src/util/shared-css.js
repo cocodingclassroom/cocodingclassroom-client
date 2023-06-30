@@ -192,10 +192,15 @@ export const inputStyle = () => css`
   }
 
   input:focus {
-    background-color: #444444;
+    outline: #435a62 solid 3px;
   }
 
   select {
+    outline: none;
+  }
+
+  .input-slim:focus {
+    background-color: #394144;
     outline: none;
   }
 `;

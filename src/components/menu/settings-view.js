@@ -71,7 +71,7 @@ export class SettingsView extends LitElement {
                   >Live Coding
                   <select
                     id="seconds-delay"
-                    class="input"
+                    class="input input-slim"
                     @change="${() => {
                       this._onChangeLiveCodingDelay();
                     }}"
@@ -122,7 +122,7 @@ export class SettingsView extends LitElement {
               >
                 <label for="walk-delay">Walk Delay:</label>
                 <input
-                  class="input"
+                  class="input input-slim"
                   id="walk-delay"
                   type="number"
                   value="${ClassroomService.get().classroom.walkDelay}"

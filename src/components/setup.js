@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { ClassroomService } from "/src/services/classroom-service.js";
 import { Router } from "@vaadin/router";
 import { safeRegister } from "../util/util";
+import { inputStyle } from "../util/shared-css";
 
 export class Setup extends LitElement {
   initialRoomNumbers = 5;
@@ -143,52 +144,55 @@ export class Setup extends LitElement {
     );
   };
 
-  static styles = css`
-    .container-col {
-      display: flex;
-      flex-direction: column;
-    }
+  static styles = [
+    css`
+      .container-col {
+        display: flex;
+        flex-direction: column;
+      }
 
-    .container-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-    }
+      .container-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
 
-    .p5 {
-      padding: 5px;
-    }
+      .p5 {
+        padding: 5px;
+      }
 
-    h3 {
-      margin-bottom: 0px;
-    }
+      h3 {
+        margin-bottom: 0px;
+      }
 
-    .round {
-      padding: 5px;
-      border-radius: 5px;
-      border: white 1px;
-    }
+      .round {
+        padding: 5px;
+        border-radius: 5px;
+        border: white 1px;
+      }
 
-    .submit {
-      font-family: roboto mono, sans-serif;
-      background-color: white;
-      text-transform: uppercase;
-    }
+      .submit {
+        font-family: roboto mono, sans-serif;
+        background-color: white;
+        text-transform: uppercase;
+      }
 
-    hr {
-      height: 2px;
-      background-color: white;
-      border: none;
-      width: 400px;
-    }
+      hr {
+        height: 2px;
+        background-color: white;
+        border: none;
+        width: 400px;
+      }
 
-    input,
-    textarea,
-    select,
-    option {
-      font-family: inherit;
-    }
-  `;
+      input,
+      textarea,
+      select,
+      option {
+        font-family: inherit;
+      }
+    `,
+    inputStyle(),
+  ];
 }
 
 safeRegister("cc-setup", Setup);

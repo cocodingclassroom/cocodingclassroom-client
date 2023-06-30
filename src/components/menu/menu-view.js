@@ -102,7 +102,7 @@ export class MenuView extends LitElement {
         <input
           id="chatInput"
           placeholder="Send message ..."
-          class="chat-input grow input"
+          class="chat-input grow input-slim"
           type="text"
           @keydown="${(event) => {
             this.#sendMessageIfEnter(event);
