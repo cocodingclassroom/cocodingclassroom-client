@@ -111,10 +111,7 @@ export class TeacherMenuView extends LitElement {
         >
           <cc-icon svg="${iconSvg.message}"></cc-icon>
         </div>
-        <div
-          data-tip="Set split screen"
-          @click="${() => forceSplitView()}"
-        >
+        <div data-tip="Set split screen" @click="${() => forceSplitView()}">
           <cc-icon svg="${iconSvg.layout}"></cc-icon>
         </div>
       </div>
@@ -127,7 +124,7 @@ export class TeacherMenuView extends LitElement {
         <cc-export-code roomId="${this.roomId}"></cc-export-code>
       </div>
       <div data-tip="Compare Code">
-        <cc-icon svg="${iconSvg.merge}"></cc-icon>
+        <cc-compare-code-view></cc-compare-code-view>
       </div>
     `;
   };

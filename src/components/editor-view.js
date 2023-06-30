@@ -404,6 +404,14 @@ export class EditorView extends LitElement {
       background-color: rgba(150, 150, 0, 0.5) !important;
     }
 
+    .added-line {
+      background-color: rgba(255, 27, 27, 0.38);
+      height: 8px;
+      position: absolute;
+      opacity: 0;
+      animation: fade-out 15s normal;
+    }
+
     .synced_flag {
       font-size: 9pt;
     }
@@ -434,6 +442,16 @@ export class EditorView extends LitElement {
     @-webkit-keyframes blink-animation {
       to {
         visibility: hidden;
+      }
+    }
+
+    @keyframes fade-out {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
       }
     }
   `;
