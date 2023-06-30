@@ -1,7 +1,6 @@
 import "./components/register";
 import { Router } from "@vaadin/router";
 
-
 window.onload = () => {
   const routes = [
     {
@@ -9,7 +8,7 @@ window.onload = () => {
       component: "cc-setup",
     },
     {
-      path: "/classroom/:id",
+      path: "/:id",
       component: "cc-classroom",
     },
   ];
