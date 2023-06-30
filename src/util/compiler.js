@@ -110,7 +110,7 @@ const fullRebuildOfIframe = (
     }
   }
 
-  s.innerHTML = sketchCode + "\n\n" + activeBinding.codeCustom;
+  s.innerHTML = sketchCode + "\n\n" + activeBinding.customCode;
 
   // set template as iframe srcdoc
   iframe.srcdoc = el.innerHTML;

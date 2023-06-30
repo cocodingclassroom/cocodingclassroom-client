@@ -94,6 +94,10 @@ export class Room extends YSyncModel {
     return this.ownerId === null || this.ownerId === undefined;
   };
 
+  isClaimed = () => {
+    return !this.isUnclaimed();
+  };
+
   isOwnedByLocalUser = () => {
     return this.ownerId === UserService.get().localUser.id;
   };
@@ -114,7 +118,9 @@ export class Room extends YSyncModel {
   };
 
   isWriter = (userId) => {
-    return this.writersIds.toArray().includes(userId);
+    return (
+      this.writersIds.toArray().includes(userId) || this.ownerId === userId
+    );
   };
 
   stopRequestAccessOfLocalUser = () => {

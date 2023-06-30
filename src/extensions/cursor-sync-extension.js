@@ -19,11 +19,13 @@ export class CursorSyncExtension {
   }
 
   #setup() {
-    UserService.get().otherUsers.forEach((otherUser) => {
-      otherUser.addListener(() => {
-        this.#rerender();
+    UserService.get()
+      .getAllUsers()
+      .forEach((user) => {
+        user.addListener(() => {
+          this.#rerender();
+        });
       });
-    });
     ClassroomService.get().classroom.addListener(() => {
       this.#rerender();
     });
@@ -68,11 +70,7 @@ export class CursorSyncExtension {
 
   #renderSelectionsInEditor() {
     UserService.get().otherUsers.forEach((user) => {
-      if (
-        user.activeRoom !== this.room.id ||
-        (!this.room.isWriter(user.id) && !user.isTeacher())
-      )
-        return;
+      if (!this.#shouldDrawThisUsersSelection(user)) return;
       this.#createUserSelectionStyleIfNotExistingYet(user);
       let id = this.editor.session.addMarker(
         new Range(
@@ -89,6 +87,23 @@ export class CursorSyncExtension {
     });
   }
 
+  #shouldDrawThisUsersSelection(user) {
+    if (user.activeRoom !== this.room.id) return false;
+    if (this.room.isTeacherRoom()) {
+      if (user.isStudent()) return false;
+    }
+    if (ClassroomService.get().classroom.roomLocks) {
+      if (user.isStudent()) {
+        if (this.room.isClaimed()) {
+          if (!this.room.isWriter(user.id)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   #removeAllCursorsAndFlags() {
     this.view.renderRoot.querySelectorAll(".synced_flag").forEach((elm) => {
       elm.remove();
@@ -100,11 +115,7 @@ export class CursorSyncExtension {
 
   #renderUserCursorsAndFlags() {
     UserService.get().otherUsers.forEach((user) => {
-      if (
-        user.activeRoom !== this.room.id ||
-        (!this.room.isWriter(user.id) && !user.isTeacher())
-      )
-        return;
+      if (!this.#shouldDrawThisUsersSelection(user)) return;
       this.#renderFlag(user);
       this.#renderCursor(user);
     });
