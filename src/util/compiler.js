@@ -67,7 +67,7 @@ const fullRebuildOfIframe = (
   compilationOkayCallback
 ) => {
   let el = document.createElement("html");
-  el.innerHTML = activeBinding.iframeTemplate;
+  el.innerHTML = activeBinding.getIFrameTemplate();
   let iFrameHead = el.getElementsByTagName("head")[0]; //el.document.getElementsByTagName('body')[0];
   let iFrameBody = el.getElementsByTagName("body")[0]; //el.document.getElementsByTagName('body')[0];
 

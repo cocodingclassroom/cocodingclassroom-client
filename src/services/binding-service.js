@@ -25,7 +25,7 @@ export class BindingService {
 
   setBindingByBindingType(bindingType) {
     if (bindingType === BindingType.P5) {
-      this.binding = p5binding;
+      this.binding = new p5binding();
     } else if (bindingType === BindingType.HYDRA) {
       //Implement mapping here.
     }
