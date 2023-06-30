@@ -8,6 +8,7 @@ import {
   basicFlexStyles,
   black,
   cursorTipStyle,
+  inputStyle,
   menuBackground1,
   menuBackground2,
   menuBorder2,
@@ -101,7 +102,7 @@ export class MenuView extends LitElement {
         <input
           id="chatInput"
           placeholder="Send message ..."
-          class="chat-input grow"
+          class="chat-input grow input"
           type="text"
           @keydown="${(event) => {
             this.#sendMessageIfEnter(event);
@@ -271,6 +272,7 @@ export class MenuView extends LitElement {
     cursorTipStyle(),
     toolTipStyle(),
     pulseStyle(),
+    inputStyle(),
   ];
 }
 

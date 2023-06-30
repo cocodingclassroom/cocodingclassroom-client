@@ -17,7 +17,6 @@ export const menuBackground2Hover = () => unsafeCSS("#555555");
 export const menuBackground3 = () => unsafeCSS("#666666");
 export const menuBackground3Hover = () => unsafeCSS("#555555");
 
-
 export const menuRowStyles = () => css`
   .cc-controls-row {
     display: flex;
@@ -148,7 +147,7 @@ export const toolTipStyle = () => css`
     font-size: 12px;
     line-height: 12px;
     padding: 5px;
-    background: ${menuBackground1()};;
+    background: ${menuBackground1()};
     color: ${white()};
     border: 1px solid ${menuBorder1()};
     border-radius: 5px;
@@ -184,5 +183,19 @@ export const helpRotationStyle = () => css`
 
   .help-rotation {
     animation: help-rotation 1s infinite linear;
+  }
+`;
+
+export const inputStyle = () => css`
+  input {
+    outline: none;
+  }
+
+  input:focus {
+    background-color: #444444;
+  }
+
+  select {
+    outline: none;
   }
 `;

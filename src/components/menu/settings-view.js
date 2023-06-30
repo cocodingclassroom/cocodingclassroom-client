@@ -3,6 +3,7 @@ import { safeRegister } from "../../util/util";
 import {
   basicFlexStyles,
   black,
+  inputStyle,
   menuBackground2,
   menuBackground3Hover,
   toolTipStyle,
@@ -228,7 +229,7 @@ export class SettingsView extends LitElement {
         font-size: 10pt;
         background-color: ${menuBackground3Hover()};
       }
-      
+
       .settings-panel div {
         padding: 2px;
       }
@@ -257,6 +258,7 @@ export class SettingsView extends LitElement {
     `,
     basicFlexStyles(),
     toolTipStyle(),
+    inputStyle(),
   ];
 }
 
