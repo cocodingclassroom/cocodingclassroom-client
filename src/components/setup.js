@@ -131,8 +131,6 @@ export class Setup extends LitElement {
   };
 
   onSubmit = () => {
-    console.log("submitted");
-    window.localStorage.clear();
     let newClassroomId = ClassroomService.get().createNewRoom(
       () => {
         console.log("created new room");
