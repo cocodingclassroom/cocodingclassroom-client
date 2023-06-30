@@ -64,10 +64,6 @@ export const menuRowStyles = () => css`
   .cc-controls-row div.bg2:hover {
     background: ${menuBackground2Hover()};
   }
-  .cc-controls-row div.bg2.inactive:hover {
-    background: ${menuBackground2()};
-  }
-  
 
   .cc-controls-row div.bg3 {
     background: ${menuBackground3()};

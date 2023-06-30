@@ -23,7 +23,6 @@ import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { initDataTips } from "../../util/tooltips";
 import { showModal } from "../../util/modal";
 import { ClassroomService } from "../../services/classroom-service";
-import { ClassroomMode } from "../../models/classroom-model";
 
 export class MenuView extends LitElement {
   static properties = {
@@ -127,7 +126,7 @@ export class MenuView extends LitElement {
 
   #renderMessage = (message) => {
     let chatMessage = ChatMessage.fromJSON(message);
-    var user = UserService.get().getUserByID(chatMessage.userid);
+    let user = UserService.get().getUserByID(chatMessage.userid);
     let messageNameStyle = {
       "background-color": user.color,
       color: isColorLight(user.color) ? black() : white(),

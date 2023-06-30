@@ -131,7 +131,7 @@ export class TeacherMenuView extends LitElement {
         <cc-export-code roomId="${this.roomId}"></cc-export-code>
       </div>
       <div data-tip="Compare Code" class="bg2">
-        <cc-icon svg="${iconSvg.merge}"></cc-icon>
+        <cc-compare-code-view></cc-compare-code-view>
       </div>
     `;
   };

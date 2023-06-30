@@ -18,7 +18,7 @@ export class WalkRoomView extends LitElement {
 
     ClassroomService.get().classroom.addListener(() => {
       if (this.isWalking) {
-        this._stopWalking();
+        this.#stopWalking();
         this.walkRooms();
       }
     });
@@ -38,24 +38,35 @@ export class WalkRoomView extends LitElement {
   walkRooms = () => {
     this.isWalking = !this.isWalking;
     if (this.isWalking) {
-      this.interval = setInterval(() => {
-        let currentRoom = UserService.get().localUser.selectedRoomRight;
-        let nextRoom = RoomService.get().getRoom(
-          (currentRoom + 1) % RoomService.get().rooms.length
-        );
-        while (nextRoom.roomType === RoomType.TEACHER || !nextRoom.hasUsers()) {
-          nextRoom = RoomService.get().getRoom(
-            (nextRoom.id + 1) % RoomService.get().rooms.length
-          );
-        }
-        UserService.get().localUser.selectedRoomRight = nextRoom.id;
-      }, 1000 * ClassroomService.get().classroom.walkDelay);
+      this.#startWalking();
     } else {
-      this._stopWalking();
+      this.#stopWalking();
     }
   };
 
-  _stopWalking = () => {
+  #startWalking() {
+    this.interval = setInterval(() => {
+      let currentRoom = UserService.get().localUser.selectedRoomRight;
+      let nextRoom = RoomService.get().getRoom(
+        (currentRoom + 1) % RoomService.get().rooms.length
+      );
+      while (this.#nextRoomNotOkay(nextRoom)) {
+        nextRoom = RoomService.get().getRoom(
+          (nextRoom.id + 1) % RoomService.get().rooms.length
+        );
+      }
+      UserService.get().localUser.selectedRoomRight = nextRoom.id;
+    }, 1000 * ClassroomService.get().classroom.walkDelay);
+  }
+
+  #nextRoomNotOkay(nextRoom) {
+    if (ClassroomService.get().isGalleryMode()) {
+      return nextRoom.roomType === RoomType.TEACHER;
+    }
+    return nextRoom.roomType === RoomType.TEACHER || !nextRoom.hasUsers();
+  }
+
+  #stopWalking = () => {
     clearInterval(this.interval);
   };
 

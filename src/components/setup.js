@@ -132,10 +132,11 @@ export class Setup extends LitElement {
 
   onSubmit = () => {
     console.log("submitted");
+    window.localStorage.clear();
     let newClassroomId = ClassroomService.get().createNewRoom(
       () => {
         console.log("created new room");
-        Router.go(`/classroom/${newClassroomId}`);
+        Router.go(`/${newClassroomId}`);
       },
       this.initialRoomNumbers,
       this.liveCodingOn,
@@ -150,7 +151,6 @@ export class Setup extends LitElement {
       flex-direction: column;
     }
 
-
     .container-row {
       display: flex;
       flex-direction: row;
@@ -159,7 +159,6 @@ export class Setup extends LitElement {
 
     .p5 {
       padding: 5px;
-      
     }
 
     h3 {
@@ -184,9 +183,13 @@ export class Setup extends LitElement {
       border: none;
       width: 400px;
     }
-    
-    input, textarea, select, option { font-family:inherit; }
 
+    input,
+    textarea,
+    select,
+    option {
+      font-family: inherit;
+    }
   `;
 }
 

@@ -63,6 +63,7 @@ export class StudentMenuView extends LitElement {
 
   #renderRoomClaim = () => {
     if (!ClassroomService.get().classroom.roomLocks) return "";
+
     if (RoomService.get().getRoom(this.roomId).ownerId) {
       if (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser()) {
         return this.#renderClaimedRoomByYou();

@@ -9,3 +9,4 @@ import { WalkRoomView } from "./walk-room-view";
 import { SettingsView } from "./settings-view";
 import { MenuView } from "./menu-view";
 import { GalleryModeMenuView } from "./gallery-mode-menu-view";
+import { CompareCodeView } from "./compare-code-view";
