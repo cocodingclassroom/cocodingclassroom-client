@@ -126,8 +126,8 @@ export class UserListView extends LitElement {
         <div
           class="user-row row"
           data-tip="${localUser.getTrackingByRoom(this.roomId)
-            ? "Unfollow"
-            : "Follow"}"
+            ? "Stop Tracking"
+            : "Track Cursor"}"
           data-tip-left
           style="${styleMap(textColorStyle)}"
           @click="${() => {
