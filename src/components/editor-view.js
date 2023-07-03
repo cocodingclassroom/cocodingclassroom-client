@@ -150,7 +150,8 @@ export class EditorView extends LitElement {
     });
 
     this.editor.commands.on("afterExec", (data) => {
-      if (data.command.name === "insertstring") {
+      let commands = ["insertstring", "backspace", "cut"];
+      if (commands.includes(data.command.name)) {
         this.#stopLiveCoding();
         this.#startLiveCoding();
       }
