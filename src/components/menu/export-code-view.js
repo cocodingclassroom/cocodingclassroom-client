@@ -1,7 +1,6 @@
 import { html, LitElement } from "lit";
 import { iconSvg } from "../icons/icons";
 import { safeRegister } from "../../util/util";
-import { ClassroomService } from "../../services/classroom-service";
 import { BindingService } from "../../services/binding-service";
 import { RoomService } from "../../services/room-service";
 

@@ -11,6 +11,7 @@ export class YSyncModel {
     this.listeners = [];
     this.map = SyncService.get().getSharedMap(mapName);
     this.map.observeDeep((changes) => {
+      console.log(changes);
       this.notifyListeners(changes);
     });
   }

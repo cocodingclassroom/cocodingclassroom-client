@@ -17,7 +17,6 @@ import { ClassroomService } from "../../services/classroom-service";
 import { RoomService } from "../../services/room-service";
 import { iconSvg } from "../icons/icons";
 import { RoomType } from "../../models/room";
-import { ClassroomMode } from "../../models/classroom-model";
 
 export class UserListView extends LitElement {
   static properties = {
@@ -84,7 +83,9 @@ export class UserListView extends LitElement {
           let backgroundColorStyle = { backgroundColor: user.color };
 
           return html` <div
-            class="cc-controlls-view row center border ${user.needsHelp ? "pulse-on" : ""}"
+            class="cc-controlls-view row center border ${user.needsHelp
+              ? "pulse-on"
+              : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this.#renderRoomAccess(user)} ${this.#renderNameAndRoom(user)}
@@ -134,7 +135,7 @@ export class UserListView extends LitElement {
           <div class="font-emoji pulse-on">
             ${this.#renderFollowSymbol(user)}
           </div>
-          <div>${user.name}</div>
+          <div>${this.#trimUserName(user)}</div>
         </div>
         ${this.#renderJumpToRoomElement(user)}
       </div>`;
@@ -184,12 +185,15 @@ export class UserListView extends LitElement {
   }
 
   #renderNeedsHelp = (user) => {
-    if (!user.isLocalUser()) return "";
+    let localIsStudent = UserService.get().localUser.isStudent();
     if (user.needsHelp) {
       return html` <div
-        class="font-emoji pulse pointer help-rotation rm"
+        class="font-emoji pulse ${localIsStudent
+          ? ""
+          : "pointer"} help-rotation rm"
         data-tip="${user.name} needs some help"
         @click="${() => {
+          if (localIsStudent) return;
           user.needsHelp = false;
           this.requestUpdate();
         }}"
@@ -197,6 +201,7 @@ export class UserListView extends LitElement {
         👋
       </div>`;
     }
+    if (!user.isLocalUser()) return html``;
     return html` <div
       class="font-emoji pulse pointer rm"
       data-tip="Request Help"
@@ -291,10 +296,10 @@ export class UserListView extends LitElement {
         margin: 2px;
       }
 
-//      .border {
-//        border: aliceblue 1px solid;
-//        border-top: 0;
-//      }
+      //      .border {
+      //        border: aliceblue 1px solid;
+      //        border-top: 0;
+      //      }
     `,
     basicFlexStyles(),
     pulseStyle(),
