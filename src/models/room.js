@@ -11,7 +11,6 @@ export class Room extends YSyncModel {
   messages;
   ownerId;
   writersIds;
-  requestIds;
   l_changedPositions;
   l_editorForRoom;
   l_iframeForRoom;
@@ -58,7 +57,6 @@ export class Room extends YSyncModel {
     this.id = id;
     this.messages = [];
     this.writersIds = [];
-    this.requestIds = [];
     this.setup();
     this.roomName = this.roomName ?? "Room";
     if (this.codeContent === null || this.codeContent === undefined) {
@@ -77,7 +75,6 @@ export class Room extends YSyncModel {
   };
 
   clearAllAuthorizationOnRoom = () => {
-    this.requestIds.delete(0, this.requestIds.length);
     this.writersIds.delete(0, this.writersIds.length);
     this.ownerId = null;
   };
@@ -112,36 +109,14 @@ export class Room extends YSyncModel {
       .find((user) => user.id === this.ownerId);
   };
 
-  requestAccess = () => {
-    let id = UserService.get().localUser.id;
-    this.isRequesting() || this.requestIds.push([id]);
-  };
-
   isWriter = (userId) => {
     return (
       this.writersIds.toArray().includes(userId) || this.ownerId === userId
     );
   };
 
-  stopRequestAccessOfLocalUser = () => {
-    this.stopRequestAccess(UserService.get().localUser.id);
-  };
-
-  stopRequestAccess = (userId) => {
-    const index = this.requestIds.toArray().indexOf(userId);
-    if (index !== -1) {
-      this.requestIds.delete(index);
-    }
-  };
-
-  isRequesting = () => {
-    let id = UserService.get().localUser.id;
-    return this.requestIds.toArray().includes(id);
-  };
-
   giveAccess = (userId) => {
     this.writersIds.push([userId]);
-    this.stopRequestAccess(userId);
   };
 
   removeAccess = (userId) => {

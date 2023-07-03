@@ -21,18 +21,23 @@ export class StudentMenuView extends LitElement {
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
-    initDataTips(this.renderRoot);
     UserService.get().localUser.addListener(() => {
       initDataTips(this.renderRoot);
     });
     ClassroomService.get().classroom.addListener(() => {
       this.requestUpdate();
     });
-    RoomService.get()
-      .getRoom(this.roomId)
-      .addListener(() => {
+    RoomService.get().rooms.forEach((room) =>
+      room.addListener(() => {
         this.requestUpdate();
-      });
+      })
+    );
+    initDataTips(this.renderRoot);
+  }
+
+  update(changedProperties) {
+    super.update(changedProperties);
+    initDataTips(this.renderRoot);
   }
 
   render = () => html`
@@ -43,21 +48,21 @@ export class StudentMenuView extends LitElement {
           class="grow bg2"
           data-tip="Rename"
           @click="${() => {
-            this.renameRoom();
+            this.#renameRoom();
           }}"
         >
           <cc-icon svg="${iconSvg.rename}"></cc-icon>
         </div>
       </div>
-      <div class="cc-controls-row" >
+      <div class="cc-controls-row">
         <div data-tip="New Sketch" class="bg2">
           <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
         </div>
         <div data-tip="Export Code" class="bg2">
           <cc-export-code roomId="${this.roomId}"></cc-export-code>
         </div>
+        ${this.#renderRoomClaim()}
       </div>
-      ${this.#renderRoomClaim()}
     </div>
   `;
 
@@ -76,36 +81,15 @@ export class StudentMenuView extends LitElement {
 
   #renderClaimedRoomByYou = () => {
     return html`
-      <div class="cc-controls-row">
-        <div
-          class="row access bg1"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).removeClaim();
-          }}"
-        >
-          <cc-icon svg="${iconSvg.unlock}"></cc-icon>
-          <div class="grow">
-            Claimed by
-            ${RoomService.get().getRoom(this.roomId).getOwnerAsUser().name}
-          </div>
-        </div>
+      <div
+        class="bg2"
+        data-tip="You locked this room"
+        @click="${() => {
+          RoomService.get().getRoom(this.roomId).removeClaim();
+        }}"
+      >
+        <cc-icon svg="${iconSvg.unlock}"></cc-icon>
       </div>
-      ${RoomService.get()
-        .getRoom(this.roomId)
-        .requestIds.map((requestId) => {
-          return html`
-            <div
-              class="cc-controls-row"
-              @click="${() => {
-                RoomService.get().getRoom(this.roomId).giveAccess(requestId);
-              }}"
-            >
-              <div  class="bg1">
-                ${UserService.get().getUserByID(requestId).name} wants access
-              </div>
-            </div>
-          `;
-        })}
     `;
   };
 
@@ -116,71 +100,33 @@ export class StudentMenuView extends LitElement {
         .isWriter(UserService.get().localUser.id)
     ) {
       return html`
-        <div class="cc-controls-row">
-          <div
-            class="row no-access bg1"
-            data-tip="Remove own Access"
-            @click="${() => {
-              RoomService.get()
-                .getRoom(this.roomId)
-                .removeAccess(UserService.get().localUser.id);
-            }}"
-          >
-            <cc-icon class="no-access" svg="${iconSvg.lock}"></cc-icon>
-            <div class="grow no-access">Has Access</div>
-          </div>
-        </div>
-      `;
-    }
-    if (RoomService.get().getRoom(this.roomId).isRequesting()) {
-      return html`
-        <div class="cc-controls-row">
-          <div
-            class="row no-access pulse-on bg1"
-            @click="${() => {
-              RoomService.get()
-                .getRoom(this.roomId)
-                .stopRequestAccess(UserService.get().localUser.id);
-            }}"
-          >
-            <cc-icon class="no-access" svg="${iconSvg.lock}"></cc-icon>
-            <div class="grow no-access">Stop requesting Access</div>
-          </div>
+        <div class="bg2" data-tip="You have write access">
+          <cc-icon svg="${iconSvg.lock}"></cc-icon>
         </div>
       `;
     }
     return html`
-      <div class="cc-controls-row">
-        <div
-          class="row no-access bg1"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).requestAccess();
-          }}"
-        >
-          <cc-icon class="no-access" svg="${iconSvg.lock}"></cc-icon>
-          <div class="grow no-access">Request Access</div>
-        </div>
+      <div class="bg2" data-tip="You have no write access">
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;
   }
 
   #renderUnclaimedRoom = () => {
     return html`
-      <div class="cc-controls-row">
-        <div
-          class="row bg1"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).claimRoomToLocalUser();
-          }}"
-        >
-          <cc-icon svg="${iconSvg.lock}"></cc-icon>
-          <div class="grow">Claim this room</div>
-        </div>
+      <div
+        class="bg2"
+        data-tip="Lock room"
+        @click="${() => {
+          RoomService.get().getRoom(this.roomId).claimRoomToLocalUser();
+        }}"
+      >
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;
   };
 
-  renameRoom = () => {
+  #renameRoom = () => {
     let room = RoomService.get().getRoom(this.roomId);
     showModal(
       `

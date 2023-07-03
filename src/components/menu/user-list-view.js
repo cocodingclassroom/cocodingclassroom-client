@@ -95,8 +95,8 @@ export class UserListView extends LitElement {
               : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
-            ${this.#renderRoomAccess(user)} ${this.#renderNameAndRoom(user)}
-            ${this.#renderNeedsHelp(user)} ${this.#renderTeacherSymbol(user)}
+            ${this.#renderNameAndRoom(user)} ${this.#renderNeedsHelp(user)}
+            ${this.#renderTeacherSymbol(user)}
           </div>`;
         })}
     `;
@@ -108,13 +108,13 @@ export class UserListView extends LitElement {
     };
     if (user.isLocalUser()) {
       return html` <div
-        class="row user-row grow pointer"
+        class="row user-row grow pointer font"
         @click="${() => {
           UserColorRenameModal(user);
         }}"
       >
+        ${this.#renderRoomAccess(user)}
         <div
-          class="font"
           data-tip="Set Username and Color"
           data-tip-left
           style="${styleMap(textColorStyle)}"
@@ -126,8 +126,9 @@ export class UserListView extends LitElement {
     } else {
       let localUser = UserService.get().localUser;
       return html` <div class="row font user-row grow pointer">
+        ${this.#renderRoomAccess(user)}
         <div
-          class="user-row row"
+          class="row"
           data-tip="${localUser.getTrackingByRoom(this.roomId)
             ? "Stop Tracking"
             : "Track Cursor"}"
@@ -220,18 +221,44 @@ export class UserListView extends LitElement {
     if (RoomService.get().getRoom(this.roomId).roomType === RoomType.TEACHER)
       return "";
     if (!ClassroomService.get().classroom.roomLocks) return html``;
-    return html` <div>
-      ${this.#renderAccessIdentifier(user)}
-      ${RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)
-        ? html`
-            <cc-icon
-              class="pointer"
-              data-tip="Claimed this room"
-              svg="${iconSvg.lock}"
-            ></cc-icon>
-          `
-        : ""}
-    </div>`;
+    if (RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)) {
+      return html`
+        <div class="pointer emoji-font" data-tip="Room Admin">🔐</div>
+      `;
+    }
+    if (
+      RoomService.get()
+        .getRoom(this.roomId)
+        .isOwnedBy(UserService.get().localUser.id)
+    ) {
+      if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
+        return html` <div
+          class="pointer emoji-font"
+          data-tip="Make Viewer"
+          @click="${() => {
+            RoomService.get().getRoom(this.roomId).removeAccess(user.id);
+            this.requestUpdate();
+          }}"
+        >
+          📝
+        </div>`;
+      }
+      return html` <div
+        class="pointer emoji-font"
+        data-tip="Make Writer"
+        @click="${() => {
+          RoomService.get().getRoom(this.roomId).giveAccess(user.id);
+          this.requestUpdate();
+        }}"
+      >
+        👁️
+      </div>`;
+    }
+
+    if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
+      return html` <div class="pointer emoji-font" data-tip="Writer">📝</div>`;
+    }
+    return html` <div class="pointer emoji-font" data-tip="Viewer">👁️</div>`;
   }
 
   #renderAccessIdentifier = (user) => {
