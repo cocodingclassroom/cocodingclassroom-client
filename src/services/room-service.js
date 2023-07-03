@@ -64,6 +64,7 @@ export class RoomService {
   #roomChangeListener = (changes) => {
     if (!changes) return;
     changes.forEach((change) => {
+      if (!change.target._item) return;
       if (change.target._item.parentSub === "roomIds") {
         this.init(ClassroomService.get().classroom, undefined);
       }

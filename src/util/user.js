@@ -1,3 +1,46 @@
+import { RoomService } from "../services/room-service";
+
+/**
+ *
+ * @param a
+ * @param b
+ * @type {(a: User, b: User, roomId: number ) => number }
+ */
+export const sortUsers = (a, b, roomId) => {
+  if (a.isLocalUser()) {
+    return 1;
+  }
+  if (b.isLocalUser()) {
+    return -1;
+  }
+  if (a.needsHelp) {
+    return 1;
+  }
+  if (b.needsHelp) {
+    return -1;
+  }
+
+  // sort for write access
+  let room = RoomService.get().getRoom(roomId);
+  if (room.isClaimed()) {
+    if (room.isOwnedBy(a.id)) {
+      return 1;
+    }
+    if (room.isOwnedBy(b.id)) {
+      return -1;
+    }
+
+    if (room.isWriter(a.id)) {
+      return 1;
+    }
+    if (room.isWriter(b.id)) {
+      return -1;
+    }
+  }
+
+  return 0;
+};
+
 /*
 Initial code from:
 (c) by Thomas Konings

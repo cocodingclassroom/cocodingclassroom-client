@@ -17,6 +17,7 @@ import { ClassroomService } from "../../services/classroom-service";
 import { RoomService } from "../../services/room-service";
 import { iconSvg } from "../icons/icons";
 import { RoomType } from "../../models/room";
+import { sortUsers } from "../../util/user";
 
 export class UserListView extends LitElement {
   static properties = {
@@ -83,6 +84,8 @@ export class UserListView extends LitElement {
             user.isRoomRight(this.roomId) ||
             user.isRoomLeft(this.roomId)
         )
+        .sort((a, b) => sortUsers(a, b, this.roomId))
+        .reverse()
         .map((user) => {
           let backgroundColorStyle = { backgroundColor: user.color };
 
@@ -180,12 +183,12 @@ export class UserListView extends LitElement {
     let localIsStudent = UserService.get().localUser.isStudent();
     if (user.needsHelp) {
       return html` <div
-        class="font-emoji pulse ${localIsStudent
+        class="font-emoji pulse ${localIsStudent && !user.isLocalUser()
           ? ""
           : "pointer"} help-rotation rm"
         data-tip="${user.name} needs some help"
         @click="${() => {
-          if (localIsStudent) return;
+          if (localIsStudent && !user.isLocalUser()) return;
           user.needsHelp = false;
           this.requestUpdate();
         }}"
