@@ -12,7 +12,6 @@ export class FrameView extends LitElement {
     frameIdentifier: { state: true },
   };
 
-  room;
   iframeReference;
   frameEventExtension;
 
@@ -23,18 +22,32 @@ export class FrameView extends LitElement {
 
   connectedCallback() {
     this.frameIdentifier = `frame_${this.roomId}`;
-    this.room = RoomService.get().getRoom(this.roomId);
     super.connectedCallback();
   }
 
   firstUpdated(_changedProperties) {
     this.iframeReference = this.shadowRoot.getElementById(this.frameIdentifier);
-    this.room.l_iframeForRoom = this.iframeReference;
+    this.#setup();
+    super.firstUpdated(_changedProperties);
+  }
+
+  update(changedProperties) {
+    super.update(changedProperties);
+    if (changedProperties.has("roomId")) {
+      this.#setup();
+    }
+  }
+
+  #setup() {
+    if (this.frameEventExtension != null) {
+      this.frameEventExtension.cleanUp();
+    }
+    let room = RoomService.get().getRoom(this.roomId);
+    room.l_iframeForRoom = this.iframeReference;
     this.frameEventExtension = new FrameEventExtension(
       UserService.get().localUser,
-      this.room
+      room
     );
-    super.firstUpdated(_changedProperties);
   }
 
   render = () => {

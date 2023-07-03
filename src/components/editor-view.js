@@ -63,7 +63,7 @@ export class EditorView extends LitElement {
     });
     NotifyService.get().addListener((notification) => {
       if (notification.type !== NotificationType.FULLREBUILDOFFRAME) return;
-      if (notification.message === this.room.id) {
+      if (notification.message === parseInt(this.roomId)) {
         this.#runCode(true, false);
       }
     });
@@ -105,6 +105,13 @@ export class EditorView extends LitElement {
     this.#setupEditor();
   }
 
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has("roomId")) {
+      this.#setupContent();
+    }
+  }
+
   #setupEditor = () => {
     let cont = this.shadowRoot.getElementById(this.editorIdentifier);
     this.editor = ace.edit(cont);
@@ -136,21 +143,11 @@ export class EditorView extends LitElement {
 
     this.#updateOnRoomAccess();
 
-    // setup binding
-    let room = RoomService.get().rooms[this.roomId];
-    new AceBinding(
-      room.codeContent,
-      this.editor,
-      SyncService.get().getAwareness()
-    );
     new CursorSyncExtension(this.editor, this.room, this);
 
     this.editor.session.on("change", (x) => {
       this.#onEditorChange(x);
     });
-
-    this.room.l_editorForRoom = this.editor;
-    this.#runCode(true);
 
     this.editor.commands.on("afterExec", (data) => {
       if (data.command.name === "insertstring") {
@@ -158,6 +155,7 @@ export class EditorView extends LitElement {
         this.#startLiveCoding();
       }
     });
+
     ClassroomService.get().classroom.addListener((changes) => {
       changes.forEach((change) => {
         if (change.keysChanged === undefined) return;
@@ -170,16 +168,32 @@ export class EditorView extends LitElement {
         }
       });
     });
+
+    this.#setupContent();
   };
 
+  #setupContent() {
+    if (this.editor === undefined) return;
+    if (this.binding != null) {
+      this.binding.destroy();
+    }
+    let room = RoomService.get().rooms[this.roomId];
+    this.binding = new AceBinding(
+      room.codeContent,
+      this.editor,
+      SyncService.get().getAwareness()
+    );
+    this.room.l_editorForRoom = this.editor;
+    this.#runCode(true);
+  }
+
   #updateOnRoomAccess = () => {
-    if (ClassroomService.get().classroom.roomLocks) {
-      let localId = UserService.get().localUser.id;
-      if (this.room.isWriter(localId) || this.room.isOwnedByLocalUser()) {
-        this.editor.setReadOnly(false);
-      } else {
-        this.editor.setReadOnly(true);
-      }
+    if (!ClassroomService.get().classroom.roomLocks) return;
+    let localId = UserService.get().localUser.id;
+    if (this.room.isWriter(localId) || this.room.isOwnedByLocalUser()) {
+      this.editor.setReadOnly(false);
+    } else {
+      this.editor.setReadOnly(true);
     }
   };
 

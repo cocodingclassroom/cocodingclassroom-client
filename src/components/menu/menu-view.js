@@ -30,10 +30,7 @@ export class MenuView extends LitElement {
     roomId: { type: String },
   };
 
-  room;
-
   connectedCallback() {
-    this.room = RoomService.get().getRoom(this.roomId);
     UserService.get().localUser.addListener(() => {
       this.requestUpdate();
       initDataTips(this.renderRoot);
@@ -47,12 +44,12 @@ export class MenuView extends LitElement {
         });
       });
     super.connectedCallback();
-    RoomService.get()
-      .getRoom(this.roomId)
-      .addListener(() => {
+    RoomService.get().rooms.forEach((room) =>
+      room.addListener(() => {
         this.requestUpdate();
         this.#scrollToBottom();
-      });
+      })
+    );
   }
 
   firstUpdated = (change) => {
@@ -61,26 +58,33 @@ export class MenuView extends LitElement {
     this.#scrollToBottom();
   };
 
+  update(changedProperties) {
+    super.update(changedProperties);
+    initDataTips(this.renderRoot);
+    this.#scrollToBottom();
+  }
+
   render = () => {
+    let room = RoomService.get().getRoom(this.roomId);
     if (ClassroomService.get().isGalleryMode())
       return html`
         <div class="cc-meta">
-          <cc-gallery-menu-view roomId="${this.room.id}"></cc-gallery-menu-view>
-          <cc-user-list roomId="${this.room.id}"></cc-user-list>
+          <cc-gallery-menu-view roomId="${room.id}"></cc-gallery-menu-view>
+          <cc-user-list roomId="${room.id}"></cc-user-list>
           ${this.#renderChat()}
         </div>
       `;
 
     return html`
       <div class="cc-meta">
-        ${this.room.isTeacherRoom()
+        ${room.isTeacherRoom()
           ? html` <cc-teacher-menu-view
-              roomId="${this.room.id}"
+              roomId="${room.id}"
             ></cc-teacher-menu-view>`
           : html` <cc-student-menu-view
-              roomId="${this.room.id}"
+              roomId="${room.id}"
             ></cc-student-menu-view>`}
-        <cc-user-list roomId="${this.room.id}"></cc-user-list>
+        <cc-user-list roomId="${room.id}"></cc-user-list>
         ${this.#renderChat()}
       </div>
     `;
@@ -113,7 +117,8 @@ export class MenuView extends LitElement {
   };
 
   #renderTrash = () => {
-    if (this.room.isTeacherRoom() && UserService.get().localUser.isStudent())
+    let room = RoomService.get().getRoom(this.roomId);
+    if (room.isTeacherRoom() && UserService.get().localUser.isStudent())
       return html``;
 
     return html` <div

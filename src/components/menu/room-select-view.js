@@ -42,13 +42,11 @@ export class RoomSelectView extends LitElement {
 
   updated(_changedProperties) {
     super.updated(_changedProperties);
-    this._setSelectedOption();
   }
 
   render = () => {
     return html` <select
       class="cc-roomlist"
-      id="${this._getRoomSelectId()}"
       name="rooms"
       @change="${this._onChangeRoomSelection}"
     >
@@ -58,36 +56,27 @@ export class RoomSelectView extends LitElement {
         ),
         (e) => e,
         (room) =>
-          html` <option value="${room.id}">
+          html` <option id="${this.#thisRoomValue(room.id)}" value="${room.id}">
             ${room.id}_${room.roomName} ${this._renderRoomLocks(room)}
           </option>`
       )}
     </select>`;
   };
 
-  _getRoomSelectId = () => `room-select-${this.room.id}`;
+  #thisRoomValue(roomId) {
+    return `room-option-${roomId}`;
+  }
 
   _onChangeRoomSelection = (e) => {
-    console.log(e.target.value);
     UserService.get().localUser.selectedRoomRight = parseInt(e.target.value);
-    this._setSelectedOption();
   };
 
   _setSelectedOption() {
-    let selectDOM = this._getSelectDOMElement();
-    if (selectDOM === null) return;
-    for (let i = 0; i < selectDOM.options.length; i++) {
-      let option = selectDOM.options[i];
-      if (UserService.get().localUser.isRoomRight(option.value)) {
-        option.setAttribute("selected", true);
-      } else {
-        option.removeAttribute("selected");
-      }
-    }
+    let option = this.renderRoot.getElementById(
+      this.#thisRoomValue(this.roomId)
+    );
+    option.setAttribute("selected", true);
   }
-
-  _getSelectDOMElement = () =>
-    this.renderRoot?.querySelector(`#${this._getRoomSelectId()}`) ?? null;
 
   _renderRoomLocks = (room) => {
     if (!ClassroomService.get().classroom.roomLocks) return "";

@@ -102,42 +102,24 @@ export class ClassRoomView extends LitElement {
       (room) => room.roomType === RoomType.STUDENT
     );
 
-    return html`
-      ${leftRooms.map(
-        (leftRoom) =>
-          html`
-            <div
-              style="${styleMap(
-                this.localUser.isRoomLeft(leftRoom.id) ? leftStyle : hiddenStyle
-              )}"
-            >
-              <cc-room
-                roomId="${leftRoom.id}"
-                width="${leftWidth}"
-                isLeft="${0}"
-              ></cc-room>
-            </div>
-          `
-      )}
-      ${rightRooms.map(
-        (rightRoom) =>
-          html`
-            <div
-              style="${styleMap(
-                this.localUser.isRoomRight(rightRoom.id)
-                  ? rightStyle
-                  : hiddenStyle
-              )}"
-            >
-              <cc-room
-                roomId="${rightRoom.id}"
-                width="${rightWidth}"
-                isLeft="${1}"
-              ></cc-room>
-            </div>
-          `
-      )}
+    let leftRoom = RoomService.get().getRoom(this.localUser.selectedRoomLeft);
+    let rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight);
 
+    return html`
+      <div style="${styleMap(leftStyle)}">
+        <cc-room
+          roomId="${leftRoom.id}"
+          width="${leftWidth}"
+          isLeft="${0}"
+        ></cc-room>
+      </div>
+      <div style="${styleMap(rightStyle)}">
+        <cc-room
+          roomId="${rightRoom.id}"
+          width="${rightWidth}"
+          isLeft="${1}"
+        ></cc-room>
+      </div>
       <div
         style="${styleMap({ right: `${rightWidth}px` })}"
         class="middle-bar"
@@ -167,7 +149,7 @@ export class ClassRoomView extends LitElement {
     if (percentage < ClassRoomView.MIN_WIDTH) {
       percentage = 0.5;
     }
-    if (percentage > (100 - ClassRoomView.MIN_WIDTH)) {
+    if (percentage > 100 - ClassRoomView.MIN_WIDTH) {
       percentage = 99.5;
     }
     return percentage;
