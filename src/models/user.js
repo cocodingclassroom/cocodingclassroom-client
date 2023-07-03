@@ -1,7 +1,6 @@
 import { YSyncModel } from "./y-sync-model.js";
 import { UserService } from "../services/user-service";
 import { generateName } from "/src/util/user.js";
-import { RoomService } from "../services/room-service";
 
 export class User extends YSyncModel {
   id;
@@ -88,8 +87,7 @@ export class User extends YSyncModel {
   }
 
   getTrackingByRoom(roomId) {
-    let value = this.trackingList.get(`${roomId}`);
-    return value;
+    return this.trackingList.get(`${roomId}`);
   }
 
   toJSON = () => {
