@@ -46,6 +46,7 @@ export class RoomService {
       }
       this.rooms.push(room);
     });
+    this.#registerListener();
   };
 
   defineRooms = (numberOfRooms, classroom) => {
@@ -53,5 +54,19 @@ export class RoomService {
       classroom.roomIds.push([i]);
     }
     classroom.teacherRoomIds.push([0]);
+  };
+
+  #registerListener = () => {
+    ClassroomService.get().classroom.removeListener(this.#roomChangeListener);
+    ClassroomService.get().classroom.addListener(this.#roomChangeListener);
+  };
+
+  #roomChangeListener = (changes) => {
+    if (!changes) return;
+    changes.forEach((change) => {
+      if (change.target._item.parentSub === "roomIds") {
+        this.init(ClassroomService.get().classroom, undefined);
+      }
+    });
   };
 }

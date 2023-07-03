@@ -5,7 +5,12 @@ import { UserService } from "../../services/user-service";
 import { RoomType } from "../../models/room";
 import { ClassroomService } from "../../services/classroom-service";
 import { safeRegister } from "../../util/util";
-import { menuBackground2, menuBackground2Hover, menuBorder1, menuForeground1 } from "../../util/shared-css";
+import {
+  menuBackground2,
+  menuBackground2Hover,
+  menuBorder1,
+  menuForeground1,
+} from "../../util/shared-css";
 
 export class RoomSelectView extends LitElement {
   static properties = {
@@ -17,11 +22,9 @@ export class RoomSelectView extends LitElement {
   connectedCallback() {
     this.room = RoomService.get().getRoom(this.roomId);
     UserService.get().localUser.addListener(() => {
-      this._setSelectedOption();
       this.requestUpdate();
     });
     ClassroomService.get().classroom.addListener(() => {
-      this._setSelectedOption();
       this.requestUpdate();
     });
     RoomService.get().rooms.forEach((room) =>
@@ -34,6 +37,11 @@ export class RoomSelectView extends LitElement {
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
+    this._setSelectedOption();
+  }
+
+  updated(_changedProperties) {
+    super.updated(_changedProperties);
     this._setSelectedOption();
   }
 
@@ -113,8 +121,6 @@ export class RoomSelectView extends LitElement {
       .cc-roomlist:hover {
         background: ${menuBackground2Hover()};
       }
-
-
     `,
   ];
 }
