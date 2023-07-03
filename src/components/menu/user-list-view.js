@@ -56,9 +56,13 @@ export class UserListView extends LitElement {
     initDataTips(this.renderRoot);
   }
 
+  updated(_changedProperties) {
+    super.updated(_changedProperties);
+    initDataTips(this.renderRoot);
+  }
+
   listener = () => {
     this.requestUpdate();
-    initDataTips(this.renderRoot);
   };
 
   classroomListener = () => {
