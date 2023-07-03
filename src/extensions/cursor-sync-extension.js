@@ -140,7 +140,7 @@ export class CursorSyncExtension {
 							width: ${width * 0.3}px;
 							top: ${top}px;
 							left: ${left + width * 0.3}px;
-							z-index: 100;
+							z-index: 48;
 							cursor: help;
     `;
     this.view.renderRoot.appendChild(cursor);
@@ -164,7 +164,7 @@ export class CursorSyncExtension {
 							display: inline-block;
 							top: ${top + 14}px;
 							left: ${left + width * 0.3}px;
-							z-index: 101;
+							z-index: 49;
 							color: ${isColorLight(user.color) ? black() : white()};
 							cursor: help;
 						`;

@@ -188,7 +188,7 @@ export class MenuView extends LitElement {
     css`
       .cc-meta {
         position: absolute;
-        z-index: 4;
+        z-index: 50;
         top: 6px;
         right: 15px;
         background: ${menuBackground2()};
