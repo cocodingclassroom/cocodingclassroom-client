@@ -1,6 +1,7 @@
 import { YSyncModel } from "./y-sync-model.js";
 import { UserService } from "../services/user-service";
 import { generateName } from "/src/util/user.js";
+import { RoomService } from "../services/room-service";
 
 export class User extends YSyncModel {
   id;
@@ -14,11 +15,12 @@ export class User extends YSyncModel {
   activeRoom = 0;
   selection = { start: { row: 0, column: 0 }, end: { row: 0, column: 0 } };
   editorFontSize = 12;
-  followingId = null;
+  trackingList;
 
   constructor(id) {
     super(`user_${id}`);
     this.id = id;
+    this.trackingList = new Map();
     this.setup();
     this.name = this.name ?? generateName();
     this.color =
@@ -68,6 +70,28 @@ export class User extends YSyncModel {
     return this.selection.end.column;
   };
 
+  toggleTrackingInRoom(roomId, user) {
+    if (this.getTrackingByRoom(roomId)) {
+      this.clearTrackInRoom(roomId);
+      return;
+    }
+
+    this.trackInRoom(roomId, user);
+  }
+
+  trackInRoom(roomId, user) {
+    this.trackingList.set(`${roomId}`, user.id);
+  }
+
+  clearTrackInRoom(roomId) {
+    this.trackingList.delete(`${roomId}`);
+  }
+
+  getTrackingByRoom(roomId) {
+    let value = this.trackingList.get(`${roomId}`);
+    return value;
+  }
+
   toJSON = () => {
     return {
       id: this.id,
@@ -78,14 +102,6 @@ export class User extends YSyncModel {
       selectedRoomLeft: this.selectedRoomLeft,
       selectedRoomRight: this.selectedRoomRight,
     };
-  };
-
-  _getRandomUserName = () => {
-    return uniqueNamesGenerator({
-      dictionaries: [adjectives, animals],
-      length: 2,
-      separator: "_",
-    });
   };
 }
 

@@ -82,12 +82,12 @@ export class UserService {
     return this.getAllUsers().find((user) => user.id === id);
   };
 
-  getFollowedBy = () => {
+  getFollowedBy = (roomId) => {
     let results = [];
     let localUser = UserService.get().localUser;
     for (let i = 0; i < this.otherUsers.length; i++) {
       let user = this.otherUsers[i];
-      if (user.followingId === localUser.id) {
+      if (user.getTrackingByRoom(roomId) === localUser.id) {
         results.push(user);
       }
     }

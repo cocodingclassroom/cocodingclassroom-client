@@ -71,8 +71,12 @@ export class EditorView extends LitElement {
   }
 
   #updateFollowing(localUser) {
-    if (localUser.followingId !== this.currentlyFollowing) {
-      let following = UserService.get().getUserByID(localUser.followingId);
+    let trackingUserId = localUser.getTrackingByRoom(this.room.id);
+    if (
+      trackingUserId !== this.currentlyFollowing &&
+      !(this.currentlyFollowing === undefined && trackingUserId === undefined)
+    ) {
+      let following = UserService.get().getUserByID(trackingUserId);
       let oldFollowUser = UserService.get().getUserByID(
         this.currentlyFollowing
       );
@@ -80,14 +84,12 @@ export class EditorView extends LitElement {
       if (following) {
         following.addListener(this.#followUser);
       }
-      this.currentlyFollowing = localUser.followingId;
+      this.currentlyFollowing = trackingUserId;
     }
   }
 
   #followUser = () => {
-    let following = UserService.get().getUserByID(
-      UserService.get().localUser.followingId
-    );
+    let following = UserService.get().getUserByID(this.currentlyFollowing);
     let lineToGoTo = following.getSelectedRow();
     this.editor.scrollToLine(lineToGoTo, true, true, () => {});
   };

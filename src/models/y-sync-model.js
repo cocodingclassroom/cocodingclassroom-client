@@ -1,5 +1,5 @@
 import { SyncService } from "/src/services/sync-service";
-import { Array as YArray } from "yjs";
+import { Array as YArray, Map as YMap } from "yjs";
 
 export class YSyncModel {
   mapName;
@@ -27,17 +27,27 @@ export class YSyncModel {
         !propertyName.startsWith("l_") &&
         typeof this[propertyName] !== "function"
       ) {
-        if (Array.isArray(this[propertyName])) {
+        if (this[propertyName] instanceof Map) {
+          initialData[propertyName] = new YMap();
+          Object.defineProperty(this, propertyName, {
+            get: () => this.map.get(propertyName),
+            set: (newValue) => {
+              if (newValue instanceof Map) {
+                let map = new YMap();
+                newValue.forEach((key, value) => {
+                  map.set(key, value);
+                });
+                this.map.set(propertyName, map);
+              }
+            },
+          });
+        } else if (Array.isArray(this[propertyName])) {
           initialData[propertyName] = new YArray();
           Object.defineProperty(this, propertyName, {
             get: () => this.map.get(propertyName),
             set: (newValue) => {
-              let array = YArray.from(newValue); // SyncService.get().getSharedArray(`${propertyName}_${this.mapName}`);
+              let array = YArray.from(newValue);
               this.map.set(propertyName, array);
-              // this.map.get(propertyName).delete(0, this.map.get(propertyName).length);
-              // newValue.forEach((item, index) => {
-              //   this.map.get(propertyName).insert(index, item);
-              // });
             },
           });
         } else {

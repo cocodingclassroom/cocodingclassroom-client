@@ -93,8 +93,7 @@ export class UserListView extends LitElement {
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this.#renderRoomAccess(user)} ${this.#renderNameAndRoom(user)}
-            ${this.#renderFollowedBy(user)} ${this.#renderNeedsHelp(user)}
-            ${this.#renderTeacherSymbol(user)}
+            ${this.#renderNeedsHelp(user)} ${this.#renderTeacherSymbol(user)}
           </div>`;
         })}
     `;
@@ -122,12 +121,13 @@ export class UserListView extends LitElement {
         ${this.#renderJumpToRoomElement(user)}
       </div>`;
     } else {
+      let localUser = UserService.get().localUser;
       return html` <div class="row font user-row grow pointer">
         <div
           class="user-row row"
-          data-tip="${UserService.get().localUser.followingId === user.id
-            ? "Follow"
-            : "Unfollow"}"
+          data-tip="${localUser.getTrackingByRoom(this.roomId)
+            ? "Unfollow"
+            : "Follow"}"
           data-tip-left
           style="${styleMap(textColorStyle)}"
           @click="${() => {
@@ -136,9 +136,7 @@ export class UserListView extends LitElement {
             initDataTips(this.renderRoot);
           }}"
         >
-          <div class="font-emoji pulse-on">
-            ${this.#renderFollowSymbol(user)}
-          </div>
+          <div>${this.#renderFollowing(user)}</div>
           <div>${this.#trimUserName(user)}</div>
         </div>
         ${this.#renderJumpToRoomElement(user)}
@@ -154,17 +152,7 @@ export class UserListView extends LitElement {
 
   #onClickFollow(user) {
     let localUser = UserService.get().localUser;
-    if (localUser.followingId === null) {
-      localUser.selectedRoomRight = user.selectedRoomRight;
-      localUser.followingId = user.id;
-    } else {
-      localUser.followingId = null;
-    }
-  }
-
-  #renderFollowSymbol(user) {
-    if (UserService.get().localUser.followingId === user.id) return "👀";
-    return "";
+    localUser.toggleTrackingInRoom(this.roomId, user);
   }
 
   #renderJumpToRoomElement(user) {
@@ -270,6 +258,16 @@ export class UserListView extends LitElement {
     }
   };
 
+  #renderFollowing(user) {
+    if (
+      UserService.get().localUser.getTrackingByRoom(this.roomId) === user.id
+    ) {
+      return html` <div class="font-emoji pulse-on rm">👀</div> `;
+    }
+
+    return "";
+  }
+
   static styles = [
     css`
       .rm {
@@ -299,11 +297,6 @@ export class UserListView extends LitElement {
         width: 11px;
         margin: 2px;
       }
-
-      //      .border {
-      //        border: aliceblue 1px solid;
-      //        border-top: 0;
-      //      }
     `,
     basicFlexStyles(),
     pulseStyle(),
@@ -311,16 +304,6 @@ export class UserListView extends LitElement {
     toolTipStyle(),
     helpRotationStyle(),
   ];
-
-  #renderFollowedBy(user) {
-    if (UserService.get().localUser !== user) return "";
-    let followedBy = UserService.get().getFollowedBy();
-    if (followedBy.length === 0) return "";
-    let hintString = followedBy.map((user) => user.name).join(" ");
-    return html` <div class="pulse-on" data-tip="Followed by ${hintString}">
-      👀
-    </div>`;
-  }
 }
 
 safeRegister("cc-user-list", UserListView);
