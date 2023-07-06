@@ -68,6 +68,10 @@
     outline: none;
 }
 
+.modal-content ul li img {
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(203deg) brightness(105%) contrast(101%); 
+}
+
 .modal-button {
     outline: none;
     border-width: 0;
