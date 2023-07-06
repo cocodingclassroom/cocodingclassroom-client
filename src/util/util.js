@@ -16,10 +16,13 @@ export const getSplitScreenWidthAndAlignStyle = (width, leftAlign) => {
   // styles.set("width", );
   if (leftAlign === 0) {
     styles.left = 0;
+    styles['z-index'] = 53;
+    
     if (width) {
     }
   } else {
     styles.right = 0;
+    styles['z-index'] = 50;
   }
 
   return styles;
