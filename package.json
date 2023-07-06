@@ -25,12 +25,14 @@
     "yjs": "^13.5.46"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "prettier": "2.8.4",
     "process": "^0.11.10",
-    "svg-inline-loader": "^0.8.2",
+    "raw-loader": "^4.0.2",
     "style-loader": "^3.3.2",
-    "webpack": "^5.75.0",
+    "svg-inline-loader": "^0.8.2",
+    "webpack": "^5.88.1",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"
   }
