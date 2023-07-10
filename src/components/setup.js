@@ -172,7 +172,7 @@ export class Setup extends LitElement {
       }
 
       .submit {
-        font-family: roboto mono, sans-serif;
+        font-family: Roboto Mono, sans-serif;
         background-color: white;
         text-transform: uppercase;
       }
