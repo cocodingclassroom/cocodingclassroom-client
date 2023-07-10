@@ -27,7 +27,9 @@ export default (env, arg) => {
       }),
       new CopyPlugin({
         patterns: [
-          "./src/assets/resource/*.svg"
+          "./src/assets/resource/*.svg",
+          "./src/assets/fonts/*",
+          "./src/assets/css/global.css",
         ]
       }),
     ],
@@ -72,7 +74,7 @@ export default (env, arg) => {
           resolve: {
             fullySpecified: false
           }
-        },
+        }
       ]
     }
   }
