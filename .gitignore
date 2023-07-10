@@ -16,6 +16,7 @@ build
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+jsconfig.json
 .idea
 .DS_Store
 *.suo

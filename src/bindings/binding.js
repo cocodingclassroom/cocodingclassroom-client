@@ -7,7 +7,11 @@ export class BindingTemplate {
 
   getIFrameTemplate() {}
 
-  export = (room) => {
+  exportJS = (room) => {
+    download(`${room.l_filename}.js`, room.codeContent);
+  };
+
+  exportHTML = (room) => {
     let exportHtml = `<html lang="en">
     ${this.iframeTemplate}
    <script>
@@ -16,6 +20,6 @@ export class BindingTemplate {
     </script>
     </html>
     `;
-    download("export.html", exportHtml);
+    download(`${room.l_filename}.html`, exportHtml);
   };
 }

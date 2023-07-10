@@ -14,6 +14,7 @@ export class Room extends YSyncModel {
   l_changedPositions;
   l_editorForRoom;
   l_iframeForRoom;
+  l_filename;
   l_iframeMeta = `
 		// catch mouse focus
 		// document.addEventListener("mouseup", function(){
