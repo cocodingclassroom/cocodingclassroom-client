@@ -113,6 +113,8 @@ const fullRebuildOfIframe = (
   s.innerHTML = sketchCode + "\n\n" + activeBinding.customCode;
 
   // set template as iframe srcdoc
+  iframe.sandbox =
+    "allow-same-origin allow-scripts allow-downloads allow-pointer-lock";
   iframe.srcdoc = el.innerHTML;
 
   // when ready, add sketch script
