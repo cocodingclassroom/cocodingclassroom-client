@@ -32,7 +32,7 @@ export class GalleryModeMenuView extends LitElement {
       <div class="cc-controls-row">
         <div
           class="cc-header-title help bg3"
-          data-tip="Cocoding Classroom ${version}"
+          data-tip="${version}"
           @click="${() => {
             showAbout();
           }}"
