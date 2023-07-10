@@ -60,7 +60,6 @@ export class SyncService {
         params: {
           authID: classroomID,
           authSet: murmurhash3_32_gc(classroomID, password),
-          authToken: null,
         },
       };
     }
