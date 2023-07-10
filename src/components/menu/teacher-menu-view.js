@@ -50,7 +50,7 @@ export class TeacherMenuView extends LitElement {
         <div class="cc-controls-row bg3">
           <div
             class="cc-header-title help"
-            data-tip="Cocoding Classroom ${version}"
+            data-tip="${version}"
             @click="${() => {
               showAbout();
             }}"

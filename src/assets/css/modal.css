@@ -86,7 +86,6 @@
 }
 
 .modal-button:hover {
-    animation: modal-pulse 1.1s infinite;
 }
 
 .modal-button-row {
@@ -102,6 +101,7 @@
 .modal-ok-button {
     background-color: #3288e6;
     color: white;
+    animation: modal-pulse 1.1s infinite;
 }
 
 @keyframes modal-pulse {
