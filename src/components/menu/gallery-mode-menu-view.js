@@ -76,7 +76,7 @@ export class GalleryModeMenuView extends LitElement {
     css`
       .cc-controls-row div.cc-header-title {
         font-size: 10pt;
-        min-width: calc(100% - 60px);
+        min-width: calc(100% - 65px);
         padding: 4px;
         cursor: help;
         margin-bottom: -1px;
