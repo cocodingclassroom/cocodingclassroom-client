@@ -92,6 +92,7 @@ export class RoomSelectView extends LitElement {
       .cc-roomlist {
         border: 1px solid ${menuBorder1()};
         border-top: none;
+        border-bottom: none;
         height: 26px;
         background: ${menuBackground2()};
         color: ${menuForeground1()};
@@ -100,6 +101,7 @@ export class RoomSelectView extends LitElement {
         cursor: pointer;
         max-width: calc(128px);
         min-width: calc(180px);
+        outline: none;
       }
 
       .cc-roomlist > option {
