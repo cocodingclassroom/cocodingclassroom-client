@@ -29,8 +29,14 @@ export class CompareCodeView extends LitElement {
     let roomLeft = RoomService.get().getRoom(user.selectedRoomLeft);
     let roomRight = RoomService.get().getRoom(user.selectedRoomRight);
 
-    let linesLeft = roomLeft.codeContent.toString().split("\n");
-    let lineRight = roomRight.codeContent.toString().split("\n");
+    let linesLeft = roomLeft.codeContent
+      .toString()
+      .split("\n")
+      .map((item) => item.replace(/\s+/g, ""));
+    let lineRight = roomRight.codeContent
+      .toString()
+      .split("\n")
+      .map((item) => item.replace(/\s+/g, ""));
 
     let results = patienceDiffPlus(lineRight, linesLeft);
     this.#clearMarkers(roomLeft.l_editorForRoom);
