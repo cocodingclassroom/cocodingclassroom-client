@@ -422,7 +422,7 @@ export class EditorView extends LitElement {
     }
 
     .added-line {
-      background-color: rgba(255, 27, 27, 0.38);
+      background-color: rgba(255, 255, 27, 0.38);
       height: 8px;
       position: absolute;
       opacity: 0;
