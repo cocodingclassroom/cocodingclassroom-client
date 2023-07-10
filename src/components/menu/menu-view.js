@@ -102,7 +102,7 @@ export class MenuView extends LitElement {
           .messages.toArray()
           .map((message) => this.#renderMessage(message))}
       </div>
-      <div class="cc-controls-row">
+      <div class="cc-controls-row" style="border-top-style:none;">
         <input
           id="chatInput"
           placeholder="Send message ..."
