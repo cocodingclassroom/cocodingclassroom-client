@@ -20,41 +20,48 @@ export class ExportCodeView extends LitElement {
         showModal(
           `
             <div>
-              Export:<br>
-              <select id="export-type" style="background:#444;">
-              <option value="export-room-js">Room as .js</option>
-              <option value="export-room-html">Room as .html</option>
-              <!--<option value="export-classroom-js">Classroom Session as .js</option>-->
-              <!--<option value="export-classroom-html">Classroom Session as .html</option>-->
-              </select> <br>
-              Filesname: <br><input id="export-filename" value="${
-                RoomService.get().getRoom(this.roomId).l_filename
-              }" style="color:#000;">
+              <div>
+                Export:<br>
+                <select id="export-type" style="">
+                <option value="export-room-js">Room as .js</option>
+                <option value="export-room-html">Room as .html</option>
+                <option value="export-classroom-js">Classroom Session as .js</option>
+                <option value="export-classroom-html" disabled>Classroom Session as .html</option>
+                </select>
+              </div><br>
+              <div>
+                Filesname: <br><input type="text" id="export-filename" value="${
+                  RoomService.get().getRoom(this.roomId).l_filename
+                }" onclick="this.select();">
+              </div>
             </div>
           `,
           () => {
+            let exportType = document.getElementById("export-type").value;
             let filename = document.getElementById("export-filename").value;
             let room = RoomService.get().getRoom(this.roomId);
-            room.l_filename = filename;
-            let exportType = document.getElementById("export-type").value;
             switch (exportType) {
               case "export-room-js":
                 console.log(exportType);
-                BindingService.get().binding.exportJS(
+                room.l_filename = filename;
+                BindingService.get().binding.exportRoomJS(
                   RoomService.get().getRoom(this.roomId)
                 );
                 break;
               case "export-room-html":
                 console.log(exportType);
-                BindingService.get().binding.exportHTML(
+                room.l_filename = filename;
+                BindingService.get().binding.exportRoomHTML(
                   RoomService.get().getRoom(this.roomId)
                 );
                 break;
               case "export-classroom-js":
                 console.log(exportType);
+                BindingService.get().binding.exportClassroomJS(filename);
                 break;
               case "export-classroom-html":
                 console.log(exportType);
+                BindingService.get().binding.exportClassroomHTML(filename);
                 break;
             }
             // let room = RoomService.get().getRoom(this.roomId);
@@ -65,11 +72,10 @@ export class ExportCodeView extends LitElement {
             //   otherRoom.codeContent.insert(0, template);
             // });
           },
-          () => {}
+          () => {
+            document.getElementById("export-filename").select();
+          }
         );
-        // BindingService.get().binding.export(
-        //   RoomService.get().getRoom(this.roomId)
-        // );
       }}"
     >
       <cc-icon svg="${iconSvg.save}"></cc-icon>

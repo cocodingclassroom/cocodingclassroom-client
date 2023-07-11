@@ -1,4 +1,6 @@
-import { download } from "../util/util";
+import { download, downloadZipFile } from "../util/util";
+import { ClassroomService } from "../services/classroom-service";
+import { RoomService } from "../services/room-service";
 
 export class BindingTemplate {
   codeTemplate;
@@ -7,11 +9,11 @@ export class BindingTemplate {
 
   getIFrameTemplate() {}
 
-  exportJS = (room) => {
+  exportRoomJS = (room) => {
     download(`${room.l_filename}.js`, room.codeContent);
   };
 
-  exportHTML = (room) => {
+  exportRoomHTML = (room) => {
     let exportHtml = `<html lang="en">
     ${this.iframeTemplate}
    <script>
@@ -21,5 +23,23 @@ export class BindingTemplate {
     </html>
     `;
     download(`${room.l_filename}.html`, exportHtml);
+  };
+
+  exportClassroomJS = (filename) => {
+    let zipFiles = [];
+    let rooms = ClassroomService.get().classroom.roomIds.forEach((id, i) => {
+      let room = RoomService.get().getRoom(id);
+      zipFiles.push({
+        name: `${i}_${room.roomName}.js`,
+        lastModified: new Date(),
+        input: room.codeContent.toString(),
+      });
+    });
+
+    downloadZipFile(zipFiles, filename);
+  };
+
+  exportClassroomHTML = (filename) => {
+    console.log("Export HTML package... coming soon");
   };
 }
