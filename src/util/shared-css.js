@@ -76,7 +76,7 @@ export const menuRowStyles = () => css`
   }
 
   .cc-controls-row-container {
-    border-top: 1px solid ${menuBorder1()};
+    
   }
 `;
 

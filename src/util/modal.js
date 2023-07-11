@@ -55,7 +55,7 @@ export const showModal = (content, onConfirm, afterOpen, showCancel = true) => {
   // borrowed and adapted from https://stackoverflow.com/a/60031728/1393693
   function handleKey(e) {
     if (e.key === "Tab") {
-      let focusable = document.querySelector('#modal').querySelectorAll('input,button,select,textarea,div[tabindex]');
+      let focusable = document.querySelector('#modal').querySelectorAll('input,button,select,textarea');
       if (focusable.length) {
         let first = focusable[0];
         let last = focusable[focusable.length - 1];

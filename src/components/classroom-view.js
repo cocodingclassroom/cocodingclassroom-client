@@ -152,6 +152,9 @@ export class ClassRoomView extends LitElement {
     if (percentage > 100 - ClassRoomView.MIN_WIDTH) {
       percentage = 99.5;
     }
+    if (percentage > 45 && percentage < 55) {
+      percentage = 50;
+    }
     return percentage;
   };
 
