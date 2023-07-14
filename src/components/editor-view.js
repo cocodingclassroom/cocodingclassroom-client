@@ -21,6 +21,7 @@ import {
   Notification,
 } from "../services/notify-service";
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
+import { error } from "lib0";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -56,10 +57,8 @@ export class EditorView extends LitElement {
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
       this.requestUpdate();
     });
-    this.room.addListener((changes) => {
-      changes.forEach(() => {
-        this.#updateOnRoomAccess();
-      });
+    this.room.addListener(() => {
+      this.#updateOnRoomAccess();
     });
     NotifyService.get().addListener((notification) => {
       if (notification.type !== NotificationType.FULLREBUILDOFFRAME) return;
@@ -179,6 +178,9 @@ export class EditorView extends LitElement {
       this.binding.destroy();
     }
     let room = RoomService.get().rooms[this.roomId];
+    room.addListener(() => {
+      this.#updateOnRoomAccess();
+    });
     this.binding = new AceBinding(
       room.codeContent,
       this.editor,
@@ -192,14 +194,28 @@ export class EditorView extends LitElement {
     if (
       !ClassroomService.get().classroom.roomLocks &&
       RoomService.get().getRoom(this.roomId).isStudentRoom()
-    )
+    ) {
       return;
-    let localId = UserService.get().localUser.id;
-    if (this.room.isWriter(localId) || this.room.isOwnedByLocalUser()) {
-      this.editor.setReadOnly(false);
-    } else {
-      this.editor.setReadOnly(true);
     }
+
+    if (RoomService.get().getRoom(this.roomId).isUnclaimed()) {
+      this.editor.setReadOnly(false);
+      return;
+    }
+    
+    let localUser = UserService.get().localUser;
+
+    if (localUser.isTeacher()) {
+      this.editor.setReadOnly(false);
+      return;
+    }
+
+    if (this.room.isWriter(localUser.id) || this.room.isOwnedByLocalUser()) {
+      this.editor.setReadOnly(false);
+      return;
+    }
+
+    this.editor.setReadOnly(true);
   };
 
   #stopLiveCoding = () => {
