@@ -269,8 +269,6 @@ export class MenuView extends LitElement {
       a {
         color: cornflowerblue;
       }
-
-    ,
     `,
     menuRowStyles(),
     basicFlexStyles(),

@@ -1,6 +1,7 @@
 import { YSyncModel } from "./y-sync-model.js";
 import { UserService } from "../services/user-service";
 import { generateName } from "/src/util/user.js";
+import { RoomService } from "../services/room-service.js";
 
 export class User extends YSyncModel {
   id;
@@ -95,6 +96,14 @@ export class User extends YSyncModel {
   getTrackingByRoom(roomId) {
     return this.trackingList.get(`${roomId}`);
   }
+
+  hasClaimedRoom = () => {
+    var result = false;
+    RoomService.get().rooms.forEach((room) => {
+      if (room.isOwnedBy(this.id)) result = true;
+    });
+    return result;
+  };
 
   toJSON = () => {
     return {

@@ -82,7 +82,7 @@ export class StudentMenuView extends LitElement {
     return html`
       <div
         class="bg2"
-        data-tip="You locked this room"
+        data-tip="Freeroom"
         @click="${() => {
           RoomService.get().getRoom(this.roomId).removeClaim();
         }}"
@@ -96,7 +96,10 @@ export class StudentMenuView extends LitElement {
     return html`
       <div
         class="disabled"
-        data-tip="${RoomService.get().getRoom(this.roomId).getOwnerAsUser().getNameShortened()} locked this room"
+        data-tip="${RoomService.get()
+          .getRoom(this.roomId)
+          .getOwnerAsUser()
+          .getNameShortened()} locked room"
       >
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
@@ -104,6 +107,18 @@ export class StudentMenuView extends LitElement {
   }
 
   #renderUnclaimedRoom = () => {
+    if (UserService.get().localUser.isTeacher()) {
+      return html` <div class="disabled" data-tip="You are a Teacher">
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
+      </div>`;
+    }
+
+    if (UserService.get().localUser.hasClaimedRoom()) {
+      return html`<div class="disabled" data-tip="You own another room">
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
+      </div>`;
+    }
+
     return html`
       <div
         class="bg2"
