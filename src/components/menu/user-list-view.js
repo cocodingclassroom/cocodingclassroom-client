@@ -16,7 +16,7 @@ import { UserColorRenameModal } from "../user-color-rename-modal";
 import { ClassroomService } from "../../services/classroom-service";
 import { RoomService } from "../../services/room-service";
 import { iconSvg } from "../icons/icons";
-import { RoomType } from "../../models/room";
+import { Room, RoomType } from "../../models/room";
 import { sortUsers } from "../../util/user";
 
 export class UserListView extends LitElement {
@@ -209,20 +209,71 @@ export class UserListView extends LitElement {
     </div>`;
   };
 
+  adminIcon = "🔐";
+  writerIcon = "🔏";
+
   #renderRoomAccess(user) {
-    var adminIcon = "🔐";
-    var writerIcon = "🔏";
+    let room = RoomService.get().getRoom(this.roomId);
+    if (room.roomType === RoomType.STUDENT) {
+      return this.#renderRoomAccessStudentRoom(user);
+    }
 
-    if (RoomService.get().getRoom(this.roomId).roomType === RoomType.TEACHER)
-      return "";
+    return this.#renderRoomAccessTeacherRoom(user);
+  }
 
+  #renderRoomAccessTeacherRoom = (user) => {
+    let room = RoomService.get().getRoom(this.roomId);
+
+    if (UserService.get().localUser.isStudent()) {
+      if (room.isWriter(user.id) ) {
+        return html` <div
+          class="pointer emoji-font"
+          data-tip="Has Access"
+        >
+          ${this.writerIcon}
+        </div>`;
+      }
+    }
+
+    if (UserService.get().localUser.isTeacher()) {
+      if (user.id === UserService.get().localUser.id) return "";
+
+      if (room.isWriter(user.id)) {
+        return html` <div
+          class="pointer emoji-font"
+          data-tip="Remove Access"
+          @click=${() => {
+            RoomService.get().getRoom(this.roomId).removeAccess(user.id);
+            this.requestUpdate();
+          }}
+        >
+          ${this.writerIcon}
+        </div>`;
+      }
+
+      return html` <div
+        class="pointer emoji-font grey-out"
+        data-tip="Give Access"
+        @click=${() => {
+          RoomService.get().getRoom(this.roomId).giveAccess(user.id);
+          this.requestUpdate();
+        }}
+      >
+        ${this.writerIcon}
+      </div>`;
+    }
+  }
+
+  #renderRoomAccessStudentRoom = (user) => {
     if (!ClassroomService.get().classroom.roomLocks) return html``;
 
     if (RoomService.get().getRoom(this.roomId).isUnclaimed()) return html``;
 
     if (RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)) {
       return html`
-        <div class="pointer emoji-font" data-tip="Room Owner">${adminIcon}</div>
+        <div class="pointer emoji-font" data-tip="Room Owner">
+          ${this.adminIcon}
+        </div>
       `;
     }
 
@@ -232,14 +283,13 @@ export class UserListView extends LitElement {
         .isWriter(UserService.get().localUser.id)
     ) {
       if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
-
         // make sure you cannot remove yourself from the list of writers.
         if (UserService.get().localUser.id === user.id) {
           return html` <div
             class="pointer emoji-font"
             data-tip="You have Access"
           >
-            ${writerIcon}
+            ${this.writerIcon}
           </div>`;
         }
 
@@ -251,7 +301,7 @@ export class UserListView extends LitElement {
             this.requestUpdate();
           }}"
         >
-          ${writerIcon}
+          ${this.writerIcon}
         </div>`;
       }
 
@@ -263,12 +313,12 @@ export class UserListView extends LitElement {
           this.requestUpdate();
         }}"
       >
-        ${writerIcon}
+        ${this.writerIcon}
       </div>`;
     }
 
     return html``;
-  }
+  };
 
   #renderFollowing(user) {
     if (
