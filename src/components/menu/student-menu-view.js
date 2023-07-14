@@ -12,7 +12,6 @@ import { RoomService } from "../../services/room-service";
 import { initDataTips } from "../../util/tooltips";
 import { UserService } from "../../services/user-service";
 import { ClassroomService } from "../../services/classroom-service";
-import { Room } from "../../models/room";
 
 export class StudentMenuView extends LitElement {
   static properties = {
@@ -53,6 +52,7 @@ export class StudentMenuView extends LitElement {
         >
           <cc-icon svg="${iconSvg.rename}"></cc-icon>
         </div>
+        ${this.#renderRoomClaim()}
       </div>
       <div class="cc-controls-row">
         <div data-tip="New Sketch" class="bg2">
@@ -61,7 +61,6 @@ export class StudentMenuView extends LitElement {
         <div data-tip="Export Code" class="bg2">
           <cc-export-code roomId="${this.roomId}"></cc-export-code>
         </div>
-        ${this.#renderRoomClaim()}
       </div>
     </div>
   `;
@@ -71,15 +70,15 @@ export class StudentMenuView extends LitElement {
 
     if (RoomService.get().getRoom(this.roomId).ownerId) {
       if (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser()) {
-        return this.#renderClaimedRoomByYou();
+        return this.#renderOwnedByYou();
       }
-      return this.#renderClaimedBySomeoneElse();
+      return this.#renderOwnedBySomeoneElse();
     }
 
     return this.#renderUnclaimedRoom();
   };
 
-  #renderClaimedRoomByYou = () => {
+  #renderOwnedByYou = () => {
     return html`
       <div
         class="bg2"
@@ -93,20 +92,12 @@ export class StudentMenuView extends LitElement {
     `;
   };
 
-  #renderClaimedBySomeoneElse() {
-    if (
-      RoomService.get()
-        .getRoom(this.roomId)
-        .isWriter(UserService.get().localUser.id)
-    ) {
-      return html`
-        <div class="bg2" data-tip="You have write access">
-          <cc-icon svg="${iconSvg.lock}"></cc-icon>
-        </div>
-      `;
-    }
+  #renderOwnedBySomeoneElse() {
     return html`
-      <div class="bg2" data-tip="You have no write access">
+      <div
+        class="disabled"
+        data-tip="${RoomService.get().getRoom(this.roomId).getOwnerAsUser().getNameShortened()} locked this room"
+      >
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;

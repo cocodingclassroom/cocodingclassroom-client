@@ -118,7 +118,7 @@ export class UserListView extends LitElement {
           data-tip-left
           style="${styleMap(textColorStyle)}"
         >
-          ${this.#trimUserName(user)}
+          ${user.getNameShortened()}
         </div>
         ${this.#renderJumpToRoomElement(user)}
       </div>`;
@@ -139,17 +139,11 @@ export class UserListView extends LitElement {
           }}"
         >
           <div>${this.#renderFollowing(user)}</div>
-          <div>${this.#trimUserName(user)}</div>
+          <div>${user.getNameShortened()}</div>
         </div>
         ${this.#renderJumpToRoomElement(user)}
       </div>`;
     }
-  }
-
-  #trimUserName(user, maxLength = 15) {
-    return user.name.length < maxLength
-      ? user.name
-      : `${user.name.substring(0, maxLength)}...`;
   }
 
   #onClickFollow(user) {
@@ -238,6 +232,8 @@ export class UserListView extends LitElement {
         .isWriter(UserService.get().localUser.id)
     ) {
       if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
+
+        // make sure you cannot remove yourself from the list of writers.
         if (UserService.get().localUser.id === user.id) {
           return html` <div
             class="pointer emoji-font"

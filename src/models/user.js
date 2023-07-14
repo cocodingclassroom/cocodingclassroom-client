@@ -35,6 +35,12 @@ export class User extends YSyncModel {
     return user;
   }
 
+  getNameShortened = (maxLength = 15) => {
+    return this.name.length < maxLength
+      ? this.name
+      : `${this.name.substring(0, maxLength)}...`;
+  };
+
   getEditorFontSize = () => {
     return `${UserService.get().localUser.editorFontSize}pt`;
   };

@@ -99,8 +99,7 @@ export class RoomSelectView extends LitElement {
         padding: 2px;
         font-size: 10pt;
         cursor: pointer;
-        max-width: calc(128px);
-        min-width: calc(180px);
+        min-width: calc(150px);
         outline: none;
       }
 
