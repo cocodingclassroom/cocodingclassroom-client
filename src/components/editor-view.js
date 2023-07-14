@@ -189,7 +189,11 @@ export class EditorView extends LitElement {
   }
 
   #updateOnRoomAccess = () => {
-    if (!ClassroomService.get().classroom.roomLocks) return;
+    if (
+      !ClassroomService.get().classroom.roomLocks &&
+      RoomService.get().getRoom(this.roomId).isStudentRoom()
+    )
+      return;
     let localId = UserService.get().localUser.id;
     if (this.room.isWriter(localId) || this.room.isOwnedByLocalUser()) {
       this.editor.setReadOnly(false);

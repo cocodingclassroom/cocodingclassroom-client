@@ -184,7 +184,7 @@ export class SettingsView extends LitElement {
     ClassroomService.get().classroom.roomLocks =
       this.renderRoot.getElementById("room-locks").checked;
     if (!ClassroomService.get().classroom.roomLocks) {
-      RoomService.get().rooms.forEach((room) =>
+      RoomService.get().rooms.filter(room => room.isStudentRoom()).forEach((room) =>
         room.clearAllAuthorizationOnRoom()
       );
     }
