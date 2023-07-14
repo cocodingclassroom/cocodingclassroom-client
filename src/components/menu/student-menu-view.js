@@ -82,7 +82,7 @@ export class StudentMenuView extends LitElement {
     return html`
       <div
         class="bg2"
-        data-tip="Freeroom"
+        data-tip="Free room"
         @click="${() => {
           RoomService.get().getRoom(this.roomId).removeClaim();
         }}"
