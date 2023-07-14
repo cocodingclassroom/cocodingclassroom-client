@@ -225,11 +225,8 @@ export class UserListView extends LitElement {
     let room = RoomService.get().getRoom(this.roomId);
 
     if (UserService.get().localUser.isStudent()) {
-      if (room.isWriter(user.id) ) {
-        return html` <div
-          class="pointer emoji-font"
-          data-tip="Has Access"
-        >
+      if (room.isWriter(user.id)) {
+        return html` <div class="pointer emoji-font" data-tip="Has Access">
           ${this.writerIcon}
         </div>`;
       }
@@ -262,7 +259,7 @@ export class UserListView extends LitElement {
         ${this.writerIcon}
       </div>`;
     }
-  }
+  };
 
   #renderRoomAccessStudentRoom = (user) => {
     if (!ClassroomService.get().classroom.roomLocks) return html``;
@@ -304,8 +301,8 @@ export class UserListView extends LitElement {
           ${this.writerIcon}
         </div>`;
       }
-
-      return html` <div
+      if (user.isStudent()) {
+        return html` <div
         class="pointer emoji-font grey-out"
         data-tip="Give Access"
         @click="${() => {
@@ -315,6 +312,8 @@ export class UserListView extends LitElement {
       >
         ${this.writerIcon}
       </div>`;
+      }
+    
     }
 
     return html``;
