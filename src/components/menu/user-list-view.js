@@ -96,7 +96,7 @@ export class UserListView extends LitElement {
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this.#renderNameAndRoom(user)} ${this.#renderNeedsHelp(user)}
-            ${this.#renderTeacherSymbol(user)}
+            ${this.#renderTeacherSymbol(user)} ${this.#renderRoomAccess(user)}
           </div>`;
         })}
     `;
@@ -113,7 +113,6 @@ export class UserListView extends LitElement {
           UserColorRenameModal(user);
         }}"
       >
-        ${this.#renderRoomAccess(user)}
         <div
           data-tip="Set Username and Color"
           data-tip-left
@@ -126,7 +125,6 @@ export class UserListView extends LitElement {
     } else {
       let localUser = UserService.get().localUser;
       return html` <div class="row font user-row grow pointer">
-        ${this.#renderRoomAccess(user)}
         <div
           class="row"
           data-tip="${localUser.getTrackingByRoom(this.roomId)
@@ -218,75 +216,63 @@ export class UserListView extends LitElement {
   };
 
   #renderRoomAccess(user) {
+    var adminIcon = "🔐";
+    var writerIcon = "🔏";
+
     if (RoomService.get().getRoom(this.roomId).roomType === RoomType.TEACHER)
       return "";
+
     if (!ClassroomService.get().classroom.roomLocks) return html``;
+
+    if (RoomService.get().getRoom(this.roomId).isUnclaimed()) return html``;
+
     if (RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)) {
       return html`
-        <div class="pointer emoji-font" data-tip="Room Admin">🔐</div>
+        <div class="pointer emoji-font" data-tip="Room Owner">${adminIcon}</div>
       `;
     }
+
     if (
       RoomService.get()
         .getRoom(this.roomId)
-        .isOwnedBy(UserService.get().localUser.id)
+        .isWriter(UserService.get().localUser.id)
     ) {
       if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
+        if (UserService.get().localUser.id === user.id) {
+          return html` <div
+            class="pointer emoji-font"
+            data-tip="You have Access"
+          >
+            ${writerIcon}
+          </div>`;
+        }
+
         return html` <div
           class="pointer emoji-font"
-          data-tip="Make Viewer"
+          data-tip="Remove Access"
           @click="${() => {
             RoomService.get().getRoom(this.roomId).removeAccess(user.id);
             this.requestUpdate();
           }}"
         >
-          📝
+          ${writerIcon}
         </div>`;
       }
+
       return html` <div
-        class="pointer emoji-font"
-        data-tip="Make Writer"
+        class="pointer emoji-font grey-out"
+        data-tip="Give Access"
         @click="${() => {
           RoomService.get().getRoom(this.roomId).giveAccess(user.id);
           this.requestUpdate();
         }}"
       >
-        👁️
+        ${writerIcon}
       </div>`;
     }
 
-    if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
-      return html` <div class="pointer emoji-font" data-tip="Writer">📝</div>`;
-    }
-    return html` <div class="pointer emoji-font" data-tip="Viewer">👁️</div>`;
+    return html``;
   }
-
-  #renderAccessIdentifier = (user) => {
-    if (
-      RoomService.get().getRoom(this.roomId).isWriter(user.id) &&
-      (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser() ||
-        user.id === UserService.get().localUser.id)
-    ) {
-      return html`
-        <cc-icon
-          class="pointer"
-          data-tip="Revoke Access"
-          svg="${iconSvg.rename}"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).removeAccess(user.id);
-          }}"
-        ></cc-icon>
-      `;
-    } else if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
-      return html`
-        <cc-icon
-          class="pointer"
-          data-tip="Has Access"
-          svg="${iconSvg.rename}"
-        ></cc-icon>
-      `;
-    }
-  };
 
   #renderFollowing(user) {
     if (
@@ -300,6 +286,10 @@ export class UserListView extends LitElement {
 
   static styles = [
     css`
+      .grey-out {
+        opacity: 0.5;
+      }
+
       .rm {
         margin-right: 2px;
       }
