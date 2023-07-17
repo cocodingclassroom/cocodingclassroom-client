@@ -1,6 +1,14 @@
 import "./components/register";
 import { Router } from "@vaadin/router";
 
+export const DEBUG = true;
+
+export const debugLog = (toLog) => {
+  if (DEBUG) {
+    console.log(toLog);
+  }
+};
+
 window.onload = () => {
   const routes = [
     {

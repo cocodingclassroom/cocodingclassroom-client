@@ -21,7 +21,8 @@ import {
   Notification,
 } from "../services/notify-service";
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
-import { error } from "lib0";
+import { debugLog } from "../index";
+import { messageSync } from "y-websocket";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -226,7 +227,7 @@ export class EditorView extends LitElement {
     let classroom = ClassroomService.get().classroom;
     if (classroom.liveCoding) {
       this.liveCodingInterval = setTimeout(() => {
-        console.log("live coding recompile!");
+        debugLog("live coding recompile!");
         this.#runCode(false);
       }, classroom.liveCodingDelay * 1000);
     }
@@ -298,24 +299,33 @@ export class EditorView extends LitElement {
   };
 
   #runCode(fullRebuild = false, onRebuildSuccessfulShare = true) {
-    console.log("RunCode");
+    debugLog("RunCode");
     interpret(
       fullRebuild,
       this.room,
       (message) => {
+        if (this.message === message) {
+          return;
+        }
+
         this.message = message;
-        console.log(this.message);
+        debugLog(message);
         this.requestUpdate();
       },
       (message) => {
+        if (this.message === message) {
+          return;
+        }
+
         this.message = message;
-        console.log(this.message);
+        debugLog(message);
         this.requestUpdate();
         this.activeError = true;
       },
       () => {
-        console.log("compiled good");
+        this.message = false;
         this.activeError = false;
+        debugLog("compiled good 🔨");
         this.requestUpdate();
         this.#notifyOthersOfFullRebuild(fullRebuild, onRebuildSuccessfulShare);
       },
@@ -371,7 +381,7 @@ export class EditorView extends LitElement {
   };
 
   #renderConsole = () => {
-    if (!this.activeError) return html``;
+    if (!this.message) return html``;
     return html` <cc-console message="${this.message}"></cc-console>`;
   };
 
