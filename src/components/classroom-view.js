@@ -5,10 +5,7 @@ import { ClassroomService } from "/src/services/classroom-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle, safeRegister } from "../util/util";
-import { RoomType } from "../models/room";
 import { clearSelection } from "../util/clear-selection";
-import { ClassroomMode } from "../models/classroom-model";
-import { debugLog } from "../index";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
