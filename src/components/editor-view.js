@@ -177,7 +177,7 @@ export class EditorView extends LitElement {
     if (this.binding != null) {
       this.binding.destroy();
     }
-    let room = RoomService.get().rooms[this.roomId];
+    let room = RoomService.get().getRoom(this.roomId);
     room.addListener(() => {
       this.#updateOnRoomAccess();
     });
@@ -202,7 +202,7 @@ export class EditorView extends LitElement {
       this.editor.setReadOnly(false);
       return;
     }
-    
+
     let localUser = UserService.get().localUser;
 
     if (localUser.isTeacher()) {

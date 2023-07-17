@@ -75,6 +75,14 @@ export class Room extends YSyncModel {
     return this.roomType === RoomType.STUDENT;
   };
 
+  isLobby = () => {
+    return this.roomType === RoomType.LOBBY;
+  };
+
+  isStudentRoomOrLobby = () => {
+    return this.isStudentRoom() || this.isLobby();
+  };
+
   clearAllAuthorizationOnRoom = () => {
     this.writersIds.delete(0, this.writersIds.length);
     this.ownerId = null;
@@ -140,4 +148,5 @@ export class Room extends YSyncModel {
 export class RoomType {
   static STUDENT = 0;
   static TEACHER = 1;
+  static LOBBY = 2;
 }

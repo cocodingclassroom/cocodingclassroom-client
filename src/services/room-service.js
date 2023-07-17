@@ -21,7 +21,8 @@ export class RoomService {
   };
 
   getRoom = (roomId) => {
-    if (roomId >= 0 && roomId < this.rooms.length) return this.rooms[roomId];
+    var result = this.rooms.filter((room) => room.id === parseInt(roomId))[0];
+    return result;
   };
 
   addRoom() {
@@ -36,11 +37,15 @@ export class RoomService {
     if (classroom.roomIds.length === 0) {
       this.defineRooms(numberOfRooms, classroom);
     }
+
     this.rooms = [];
     classroom.roomIds.forEach((id) => {
       let room = new Room(id);
       if (classroom.teacherRoomIds.toArray().includes(id)) {
         room.roomType = RoomType.TEACHER;
+      } else if (id < 0) {
+        room.roomName = "Lobby";
+        room.roomType = RoomType.LOBBY;
       } else {
         room.roomType = RoomType.STUDENT;
       }
@@ -50,6 +55,7 @@ export class RoomService {
   };
 
   defineRooms = (numberOfRooms, classroom) => {
+    classroom.roomIds.push([-1]);
     for (let i = 0; i < numberOfRooms; i++) {
       classroom.roomIds.push([i]);
     }

@@ -37,7 +37,7 @@ export class RoomSelectView extends LitElement {
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
-    this._setSelectedOption();
+    this.#setSelectedOption();
   }
 
   updated(_changedProperties) {
@@ -48,37 +48,40 @@ export class RoomSelectView extends LitElement {
     return html` <select
       class="cc-roomlist"
       name="rooms"
-      @change="${this._onChangeRoomSelection}"
+      @change="${this.#onChangeRoomSelection}"
     >
       ${repeat(
-        RoomService.get().rooms.filter(
-          (room) => room.roomType === RoomType.STUDENT
-        ),
+        RoomService.get().rooms.filter((room) => room.isStudentRoomOrLobby()),
         (e) => e,
         (room) =>
           html` <option id="${this.#thisRoomValue(room.id)}" value="${room.id}">
-            ${room.id}_${room.roomName} ${this._renderRoomLocks(room)}
+            ${this.#getRoomNameDisplay(room)} ${this.#renderRoomLocks(room)}
           </option>`
       )}
     </select>`;
   };
 
+  #getRoomNameDisplay(room) {
+    if (room.isLobby()) return html`${room.roomName}`;
+    return html` ${room.id}_${room.roomName}`;
+  }
+
   #thisRoomValue(roomId) {
     return `room-option-${roomId}`;
   }
 
-  _onChangeRoomSelection = (e) => {
+  #onChangeRoomSelection = (e) => {
     UserService.get().localUser.selectedRoomRight = parseInt(e.target.value);
   };
 
-  _setSelectedOption() {
+  #setSelectedOption() {
     let option = this.renderRoot.getElementById(
       this.#thisRoomValue(this.roomId)
     );
     option.setAttribute("selected", true);
   }
 
-  _renderRoomLocks = (room) => {
+  #renderRoomLocks = (room) => {
     if (!ClassroomService.get().classroom.roomLocks) return "";
     if (room.isUnclaimed()) return "";
     if (room.isOwnedByLocalUser()) {

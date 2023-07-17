@@ -43,16 +43,7 @@ export class StudentMenuView extends LitElement {
     <div class="cc-controls-row-container">
       <div class="cc-controls-row">
         <cc-room-select roomId="${this.roomId}"></cc-room-select>
-        <div
-          class="grow bg2"
-          data-tip="Rename"
-          @click="${() => {
-            this.#renameRoom();
-          }}"
-        >
-          <cc-icon svg="${iconSvg.rename}"></cc-icon>
-        </div>
-        ${this.#renderRoomClaim()}
+        ${this.#renderRoomRename()} ${this.#renderRoomClaim()}
       </div>
       <div class="cc-controls-row">
         <div data-tip="New Sketch" class="bg2">
@@ -65,11 +56,26 @@ export class StudentMenuView extends LitElement {
     </div>
   `;
 
-  #renderRoomClaim = () => {
-    if (!ClassroomService.get().classroom.roomLocks) return "";
+  #renderRoomRename = () => {
+    if (RoomService.get().getRoom(this.roomId).isLobby()) return "";
+    return html` <div
+      class="grow bg2"
+      data-tip="Rename"
+      @click="${() => {
+        this.#renameRoom();
+      }}"
+    >
+      <cc-icon svg="${iconSvg.rename}"></cc-icon>
+    </div>`;
+  };
 
-    if (RoomService.get().getRoom(this.roomId).ownerId) {
-      if (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser()) {
+  #renderRoomClaim = () => {
+    let room = RoomService.get().getRoom(this.roomId);
+    if (!ClassroomService.get().classroom.roomLocks) return "";
+    if (room.isLobby() && UserService.get().localUser.isStudent()) return "";
+
+    if (room.isClaimed()) {
+      if (room.isOwnedByLocalUser()) {
         return this.#renderOwnedByYou();
       }
       return this.#renderOwnedBySomeoneElse();
@@ -107,14 +113,17 @@ export class StudentMenuView extends LitElement {
   }
 
   #renderUnclaimedRoom = () => {
-    if (UserService.get().localUser.isTeacher()) {
+    if (
+      UserService.get().localUser.isTeacher() &&
+      RoomService.get().getRoom(this.roomId).isStudentRoom()
+    ) {
       return html` <div class="disabled" data-tip="You are a Teacher">
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>`;
     }
 
     if (UserService.get().localUser.hasClaimedRoom()) {
-      return html`<div class="disabled" data-tip="You own another room">
+      return html` <div class="disabled" data-tip="You own another room">
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>`;
     }
