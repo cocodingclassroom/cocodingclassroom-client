@@ -3,6 +3,12 @@ import { iconSvg } from "../icons/icons";
 import { showModal } from "../../util/modal";
 import { RoomService } from "../../services/room-service";
 import { safeRegister } from "../../util/util";
+import {
+  NotifyService,
+  Notification,
+  NotificationType,
+} from "../../services/notify-service";
+import { UserService } from "../../services/user-service";
 
 export class SyncCodeView extends LitElement {
   static properties = {
@@ -29,6 +35,14 @@ export class SyncCodeView extends LitElement {
 
           otherRoom.codeContent.delete(0, otherRoom.codeContent.length);
           otherRoom.codeContent.insert(0, template);
+
+          NotifyService.get().notify(
+            new Notification(
+              NotificationType.FULLREBUILDOFFRAME,
+              UserService.get().localUser,
+              otherRoom.id
+            )
+          );
         });
       },
       () => {}
