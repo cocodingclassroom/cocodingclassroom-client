@@ -14,7 +14,7 @@ export class ExportCodeView extends LitElement {
     return html` <div
       @click="${() => {
         let room = RoomService.get().getRoom(this.roomId);
-        if (room.l_filename == undefined) {
+        if (room.l_filename === undefined) {
           room.l_filename = room.roomName;
         }
         showModal(

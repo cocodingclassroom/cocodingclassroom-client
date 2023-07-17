@@ -6,6 +6,7 @@ import { RoomType } from "../../models/room";
 import { ClassroomService } from "../../services/classroom-service";
 import { safeRegister } from "../../util/util";
 import {
+  basicFlexStyles,
   menuBackground2,
   menuBackground2Hover,
   menuBorder1,
@@ -46,7 +47,7 @@ export class RoomSelectView extends LitElement {
 
   render = () => {
     return html` <select
-      class="cc-roomlist"
+      class="cc-roomlist grow"
       name="rooms"
       @change="${this.#onChangeRoomSelection}"
     >
@@ -93,16 +94,20 @@ export class RoomSelectView extends LitElement {
   static styles = [
     css`
       .cc-roomlist {
-        border: 1px solid ${menuBorder1()};
-        border-top: none;
-        border-bottom: none;
-        height: 26px;
+        //border: 1px solid ${menuBorder1()};
+        border: none;
+        //border-top: none;
+        //border-bottom: none;
+        //height: 26px;
         background: ${menuBackground2()};
         color: ${menuForeground1()};
-        padding: 2px;
+        //padding: 1px;
+        padding: 1px;
         font-size: 10pt;
         cursor: pointer;
-        min-width: calc(150px);
+        min-width: 150px;
+        width: 100%;
+        height: 100%;
         outline: none;
       }
 
@@ -115,6 +120,7 @@ export class RoomSelectView extends LitElement {
         background: ${menuBackground2Hover()};
       }
     `,
+    basicFlexStyles(),
   ];
 }
 

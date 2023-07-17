@@ -40,18 +40,19 @@ export class StudentMenuView extends LitElement {
   }
 
   render = () => html`
-    <div class="cc-controls-row-container">
-      <div class="cc-controls-row">
+    <div class="cc-controls-row">
+      <div class="grow bg2">
         <cc-room-select roomId="${this.roomId}"></cc-room-select>
-        ${this.#renderRoomRename()} ${this.#renderRoomClaim()}
       </div>
-      <div class="cc-controls-row">
-        <div data-tip="New Sketch" class="bg2">
-          <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
-        </div>
-        <div data-tip="Export Code" class="bg2">
-          <cc-export-code roomId="${this.roomId}"></cc-export-code>
-        </div>
+
+      ${this.#renderRoomRename()} ${this.#renderRoomClaim()}
+    </div>
+    <div class="cc-controls-row">
+      <div data-tip="New Sketch" class="bg2">
+        <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
+      </div>
+      <div data-tip="Export Code" class="bg2">
+        <cc-export-code roomId="${this.roomId}"></cc-export-code>
       </div>
     </div>
   `;
