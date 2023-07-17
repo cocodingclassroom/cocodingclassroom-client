@@ -98,7 +98,7 @@ export class ClassRoomView extends LitElement {
   #renderLeftRoom = (leftWidth) => {
     let leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
 
-    if (leftWidth < ClassRoomView.MIN_WIDTH) return "";
+    if (this.localUser.leftSize < ClassRoomView.MIN_WIDTH) return "";
 
     let leftRoom = RoomService.get().getRoom(this.localUser.selectedRoomLeft);
     return html` <div style="${styleMap(leftStyle)}">
@@ -112,7 +112,7 @@ export class ClassRoomView extends LitElement {
 
   #renderRightRoom = (rightWidth) => {
     let rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
-    if (rightWidth < ClassRoomView.MIN_WIDTH) return "";
+    if (100 - this.localUser.leftSize < ClassRoomView.MIN_WIDTH) return "";
 
     let rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight);
     return html` <div style="${styleMap(rightStyle)}">
