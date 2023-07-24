@@ -22,8 +22,8 @@ import {
 import { styleMap } from "lit/directives/style-map.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { initDataTips } from "../../util/tooltips";
-import { showModal } from "../../util/modal";
 import { ClassroomService } from "../../services/classroom-service";
+import { clearChat } from "../modals/clear-chat-modal";
 
 export class MenuView extends LitElement {
   static properties = {
@@ -124,7 +124,7 @@ export class MenuView extends LitElement {
     return html` <div
       data-tip="Clear Chat"
       class="pointer pulse"
-      @click="${() => this.#clearChat()}"
+      @click="${() => clearChat(this.roomId)}"
     >
       <cc-icon class="grey-text" svg="${iconSvg.trash}"></cc-icon>
     </div>`;
@@ -165,21 +165,6 @@ export class MenuView extends LitElement {
       .getRoom(this.roomId)
       .messages.push([JSON.stringify(newMessage)]);
     messageContent.value = "";
-  };
-
-  #clearChat = () => {
-    showModal(
-      `
-        <div>
-         Clear chat for this room?
-        </div>
-    `,
-      () => {
-        let messages = RoomService.get().getRoom(this.roomId).messages;
-        messages.delete(0, messages.length);
-      },
-      () => {}
-    );
   };
 
   #scrollToBottom() {
@@ -225,7 +210,6 @@ export class MenuView extends LitElement {
         font-size: 10pt;
         color: ${menuForeground1()};
       }
-
 
       .message {
         margin: 1px;

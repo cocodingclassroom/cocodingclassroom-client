@@ -3,8 +3,6 @@ import { version } from "process";
 import { initDataTips } from "../../util/tooltips";
 import { showAbout } from "../modals/about-modal";
 import { iconSvg } from "../icons/icons";
-import { UserService } from "../../services/user-service";
-import { TeacherMenuView } from "./teacher-menu-view";
 import { safeRegister } from "../../util/util";
 import {
   cursorTipStyle,
@@ -53,7 +51,9 @@ export class GalleryModeMenuView extends LitElement {
       ${this.settingsOpen ? html` <cc-settings></cc-settings>` : ""}
       <div class="cc-controls-row">
         <cc-room-select roomId="${this.roomId}"></cc-room-select>
-        <div style="background: ${menuBackground2()}; border: 1px solid ${menuBorder1()};} border-style:solid solid none none; margin-top:-1px;"></div>
+        <div
+          style="background: ${menuBackground2()}; border: 1px solid ${menuBorder1()};} border-style:solid solid none none; margin-top:-1px;"
+        ></div>
       </div>
       <div class="cc-controls-row">${this.#renderTeacherActions()}</div>
     </div>`;
@@ -61,7 +61,7 @@ export class GalleryModeMenuView extends LitElement {
 
   #renderSettings = () => {
     return html` <div
-      class="cc-nav-settings  ${this.settingsOpen ? 'bg3 active' : 'bg3 help'}"
+      class="cc-nav-settings  ${this.settingsOpen ? "bg3 active" : "bg3 help"}"
       @click="${() => {
         this.settingsOpen = !this.settingsOpen;
         initDataTips(this.renderRoot);

@@ -2,7 +2,6 @@ import { css, html, LitElement } from "lit";
 import { repeat } from "lit-html/directives/repeat.js";
 import { RoomService } from "../../services/room-service";
 import { UserService } from "../../services/user-service";
-import { RoomType } from "../../models/room";
 import { ClassroomService } from "../../services/classroom-service";
 import { safeRegister } from "../../util/util";
 import {

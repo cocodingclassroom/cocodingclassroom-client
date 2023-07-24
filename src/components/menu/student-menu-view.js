@@ -7,11 +7,11 @@ import {
 } from "../../util/shared-css";
 import { iconSvg } from "../icons/icons";
 import { safeRegister } from "../../util/util";
-import { showModal } from "../../util/modal";
 import { RoomService } from "../../services/room-service";
 import { initDataTips } from "../../util/tooltips";
 import { UserService } from "../../services/user-service";
 import { ClassroomService } from "../../services/classroom-service";
+import { renameRoom } from "../modals/rename-room-modal";
 
 export class StudentMenuView extends LitElement {
   static properties = {
@@ -63,7 +63,7 @@ export class StudentMenuView extends LitElement {
       class="grow bg2"
       data-tip="Rename"
       @click="${() => {
-        this.#renameRoom();
+        renameRoom(this.roomId);
       }}"
     >
       <cc-icon svg="${iconSvg.rename}"></cc-icon>
@@ -140,29 +140,6 @@ export class StudentMenuView extends LitElement {
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;
-  };
-
-  #renameRoom = () => {
-    let room = RoomService.get().getRoom(this.roomId);
-    showModal(
-      `
-      <div>
-      Rename Room
-      </div>
-     <input id="roomname" class="cc-user-rename" name="roomname" type="text" value="${room.roomName.replace(
-       /["']/g,
-       ""
-     )}">
-    `,
-      () => {
-        let nameInput = document.getElementById("roomname");
-        room.roomName = nameInput.value;
-      },
-      () => {
-        let nameInput = document.getElementById("roomname");
-        nameInput.select();
-      }
-    );
   };
 
   static styles = [
