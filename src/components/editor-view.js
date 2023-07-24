@@ -22,7 +22,6 @@ import {
 } from "../services/notify-service";
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
 import { debugLog } from "../index";
-import { messageSync } from "y-websocket";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -150,7 +149,7 @@ export class EditorView extends LitElement {
     });
 
     this.editor.commands.on("afterExec", (data) => {
-      let commands = ["insertstring", "backspace", "cut"];
+      let commands = ["insertstring", "backspace", "cut", "paste"];
       if (commands.includes(data.command.name)) {
         this.#stopLiveCoding();
         this.#startLiveCoding();
