@@ -38,17 +38,21 @@ export class RoomSelectView extends LitElement {
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
+    this.room = RoomService.get().getRoom(this.roomId);
     this.#setSelectedOption();
   }
 
   updated(_changedProperties) {
     super.updated(_changedProperties);
+    this.room = RoomService.get().getRoom(this.roomId);
+    this.#setSelectedOption();
   }
 
   render = () => {
     return html` <select
       class="cc-roomlist grow"
       name="rooms"
+      id="room-select-options"
       @change="${this.#onChangeRoomSelection}"
     >
       ${repeat(
@@ -76,10 +80,8 @@ export class RoomSelectView extends LitElement {
   };
 
   #setSelectedOption() {
-    let option = this.renderRoot.getElementById(
-      this.#thisRoomValue(this.roomId)
-    );
-    option.setAttribute("selected", true);
+    let option = this.renderRoot.getElementById("room-select-options");
+    option.value = `${this.roomId}`;
   }
 
   #renderRoomLocks = (room) => {

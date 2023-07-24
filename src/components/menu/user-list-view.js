@@ -90,9 +90,7 @@ export class UserListView extends LitElement {
           let backgroundColorStyle = { backgroundColor: user.color };
 
           return html` <div
-            class="cc-controlls-view row center border ${user.needsHelp
-              ? "pulse-on"
-              : ""}"
+            class="row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
             ${this.#renderNameAndRoom(user)} ${this.#renderNeedsHelp(user)}
@@ -303,17 +301,16 @@ export class UserListView extends LitElement {
       }
       if (user.isStudent()) {
         return html` <div
-        class="pointer emoji-font grey-out"
-        data-tip="Give Access"
-        @click="${() => {
-          RoomService.get().getRoom(this.roomId).giveAccess(user.id);
-          this.requestUpdate();
-        }}"
-      >
-        ${this.writerIcon}
-      </div>`;
+          class="pointer emoji-font grey-out"
+          data-tip="Give Access"
+          @click="${() => {
+            RoomService.get().getRoom(this.roomId).giveAccess(user.id);
+            this.requestUpdate();
+          }}"
+        >
+          ${this.writerIcon}
+        </div>`;
       }
-    
     }
 
     return html``;
