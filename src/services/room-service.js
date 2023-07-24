@@ -21,8 +21,13 @@ export class RoomService {
   };
 
   getRoom = (roomId) => {
-    var result = this.rooms.filter((room) => room.id === parseInt(roomId))[0];
-    return result;
+    return this.rooms.filter((room) => room.id === parseInt(roomId))[0];
+  };
+
+  getNextRoomInList = (room) => {
+    const currentIndex = this.rooms.indexOf(room);
+    const newIndex = (currentIndex + 1) % this.rooms.length;
+    return this.rooms[newIndex];
   };
 
   addRoom() {
