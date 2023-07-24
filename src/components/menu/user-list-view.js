@@ -203,7 +203,10 @@ export class UserListView extends LitElement {
   };
 
   #onClickLowerHand(localIsStudent, user) {
-    if (RoomService.get().getRoom(this.roomId).isTeacherRoom()) {
+    if (
+      RoomService.get().getRoom(this.roomId).isTeacherRoom() &&
+      !user.isLocalUser
+    ) {
       this.#jumpToRoomOfUser(user);
       return;
     }
