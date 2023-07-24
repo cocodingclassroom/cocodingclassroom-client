@@ -7,7 +7,6 @@ import { safeRegister } from "../../util/util";
 import {
   cursorTipStyle,
   menuBackground2,
-  menuBackground3,
   menuBorder1,
   menuRowStyles,
   toolTipStyle,

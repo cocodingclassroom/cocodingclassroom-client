@@ -15,14 +15,16 @@ import { initDataTips } from "../../util/tooltips";
 import { UserColorRenameModal } from "../user-color-rename-modal";
 import { ClassroomService } from "../../services/classroom-service";
 import { RoomService } from "../../services/room-service";
-import { iconSvg } from "../icons/icons";
-import { Room, RoomType } from "../../models/room";
+import { RoomType } from "../../models/room";
 import { sortUsers } from "../../util/user";
 
 export class UserListView extends LitElement {
   static properties = {
     roomId: { type: String },
   };
+
+  adminIcon = "🔐";
+  writerIcon = "🔏";
 
   connectedCallback() {
     this.addListeners();
@@ -163,41 +165,57 @@ export class UserListView extends LitElement {
       data-tip="Jump to Room"
       data-tip-left
       @click="${() => {
-        UserService.get().localUser.selectedRoomRight = user.selectedRoomRight;
+        this.#jumpToRoomOfUser(user);
       }}"
     >
       <p style="${styleMap(fontStyle)}">${user.selectedRoomRight}</p>
     </div>`;
   }
 
+  #jumpToRoomOfUser(user) {
+    UserService.get().localUser.selectedRoomRight = user.selectedRoomRight;
+  }
+
   #renderNeedsHelp = (user) => {
     let localIsStudent = UserService.get().localUser.isStudent();
     if (user.needsHelp) {
       return html` <div
-        class="font-emoji pulse ${localIsStudent && !user.isLocalUser()
-          ? ""
-          : "pointer"} help-rotation rm"
-        data-tip="${user.name} needs some help"
+        class="font-emoji pulse pointer help-rotation rm"
+        data-tip="Needs Help"
         @click="${() => {
-          if (localIsStudent && !user.isLocalUser()) return;
-          user.needsHelp = false;
-          this.requestUpdate();
+          this.#onClickLowerHand(localIsStudent, user);
         }}"
       >
         👋
       </div>`;
     }
+
     if (!user.isLocalUser()) return html``;
     return html` <div
       class="font-emoji pulse pointer rm"
       data-tip="Request Help"
       @click="${() => {
-        user.needsHelp = true;
-        this.requestUpdate();
+        this.#onClickRaiseHand(user);
       }}"
     >
       ✋
     </div>`;
+  };
+
+  #onClickLowerHand(localIsStudent, user) {
+    if (RoomService.get().getRoom(this.roomId).isTeacherRoom()) {
+      this.#jumpToRoomOfUser(user);
+      return;
+    }
+
+    if (localIsStudent && !user.isLocalUser()) return;
+    user.needsHelp = false;
+    this.requestUpdate();
+  }
+
+  #onClickRaiseHand = (user) => {
+    user.needsHelp = true;
+    this.requestUpdate();
   };
 
   #renderTeacherSymbol = (user) => {
@@ -206,9 +224,6 @@ export class UserListView extends LitElement {
       🎓
     </div>`;
   };
-
-  adminIcon = "🔐";
-  writerIcon = "🔏";
 
   #renderRoomAccess(user) {
     let room = RoomService.get().getRoom(this.roomId);
