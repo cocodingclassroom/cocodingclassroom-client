@@ -1,7 +1,6 @@
 import { html, render } from "lit-html";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import "../assets/css/modal.css";
-import { getElementById } from "lib0/dom";
 
 export const showModal = (content, onConfirm, afterOpen, showCancel = true) => {
   const oldModal = document.getElementById("single-modal");
