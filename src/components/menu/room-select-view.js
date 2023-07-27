@@ -9,7 +9,7 @@ import {
   menuBackground2,
   menuBackground2Hover,
   menuBorder1,
-  menuForeground1,
+  menuForegroundLight,
 } from "../../util/shared-css";
 
 export class RoomSelectView extends LitElement {
@@ -101,7 +101,7 @@ export class RoomSelectView extends LitElement {
         //border-bottom: none;
         //height: 26px;
         background: ${menuBackground2()};
-        color: ${menuForeground1()};
+        color: ${menuForegroundLight()};
         //padding: 1px;
         padding: 1px;
         font-size: 10pt;
@@ -114,7 +114,7 @@ export class RoomSelectView extends LitElement {
 
       .cc-roomlist > option {
         background: ${menuBackground2()};
-        color: ${menuForeground1()};
+        color: ${menuForegroundLight()};
       }
 
       .cc-roomlist:hover {
