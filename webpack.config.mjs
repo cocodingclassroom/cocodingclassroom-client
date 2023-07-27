@@ -30,6 +30,7 @@ export default (env, arg) => {
           "./src/assets/resource/*.svg",
           "./src/assets/fonts/*",
           "./src/assets/css/global.css",
+          { from: "./src/bindings/", to: "bindings"},
         ]
       }),
     ],
