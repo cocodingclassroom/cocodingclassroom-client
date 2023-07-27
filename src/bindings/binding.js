@@ -17,8 +17,8 @@ export class BindingTemplate {
     let exportHtml = `<html lang="en">
     ${this.iframeTemplate}
    <script>
-    ${room.codeContent} 
     ${this.customCode}
+    ${room.codeContent} 
     </script>
     </html>
     `;

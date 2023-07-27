@@ -28,7 +28,41 @@ function println(msg){
 	print(msg)
 }
 
-new p5();`;
+
+// count number of loaded libraries
+var __libcounter=0;
+
+function loadLibrary(lib) {
+	if (lib) {
+		__libcounter++;
+		let scriptEl = document.createElement("script");
+		document.body.appendChild(scriptEl);
+		scriptEl.type = "text/javascript";
+		scriptEl.onload = function() {__onLibraryLoaded(lib)};
+		scriptEl.src = lib;
+	}
+}
+
+// callback being called after library has been loaded
+async function __onLibraryLoaded(lib) {
+	__libcounter--;
+	// console.log("lib loaded: " + lib + " counter: " + __libcounter)
+	if (__libcounter == 0) {
+		// console.log("all libs loaded, starting p5")
+		clearTimeout(runner);
+		new p5();
+	}
+}
+
+// start p5 if no library has been loaded,
+// HACK: use setTimeout() without time to start p5 in the next event cycle.
+const runner = setTimeout(() => {
+	// console.log("no library loaded, starting p5");
+	if (__libcounter <= 0)
+		new p5();
+	}
+);
+`;
 
   iframeTemplate = `
 <head>
