@@ -8,7 +8,7 @@ import {
   pulseStyle,
   helpRotationStyle,
   toolTipStyle,
-  menuForeground1,
+  menuForegroundLight,
   menuForegroundDark,
 } from "../../util/shared-css";
 import { initDataTips } from "../../util/tooltips";
@@ -104,7 +104,7 @@ export class UserListView extends LitElement {
 
   #renderNameAndRoom(user) {
     let textColorStyle = {
-      color: isColorLight(user.color) ? menuForegroundDark() : menuForeground1(),
+      color: isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight(),
     };
     if (user.isLocalUser()) {
       return html` <div
@@ -164,10 +164,10 @@ export class UserListView extends LitElement {
   #renderJumpToRoomElement(user) {
     let isLight = isColorLight(user.color);
     let backgroundStyle = {
-      backgroundColor: isLight ? menuForeground1() : menuForegroundDark(),
+      backgroundColor: isLight ? menuForegroundLight() : menuForegroundDark(),
     };
     let fontStyle = {
-      color: isLight ? menuForegroundDark() : menuForeground1(),
+      color: isLight ? menuForegroundDark() : menuForegroundLight(),
     };
     return html` <div
       class="little-box row center alias center-cross-axis"

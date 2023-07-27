@@ -2,11 +2,11 @@ import { css, html, LitElement } from "lit";
 import { safeRegister } from "../../util/util";
 import {
   basicFlexStyles,
-  black,
   inputStyle,
   menuBackground3Hover,
+  menuForegroundDark,
+  menuForegroundLight,
   toolTipStyle,
-  white,
 } from "../../util/shared-css";
 import { ClassroomMode } from "../../models/classroom-model";
 import { ClassroomService } from "../../services/classroom-service";
@@ -236,19 +236,19 @@ export class SettingsView extends LitElement {
       .line {
         height: 5px;
         width: 95%;
-        border-top: solid 1px ${white()};
+        border-top: solid 1px ${menuForegroundLight()};
       }
 
       .input {
         border: none;
         width: 20%;
-        border-bottom: solid 1px ${white()};
+        border-bottom: solid 1px ${menuForegroundLight()};
         background-color: transparent;
-        color: ${white()};
+        color: ${menuForegroundLight()};
       }
 
       .option {
-        color: ${black()};
+        color: ${menuForegroundDark()};
       }
 
       #seconds-delay {

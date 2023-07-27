@@ -6,18 +6,18 @@ import { iconSvg } from "../icons/icons";
 import { ChatMessage } from "../../models/chat-message";
 import {
   basicFlexStyles,
-  black,
   cursorTipStyle,
   inputStyle,
   menuBackground1,
   menuBackground2,
   menuBorder2,
   menuForeground1,
+  menuForegroundDark,
+  menuForegroundLight,
   menuRowStyles,
   pulseStyle,
   secondary,
   toolTipStyle,
-  white,
 } from "../../util/shared-css";
 import { styleMap } from "lit/directives/style-map.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
@@ -135,7 +135,7 @@ export class MenuView extends LitElement {
     let user = UserService.get().getUserByID(chatMessage.userid);
     let messageNameStyle = {
       "background-color": user.color,
-      color: isColorLight(user.color) ? black() : white(),
+      color: isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight(),
     };
     return html` <div class="message row">
       <div class="message-name" style="${styleMap(messageNameStyle)}">

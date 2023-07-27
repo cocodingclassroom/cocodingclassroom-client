@@ -1,7 +1,7 @@
 import { UserService } from "../services/user-service";
 import { Range } from "ace-builds";
 import { isColorLight, newShade, numberOfTabs } from "../util/util";
-import { black, white } from "../util/shared-css";
+import { black, menuForegroundDark, menuForegroundLight, white } from "../util/shared-css";
 import { ClassroomService } from "../services/classroom-service";
 
 export class CursorSyncExtension {
@@ -165,7 +165,7 @@ export class CursorSyncExtension {
 							top: ${top + 14}px;
 							left: ${left + width * 0.3}px;
 							z-index: 49;
-							color: ${isColorLight(user.color) ? black() : white()};
+							color: ${isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight()};
 							cursor: help;
 						`;
     flag.innerHTML =

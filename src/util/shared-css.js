@@ -1,14 +1,12 @@
 import { css, unsafeCSS } from "lit";
 
-export const white = () => unsafeCSS("#f5f5f5");
-export const black = () => unsafeCSS("#1f1f1f");
 export const secondary = () => unsafeCSS("#aaaaaa");
 
 export const editorBackground = () => unsafeCSS("#000000");
 
 export const menuBorder1 = () => unsafeCSS("#aaaaaa");
 export const menuBorder2 = () => unsafeCSS("#555555");
-export const menuForeground1 = () => unsafeCSS("#f5f5f5");
+export const menuForegroundLight = () => unsafeCSS("#f5f5f5");
 export const menuForegroundDark = () => unsafeCSS("#1f1f1f");
 export const menuBackground1 = () => unsafeCSS("#222222");
 export const menuBackground1Hover = () => unsafeCSS("#222222");
@@ -149,7 +147,7 @@ export const toolTipStyle = () => css`
     line-height: 12px;
     padding: 5px;
     background: ${menuBackground1()};
-    color: ${white()};
+    color: ${menuForegroundLight()};
     border: 1px solid ${menuBorder1()};
     border-radius: 5px;
     font-family: sans-serif;
