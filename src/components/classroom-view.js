@@ -160,7 +160,7 @@ export class ClassRoomView extends LitElement {
 
   static styles = css`
     .middle-bar {
-      z-index: 55;
+      z-index: 65;
       position: absolute;
       height: 100vh;
       top: 0;

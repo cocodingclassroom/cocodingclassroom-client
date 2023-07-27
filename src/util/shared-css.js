@@ -143,7 +143,7 @@ export const cursorTipStyle = () => css`
 export const toolTipStyle = () => css`
   .tooltip {
     position: fixed;
-    z-index: 9999;
+    z-index: 70;
     font-size: 12px;
     line-height: 12px;
     padding: 5px;
