@@ -1,3 +1,5 @@
+import { downloadZip } from "client-zip";
+
 export const getRandomID = () => {
   let chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let id = "";
@@ -90,3 +92,16 @@ export const download = (filename, text) => {
 
   document.body.removeChild(element);
 };
+
+export async function downloadZipFile(zipFiles, filename) {
+  // get the ZIP stream in a Blob
+  const blob = await downloadZip(zipFiles).blob();
+
+  // make and click a temporary link to download the Blob
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${filename}.zip`;
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(link.href);
+}

@@ -21,6 +21,7 @@ import {
   Notification,
 } from "../services/notify-service";
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
+import { debugLog } from "../index";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -56,10 +57,8 @@ export class EditorView extends LitElement {
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
       this.requestUpdate();
     });
-    this.room.addListener((changes) => {
-      changes.forEach(() => {
-        this.#updateOnRoomAccess();
-      });
+    this.room.addListener(() => {
+      this.#updateOnRoomAccess();
     });
     NotifyService.get().addListener((notification) => {
       if (notification.type !== NotificationType.FULLREBUILDOFFRAME) return;
@@ -150,7 +149,7 @@ export class EditorView extends LitElement {
     });
 
     this.editor.commands.on("afterExec", (data) => {
-      let commands = ["insertstring", "backspace", "cut"];
+      let commands = ["insertstring", "backspace", "cut", "paste"];
       if (commands.includes(data.command.name)) {
         this.#stopLiveCoding();
         this.#startLiveCoding();
@@ -178,7 +177,10 @@ export class EditorView extends LitElement {
     if (this.binding != null) {
       this.binding.destroy();
     }
-    let room = RoomService.get().rooms[this.roomId];
+    let room = RoomService.get().getRoom(this.roomId);
+    room.addListener(() => {
+      this.#updateOnRoomAccess();
+    });
     this.binding = new AceBinding(
       room.codeContent,
       this.editor,
@@ -189,13 +191,31 @@ export class EditorView extends LitElement {
   }
 
   #updateOnRoomAccess = () => {
-    if (!ClassroomService.get().classroom.roomLocks) return;
-    let localId = UserService.get().localUser.id;
-    if (this.room.isWriter(localId) || this.room.isOwnedByLocalUser()) {
-      this.editor.setReadOnly(false);
-    } else {
-      this.editor.setReadOnly(true);
+    if (
+      !ClassroomService.get().classroom.roomLocks &&
+      RoomService.get().getRoom(this.roomId).isStudentRoom()
+    ) {
+      return;
     }
+
+    if (RoomService.get().getRoom(this.roomId).isUnclaimed()) {
+      this.editor.setReadOnly(false);
+      return;
+    }
+
+    let localUser = UserService.get().localUser;
+
+    if (localUser.isTeacher()) {
+      this.editor.setReadOnly(false);
+      return;
+    }
+
+    if (this.room.isWriter(localUser.id) || this.room.isOwnedByLocalUser()) {
+      this.editor.setReadOnly(false);
+      return;
+    }
+
+    this.editor.setReadOnly(true);
   };
 
   #stopLiveCoding = () => {
@@ -206,7 +226,7 @@ export class EditorView extends LitElement {
     let classroom = ClassroomService.get().classroom;
     if (classroom.liveCoding) {
       this.liveCodingInterval = setTimeout(() => {
-        console.log("live coding recompile!");
+        debugLog("live coding recompile!");
         this.#runCode(false);
       }, classroom.liveCodingDelay * 1000);
     }
@@ -278,24 +298,33 @@ export class EditorView extends LitElement {
   };
 
   #runCode(fullRebuild = false, onRebuildSuccessfulShare = true) {
-    console.log("RunCode");
+    debugLog("RunCode");
     interpret(
       fullRebuild,
       this.room,
       (message) => {
+        if (this.message === message) {
+          return;
+        }
+
         this.message = message;
-        console.log(this.message);
+        debugLog(message);
         this.requestUpdate();
       },
       (message) => {
+        if (this.message === message) {
+          return;
+        }
+
         this.message = message;
-        console.log(this.message);
+        debugLog(message);
         this.requestUpdate();
         this.activeError = true;
       },
       () => {
-        console.log("compiled good");
+        this.message = false;
         this.activeError = false;
+        debugLog("compiled good 🔨");
         this.requestUpdate();
         this.#notifyOthersOfFullRebuild(fullRebuild, onRebuildSuccessfulShare);
       },
@@ -351,7 +380,7 @@ export class EditorView extends LitElement {
   };
 
   #renderConsole = () => {
-    if (!this.activeError) return html``;
+    if (!this.message) return html``;
     return html` <cc-console message="${this.message}"></cc-console>`;
   };
 

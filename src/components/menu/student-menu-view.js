@@ -7,12 +7,11 @@ import {
 } from "../../util/shared-css";
 import { iconSvg } from "../icons/icons";
 import { safeRegister } from "../../util/util";
-import { showModal } from "../../util/modal";
 import { RoomService } from "../../services/room-service";
 import { initDataTips } from "../../util/tooltips";
 import { UserService } from "../../services/user-service";
 import { ClassroomService } from "../../services/classroom-service";
-import { Room } from "../../models/room";
+import { renameRoom } from "../modals/rename-room-modal";
 
 export class StudentMenuView extends LitElement {
   static properties = {
@@ -41,49 +40,56 @@ export class StudentMenuView extends LitElement {
   }
 
   render = () => html`
-    <div class="cc-controls-row-container">
-      <div class="cc-controls-row">
+    <div class="cc-controls-row">
+      <div class="grow bg2">
         <cc-room-select roomId="${this.roomId}"></cc-room-select>
-        <div
-          class="grow bg2"
-          data-tip="Rename"
-          @click="${() => {
-            this.#renameRoom();
-          }}"
-        >
-          <cc-icon svg="${iconSvg.rename}"></cc-icon>
-        </div>
       </div>
-      <div class="cc-controls-row">
-        <div data-tip="New Sketch" class="bg2">
-          <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
-        </div>
-        <div data-tip="Export Code" class="bg2">
-          <cc-export-code roomId="${this.roomId}"></cc-export-code>
-        </div>
-        ${this.#renderRoomClaim()}
+
+      ${this.#renderRoomRename()} ${this.#renderRoomClaim()}
+    </div>
+    <div class="cc-controls-row">
+      <div data-tip="New Sketch" class="bg2">
+        <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
+      </div>
+      <div data-tip="Export Code" class="bg2">
+        <cc-export-code roomId="${this.roomId}"></cc-export-code>
       </div>
     </div>
   `;
 
-  #renderRoomClaim = () => {
-    if (!ClassroomService.get().classroom.roomLocks) return "";
+  #renderRoomRename = () => {
+    if (RoomService.get().getRoom(this.roomId).isLobby()) return "";
+    return html` <div
+      class="grow bg2"
+      data-tip="Rename"
+      @click="${() => {
+        renameRoom(this.roomId);
+      }}"
+    >
+      <cc-icon svg="${iconSvg.rename}"></cc-icon>
+    </div>`;
+  };
 
-    if (RoomService.get().getRoom(this.roomId).ownerId) {
-      if (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser()) {
-        return this.#renderClaimedRoomByYou();
+  #renderRoomClaim = () => {
+    let room = RoomService.get().getRoom(this.roomId);
+    if (!ClassroomService.get().classroom.roomLocks) return "";
+    if (room.isLobby() && UserService.get().localUser.isStudent()) return "";
+
+    if (room.isClaimed()) {
+      if (room.isOwnedByLocalUser()) {
+        return this.#renderOwnedByYou();
       }
-      return this.#renderClaimedBySomeoneElse();
+      return this.#renderOwnedBySomeoneElse();
     }
 
     return this.#renderUnclaimedRoom();
   };
 
-  #renderClaimedRoomByYou = () => {
+  #renderOwnedByYou = () => {
     return html`
       <div
         class="bg2"
-        data-tip="You locked this room"
+        data-tip="Free room"
         @click="${() => {
           RoomService.get().getRoom(this.roomId).removeClaim();
         }}"
@@ -93,26 +99,36 @@ export class StudentMenuView extends LitElement {
     `;
   };
 
-  #renderClaimedBySomeoneElse() {
-    if (
-      RoomService.get()
-        .getRoom(this.roomId)
-        .isWriter(UserService.get().localUser.id)
-    ) {
-      return html`
-        <div class="bg2" data-tip="You have write access">
-          <cc-icon svg="${iconSvg.lock}"></cc-icon>
-        </div>
-      `;
-    }
+  #renderOwnedBySomeoneElse() {
     return html`
-      <div class="bg2" data-tip="You have no write access">
+      <div
+        class="disabled"
+        data-tip="${RoomService.get()
+          .getRoom(this.roomId)
+          .getOwnerAsUser()
+          .getNameShortened()} locked room"
+      >
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;
   }
 
   #renderUnclaimedRoom = () => {
+    if (
+      UserService.get().localUser.isTeacher() &&
+      RoomService.get().getRoom(this.roomId).isStudentRoom()
+    ) {
+      return html` <div class="disabled" data-tip="You are a Teacher">
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
+      </div>`;
+    }
+
+    if (UserService.get().localUser.hasClaimedRoom()) {
+      return html` <div class="disabled" data-tip="You own another room">
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
+      </div>`;
+    }
+
     return html`
       <div
         class="bg2"
@@ -124,29 +140,6 @@ export class StudentMenuView extends LitElement {
         <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;
-  };
-
-  #renameRoom = () => {
-    let room = RoomService.get().getRoom(this.roomId);
-    showModal(
-      `
-      <div>
-      Rename Room
-      </div>
-     <input id="roomname" class="cc-user-rename" name="roomname" type="text" value="${room.roomName.replace(
-       /["']/g,
-       ""
-     )}">
-    `,
-      () => {
-        let nameInput = document.getElementById("roomname");
-        room.roomName = nameInput.value;
-      },
-      () => {
-        let nameInput = document.getElementById("roomname");
-        nameInput.select();
-      }
-    );
   };
 
   static styles = [

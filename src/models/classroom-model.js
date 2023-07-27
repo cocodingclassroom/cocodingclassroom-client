@@ -14,6 +14,7 @@ export class ClassroomModel extends YSyncModel {
   lineNumbers;
   roomLocks;
   walkDelay;
+  isWalking;
 
   constructor(
     classRoomId,
@@ -38,6 +39,7 @@ export class ClassroomModel extends YSyncModel {
     this.lineNumbers = lineNumbers ?? this.lineNumbers;
     this.roomLocks = this.roomLocks ? this.roomLocks : roomLocks;
     this.walkDelay = walkDelay ?? this.walkDelay;
+    this.isWalking = this.isWalking ?? false;
   }
 
   addUser(user) {

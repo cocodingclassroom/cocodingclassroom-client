@@ -2,10 +2,10 @@ import { css, html, LitElement } from "lit";
 import { repeat } from "lit-html/directives/repeat.js";
 import { RoomService } from "../../services/room-service";
 import { UserService } from "../../services/user-service";
-import { RoomType } from "../../models/room";
 import { ClassroomService } from "../../services/classroom-service";
 import { safeRegister } from "../../util/util";
 import {
+  basicFlexStyles,
   menuBackground2,
   menuBackground2Hover,
   menuBorder1,
@@ -37,48 +37,53 @@ export class RoomSelectView extends LitElement {
 
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
-    this._setSelectedOption();
+    this.room = RoomService.get().getRoom(this.roomId);
+    this.#setSelectedOption();
   }
 
   updated(_changedProperties) {
     super.updated(_changedProperties);
+    this.room = RoomService.get().getRoom(this.roomId);
+    this.#setSelectedOption();
   }
 
   render = () => {
     return html` <select
-      class="cc-roomlist"
+      class="cc-roomlist grow"
       name="rooms"
-      @change="${this._onChangeRoomSelection}"
+      id="room-select-options"
+      @change="${this.#onChangeRoomSelection}"
     >
       ${repeat(
-        RoomService.get().rooms.filter(
-          (room) => room.roomType === RoomType.STUDENT
-        ),
+        RoomService.get().rooms.filter((room) => room.isStudentRoomOrLobby()),
         (e) => e,
         (room) =>
           html` <option id="${this.#thisRoomValue(room.id)}" value="${room.id}">
-            ${room.id}_${room.roomName} ${this._renderRoomLocks(room)}
+            ${this.#getRoomNameDisplay(room)} ${this.#renderRoomLocks(room)}
           </option>`
       )}
     </select>`;
   };
 
+  #getRoomNameDisplay(room) {
+    if (room.isLobby()) return html`${room.roomName}`;
+    return html` ${room.id}_${room.roomName}`;
+  }
+
   #thisRoomValue(roomId) {
     return `room-option-${roomId}`;
   }
 
-  _onChangeRoomSelection = (e) => {
+  #onChangeRoomSelection = (e) => {
     UserService.get().localUser.selectedRoomRight = parseInt(e.target.value);
   };
 
-  _setSelectedOption() {
-    let option = this.renderRoot.getElementById(
-      this.#thisRoomValue(this.roomId)
-    );
-    option.setAttribute("selected", true);
+  #setSelectedOption() {
+    let option = this.renderRoot.getElementById("room-select-options");
+    option.value = `${this.roomId}`;
   }
 
-  _renderRoomLocks = (room) => {
+  #renderRoomLocks = (room) => {
     if (!ClassroomService.get().classroom.roomLocks) return "";
     if (room.isUnclaimed()) return "";
     if (room.isOwnedByLocalUser()) {
@@ -90,17 +95,20 @@ export class RoomSelectView extends LitElement {
   static styles = [
     css`
       .cc-roomlist {
-        border: 1px solid ${menuBorder1()};
-        border-top: none;
-        border-bottom: none;
-        height: 26px;
+        //border: 1px solid ${menuBorder1()};
+        border: none;
+        //border-top: none;
+        //border-bottom: none;
+        //height: 26px;
         background: ${menuBackground2()};
         color: ${menuForeground1()};
-        padding: 2px;
+        //padding: 1px;
+        padding: 1px;
         font-size: 10pt;
         cursor: pointer;
-        max-width: calc(128px);
-        min-width: calc(180px);
+        min-width: 150px;
+        width: 100%;
+        height: 100%;
         outline: none;
       }
 
@@ -113,6 +121,7 @@ export class RoomSelectView extends LitElement {
         background: ${menuBackground2Hover()};
       }
     `,
+    basicFlexStyles(),
   ];
 }
 

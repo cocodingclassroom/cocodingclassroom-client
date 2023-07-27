@@ -5,9 +5,7 @@ import { ClassroomService } from "/src/services/classroom-service.js";
 import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle, safeRegister } from "../util/util";
-import { RoomType } from "../models/room";
 import { clearSelection } from "../util/clear-selection";
-import { ClassroomMode } from "../models/classroom-model";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
@@ -87,39 +85,8 @@ export class ClassRoomView extends LitElement {
     let rightWidth = width - leftWidth;
     leftWidth = width - rightWidth;
 
-    let leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
-    let rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
-    let hiddenStyle = { display: "none" };
-
-    if (this.localUser?.leftSize < 1) {
-      leftStyle = hiddenStyle;
-    }
-
-    let leftRooms = RoomService.get().rooms.filter(
-      (room) => room.roomType === RoomType.TEACHER
-    );
-    let rightRooms = RoomService.get().rooms.filter(
-      (room) => room.roomType === RoomType.STUDENT
-    );
-
-    let leftRoom = RoomService.get().getRoom(this.localUser.selectedRoomLeft);
-    let rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight);
-
     return html`
-      <div style="${styleMap(leftStyle)}">
-        <cc-room
-          roomId="${leftRoom.id}"
-          width="${leftWidth}"
-          isLeft="${0}"
-        ></cc-room>
-      </div>
-      <div style="${styleMap(rightStyle)}">
-        <cc-room
-          roomId="${rightRoom.id}"
-          width="${rightWidth}"
-          isLeft="${1}"
-        ></cc-room>
-      </div>
+      ${this.#renderLeftRoom(leftWidth)} ${this.#renderRightRoom(rightWidth)}
       <div
         style="${styleMap({ right: `${rightWidth}px` })}"
         class="middle-bar"
@@ -127,6 +94,35 @@ export class ClassRoomView extends LitElement {
       ></div>
     `;
   }
+
+  #renderLeftRoom = (leftWidth) => {
+    let leftStyle = getSplitScreenWidthAndAlignStyle(leftWidth, 0);
+
+    if (this.localUser.leftSize < ClassRoomView.MIN_WIDTH) return "";
+
+    let leftRoom = RoomService.get().getRoom(this.localUser.selectedRoomLeft);
+    return html` <div style="${styleMap(leftStyle)}">
+      <cc-room
+        roomId="${leftRoom.id}"
+        width="${leftWidth}"
+        isLeft="${0}"
+      ></cc-room>
+    </div>`;
+  };
+
+  #renderRightRoom = (rightWidth) => {
+    let rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
+    if (100 - this.localUser.leftSize < ClassRoomView.MIN_WIDTH) return "";
+
+    let rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight);
+    return html` <div style="${styleMap(rightStyle)}">
+      <cc-room
+        roomId="${rightRoom.id}"
+        width="${rightWidth}"
+        isLeft="${1}"
+      ></cc-room>
+    </div>`;
+  };
 
   _dragMiddleBarStart = () => {
     document.onmousemove = this._dragMiddleBar;
@@ -150,7 +146,7 @@ export class ClassRoomView extends LitElement {
       percentage = 0.5;
     }
     if (percentage > 100 - ClassRoomView.MIN_WIDTH) {
-      percentage = 99.5;
+      percentage = 100;
     }
     if (percentage > 45 && percentage < 55) {
       percentage = 50;

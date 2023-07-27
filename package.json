@@ -12,6 +12,7 @@
   "dependencies": {
     "@vaadin/router": "^1.7.4",
     "ace-builds": "^1.15.1",
+    "client-zip": "^2.4.4",
     "html-webpack-plugin": "^5.5.0",
     "js-beautify": "^1.14.7",
     "lib0": "^0.2.69",

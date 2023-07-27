@@ -75,8 +75,9 @@ export const menuRowStyles = () => css`
     background: ${menuBackground3Hover()};
   }
 
-  .cc-controls-row-container {
-    
+  .cc-controls-row div.disabled {
+    background: #9a9a9a;
+    opacity: 0.5;
   }
 `;
 
