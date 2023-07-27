@@ -4,12 +4,12 @@ import { isColorLight, safeRegister } from "../../util/util";
 import { styleMap } from "lit/directives/style-map.js";
 import {
   basicFlexStyles,
-  black,
   cursorTipStyle,
   pulseStyle,
   helpRotationStyle,
   toolTipStyle,
-  white,
+  menuForeground1,
+  menuForegroundDark,
 } from "../../util/shared-css";
 import { initDataTips } from "../../util/tooltips";
 import { UserColorRenameModal } from "../user-color-rename-modal";
@@ -90,11 +90,11 @@ export class UserListView extends LitElement {
         .reverse()
         .map((user) => {
           let backgroundColorStyle = { backgroundColor: user.color };
-
           return html` <div
             class="row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
+            ${this.#renderSplitIndicator(user)}
             ${this.#renderNameAndRoom(user)} ${this.#renderNeedsHelp(user)}
             ${this.#renderTeacherSymbol(user)} ${this.#renderRoomAccess(user)}
           </div>`;
@@ -104,7 +104,7 @@ export class UserListView extends LitElement {
 
   #renderNameAndRoom(user) {
     let textColorStyle = {
-      color: isColorLight(user.color) ? black() : white(),
+      color: isColorLight(user.color) ? menuForegroundDark() : menuForeground1(),
     };
     if (user.isLocalUser()) {
       return html` <div
@@ -151,13 +151,23 @@ export class UserListView extends LitElement {
     localUser.toggleTrackingInRoom(this.roomId, user);
   }
 
+  #renderSplitIndicator(user) {
+    let localUser = UserService.get().localUser;
+    let splitindicator = user.isTeacher() && user != localUser && user.isRoomLeft(this.roomId);
+    if (splitindicator) {
+      let leftSize = user.leftSize <= 0.5 ? 0.5 : user.leftSize >= 99.5 ? 99.5 : user.leftSize;
+      return html`<div class="splitindicator" style="left:${leftSize}%"></div>`;
+    } else 
+      return '';
+  }
+
   #renderJumpToRoomElement(user) {
     let isLight = isColorLight(user.color);
     let backgroundStyle = {
-      backgroundColor: isLight ? white() : black(),
+      backgroundColor: isLight ? menuForeground1() : menuForegroundDark(),
     };
     let fontStyle = {
-      color: isLight ? black() : white(),
+      color: isLight ? menuForegroundDark() : menuForeground1(),
     };
     return html` <div
       class="little-box row center alias center-cross-axis"
@@ -376,6 +386,14 @@ export class UserListView extends LitElement {
         height: 11px;
         width: 11px;
         margin: 2px;
+      }
+
+      .splitindicator {
+        position: absolute;
+				z-index: 0;
+				filter: brightness(1);
+				height: 26px;
+        border-left:4px solid rgb(102, 102, 102, 0.4)};
       }
     `,
     basicFlexStyles(),

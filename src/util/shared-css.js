@@ -9,7 +9,7 @@ export const editorBackground = () => unsafeCSS("#000000");
 export const menuBorder1 = () => unsafeCSS("#aaaaaa");
 export const menuBorder2 = () => unsafeCSS("#555555");
 export const menuForeground1 = () => unsafeCSS("#f5f5f5");
-export const menuForeground2 = () => unsafeCSS();
+export const menuForegroundDark = () => unsafeCSS("#1f1f1f");
 export const menuBackground1 = () => unsafeCSS("#222222");
 export const menuBackground1Hover = () => unsafeCSS("#222222");
 export const menuBackground2 = () => unsafeCSS("#444444");
