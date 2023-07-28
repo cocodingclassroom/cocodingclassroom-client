@@ -11,7 +11,6 @@ import {
   menuBackground1,
   menuBackground2,
   menuBorder2,
-  menuForeground1,
   menuForegroundDark,
   menuForegroundLight,
   menuRowStyles,
@@ -208,7 +207,7 @@ export class MenuView extends LitElement {
         border-top: 1px solid ${menuBorder2()};
         padding: 4px 2px 4px 4px;
         font-size: 10pt;
-        color: ${menuForeground1()};
+        color: ${menuForegroundLight()};
       }
 
       .message {

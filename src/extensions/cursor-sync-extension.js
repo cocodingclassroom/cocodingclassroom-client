@@ -1,7 +1,7 @@
 import { UserService } from "../services/user-service";
 import { Range } from "ace-builds";
 import { isColorLight, newShade, numberOfTabs } from "../util/util";
-import { black, menuForegroundDark, menuForegroundLight, white } from "../util/shared-css";
+import { menuForegroundDark, menuForegroundLight } from "../util/shared-css";
 import { ClassroomService } from "../services/classroom-service";
 
 export class CursorSyncExtension {
