@@ -43,7 +43,7 @@ export class RoomService {
       this.defineRooms(numberOfRooms, classroom);
     }
 
-    this.rooms = [];
+    let newRooms = [];
     classroom.roomIds.forEach((id) => {
       let room = new Room(id);
       if (classroom.teacherRoomIds.toArray().includes(id)) {
@@ -54,8 +54,9 @@ export class RoomService {
       } else {
         room.roomType = RoomType.STUDENT;
       }
-      this.rooms.push(room);
+      newRooms.push(room);
     });
+    this.rooms = newRooms;
     this.#registerListener();
   };
 
