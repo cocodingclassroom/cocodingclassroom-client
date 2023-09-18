@@ -156,7 +156,7 @@ export class UserListView extends LitElement {
   #renderSplitIndicator(user) {
     let localUser = UserService.get().localUser;
     let splitindicator =
-      user.isTeacher() && user != localUser && user.isRoomLeft(this.roomId);
+      localUser.isTeacher() && user != localUser && user.isRoomLeft(this.roomId);
     if (splitindicator) {
       let leftSize =
         user.leftSize <= 0.5
