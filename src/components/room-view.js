@@ -3,7 +3,7 @@ import { safeRegister } from "../util/util";
 
 export class RoomView extends LitElement {
   static properties = {
-    roomId: { type: Number },
+    roomId: { type: String },
     width: { type: Number },
     isLeft: { type: Number },
     binding: { type: Object, state: true },
