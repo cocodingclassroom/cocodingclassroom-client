@@ -60,8 +60,10 @@ export class RoomService {
   };
 
   defineRooms = (numberOfRooms, classroom) => {
+    //define lobby
     classroom.roomIds.push([-1]);
-    for (let i = 0; i < numberOfRooms; i++) {
+    //define +1 normal room
+    for (let i = 0; i < numberOfRooms + 1; i++) {
       classroom.roomIds.push([i]);
     }
     classroom.teacherRoomIds.push([0]);
