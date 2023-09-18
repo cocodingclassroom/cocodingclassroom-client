@@ -94,9 +94,9 @@ export class UserListView extends LitElement {
             class="row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
           >
-            ${this.#renderSplitIndicator(user)}
-            ${this.#renderNameAndRoom(user)} ${this.#renderNeedsHelp(user)}
-            ${this.#renderTeacherSymbol(user)} ${this.#renderRoomAccess(user)}
+            ${this.#renderSplitIndicator(user)} ${this.#renderNameAndRoom(user)}
+            ${this.#renderNeedsHelp(user)} ${this.#renderTeacherSymbol(user)}
+            ${this.#renderRoomAccess(user)}
           </div>`;
         })}
     `;
@@ -104,7 +104,9 @@ export class UserListView extends LitElement {
 
   #renderNameAndRoom(user) {
     let textColorStyle = {
-      color: isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight(),
+      color: isColorLight(user.color)
+        ? menuForegroundDark()
+        : menuForegroundLight(),
     };
     if (user.isLocalUser()) {
       return html` <div
@@ -153,15 +155,24 @@ export class UserListView extends LitElement {
 
   #renderSplitIndicator(user) {
     let localUser = UserService.get().localUser;
-    let splitindicator = user.isTeacher() && user != localUser && user.isRoomLeft(this.roomId);
+    let splitindicator =
+      user.isTeacher() && user != localUser && user.isRoomLeft(this.roomId);
     if (splitindicator) {
-      let leftSize = user.leftSize <= 0.5 ? 0.5 : user.leftSize >= 99.5 ? 99.5 : user.leftSize;
-      return html`<div class="splitindicator" style="left:${leftSize}%"></div>`;
-    } else 
-      return '';
+      let leftSize =
+        user.leftSize <= 0.5
+          ? 0.5
+          : user.leftSize >= 99.5
+          ? 99.5
+          : user.leftSize;
+      return html` <div
+        class="splitindicator"
+        style="left:${leftSize}%"
+      ></div>`;
+    } else return "";
   }
 
   #renderJumpToRoomElement(user) {
+    if (RoomService.get().getRoom(this.roomId).isStudentRoom()) return "";
     let isLight = isColorLight(user.color);
     let backgroundStyle = {
       backgroundColor: isLight ? menuForegroundLight() : menuForegroundDark(),
@@ -265,10 +276,10 @@ export class UserListView extends LitElement {
         return html` <div
           class="pointer emoji-font"
           data-tip="Remove Access"
-          @click=${() => {
+          @click="${() => {
             RoomService.get().getRoom(this.roomId).removeAccess(user.id);
             this.requestUpdate();
-          }}
+          }}"
         >
           ${this.writerIcon}
         </div>`;
@@ -277,10 +288,10 @@ export class UserListView extends LitElement {
       return html` <div
         class="pointer emoji-font grey-out"
         data-tip="Give Access"
-        @click=${() => {
+        @click="${() => {
           RoomService.get().getRoom(this.roomId).giveAccess(user.id);
           this.requestUpdate();
-        }}
+        }}"
       >
         ${this.writerIcon}
       </div>`;
@@ -390,11 +401,13 @@ export class UserListView extends LitElement {
 
       .splitindicator {
         position: absolute;
-				z-index: 0;
-				filter: brightness(1);
-				height: 26px;
-        border-left:4px solid rgb(102, 102, 102, 0.4)};
+        z-index: 0;
+        filter: brightness(1);
+        height: 26px;
+        border-left: 4px solid rgb(102, 102, 102, 0.4)
       }
+    ;
+    }
     `,
     basicFlexStyles(),
     pulseStyle(),
