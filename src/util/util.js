@@ -93,6 +93,19 @@ export const download = (filename, text) => {
   document.body.removeChild(element);
 };
 
+export const downloadPictureFromBase64 = (filename, base64) => {
+  let element = document.createElement("a");
+  element.setAttribute("href", base64);
+  element.setAttribute("download", filename);
+
+  element.style.display = "none";
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+};
+
 export async function downloadZipFile(zipFiles, filename) {
   // get the ZIP stream in a Blob
   const blob = await downloadZip(zipFiles).blob();

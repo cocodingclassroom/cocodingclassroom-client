@@ -1,4 +1,8 @@
-import { download, downloadZipFile } from "../util/util";
+import {
+  download,
+  downloadPictureFromBase64,
+  downloadZipFile,
+} from "../util/util";
 import { ClassroomService } from "../services/classroom-service";
 import { RoomService } from "../services/room-service";
 
@@ -11,6 +15,16 @@ export class BindingTemplate {
 
   exportRoomJS = (room) => {
     download(`${room.l_filename}.js`, room.codeContent);
+  };
+
+  exportPicture = (room) => {
+    let iframe = room.l_iframeForRoom.contentWindow.document;
+    let canvas = iframe.getElementsByTagName("canvas");
+
+    canvas.forEach((canvas) => {
+      let result = canvas.toDataURL();
+      downloadPictureFromBase64(`${room.l_filename}_screenshot.png`, result);
+    });
   };
 
   exportRoomHTML = (room) => {
@@ -27,7 +41,7 @@ export class BindingTemplate {
 
   exportClassroomJS = (filename) => {
     let zipFiles = [];
-    let rooms = ClassroomService.get().classroom.roomIds.forEach((id, i) => {
+    ClassroomService.get().classroom.roomIds.forEach((id, i) => {
       let room = RoomService.get().getRoom(id);
       zipFiles.push({
         name: `${i}_${room.roomName}.js`,
