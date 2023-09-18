@@ -20,6 +20,14 @@ export class BindingBase {
     `;
   };
 
+  getCustomCode = () => {
+    return this.customCode;
+  }
+
+  getCodeTemplate = () => {
+    return this.codeTemplate;
+  }
+
   exportRoomJS = (room) => {
     download(`${room.l_filename}.js`, room.codeContent);
   };
