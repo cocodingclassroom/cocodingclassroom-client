@@ -7,11 +7,18 @@ import { ClassroomService } from "../services/classroom-service";
 import { RoomService } from "../services/room-service";
 
 export class BindingBase {
-  codeTemplate;
-  customCode;
-  iframeTemplate;
+  codeTemplate;    // javascript template that is shown in the editor
+  customCode;      // any custom code that needs to be added at the top of the iframe.
+  iframeTemplate;  // html template that is rendered as src-doc in the iframe
 
-  getIFrameTemplate() {}
+  getIFrameTemplate = () => {
+    return `
+    <!DOCTYPE html>
+      <html>
+      ${this.iframeTemplate}
+      </html>
+    `;
+  };
 
   exportRoomJS = (room) => {
     download(`${room.l_filename}.js`, room.codeContent);

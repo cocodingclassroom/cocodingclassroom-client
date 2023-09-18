@@ -2,7 +2,7 @@
 
 import { BindingBase } from "../binding-base";
 
-export class p5binding extends BindingBase {
+export class binding extends BindingBase {
   codeTemplate = `function setup() {
 	createCanvas(windowWidth, windowHeight)
 
@@ -95,12 +95,5 @@ const runner = setTimeout(() => {
 <body>
 </body>
 `;
-  getIFrameTemplate = () => {
-    return `
-    <!DOCTYPE html>
-      <html>
-      ${this.iframeTemplate}
-      </html>
-    `;
-  };
+
 }
