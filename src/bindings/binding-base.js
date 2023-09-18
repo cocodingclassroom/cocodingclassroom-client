@@ -6,7 +6,7 @@ import {
 import { ClassroomService } from "../services/classroom-service";
 import { RoomService } from "../services/room-service";
 
-export class BindingTemplate {
+export class BindingBase {
   codeTemplate;
   customCode;
   iframeTemplate;

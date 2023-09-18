@@ -1,8 +1,8 @@
 // p5 binding
 
-import { BindingTemplate } from "../binding";
+import { BindingBase } from "../binding-base";
 
-export class p5binding extends BindingTemplate {
+export class p5binding extends BindingBase {
   codeTemplate = `function setup() {
 	createCanvas(windowWidth, windowHeight)
 
