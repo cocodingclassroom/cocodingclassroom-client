@@ -22,7 +22,8 @@ export class ClassroomModel extends YSyncModel {
     liveCodingDelay,
     lineNumbers,
     roomLocks,
-    walkDelay
+    walkDelay,
+    bindingIndex
   ) {
     super(`classroom_${classRoomId}`);
     this.classRoomId = classRoomId;
@@ -32,12 +33,12 @@ export class ClassroomModel extends YSyncModel {
     this.teacherRoomIds = [];
     this.mode = ClassroomMode.EDIT;
     this.setup();
-    this.activeBindingType = this.activeBindingType ?? BindingType.P5;
-    BindingService.get().setBindingByBindingType(this.activeBindingType);
+    this.activeBindingType = bindingIndex ?? 0;
+    BindingService.get().setBindingByIndex(this.activeBindingType);
     this.liveCoding = liveCoding ?? this.liveCoding;
     this.liveCodingDelay = liveCodingDelay ?? this.liveCodingDelay;
     this.lineNumbers = lineNumbers ?? this.lineNumbers;
-    this.roomLocks = this.roomLocks ? this.roomLocks : roomLocks;
+    this.roomLocks = roomLocks ?? this.roomLocks;
     this.walkDelay = walkDelay ?? this.walkDelay;
     this.isWalking = this.isWalking ?? false;
   }

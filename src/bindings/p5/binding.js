@@ -3,6 +3,7 @@
 import { BindingBase } from "../binding-base";
 
 export class binding extends BindingBase {
+  bindingName = "p5";
   codeTemplate = `function setup() {
 	createCanvas(windowWidth, windowHeight)
 
@@ -95,5 +96,4 @@ const runner = setTimeout(() => {
 <body>
 </body>
 `;
-
 }

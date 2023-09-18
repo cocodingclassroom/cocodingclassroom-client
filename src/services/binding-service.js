@@ -1,5 +1,4 @@
-import { binding } from "../bindings/p5/binding";
-import { BindingType } from "../models/classroom-model";
+import { bindings } from "../bindings/bindings-config";
 
 export class BindingService {
   static _instance;
@@ -23,11 +22,7 @@ export class BindingService {
     return BindingService._instance;
   }
 
-  setBindingByBindingType(bindingType) {
-    if (bindingType === BindingType.P5) {
-      this.binding = new binding();
-    } else if (bindingType === BindingType.HYDRA) {
-      //Implement mapping here.
-    }
+  setBindingByIndex(bindingIndex) {
+    this.binding = new bindings[bindingIndex]();
   }
 }

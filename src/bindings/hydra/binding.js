@@ -1,17 +1,16 @@
-// hydra binding
+import { BindingBase } from "../binding-base";
 
-class CocodingClassroomBinding{
-	constructor(){
-		// default code added to editor
-		this.codeTemplate = ``
+export class binding extends BindingBase {
+  bindingName = "hydra";
+  // default code added to editor
 
+  codeTemplate = ``;
 
-		// injected AFTER the main code (for adding extra functions etc)
-		this.codeCustom = ``
+  // injected AFTER the main code (for adding extra functions etc)
+  customCode = ``;
 
-
-		// iframe template for code to live in ()
-		this.iframeTemplate = `<!DOCTYPE html>
+  // iframe template for code to live in ()
+  iframeTemplate = `<!DOCTYPE html>
 <html>
 <head>
 	<title>HYRDA</title>
@@ -49,51 +48,5 @@ class CocodingClassroomBinding{
 	</script>
 </body>
 </html>
-`
-
-
-
-		this.sessionExport = function(sessionID){
-			// let tExport = {
-			// 	"version": "1.3.7",
-			// 	"revision": 42,
-			// 	"structure": [],
-			// 	"count": {
-			// 		"sketches": 0,
-			// 		"folders": 0
-			// 	}
-			// };
-
-
-
-			// let tCode = cc.classrooms.get(sessionID).editor.getValue()
-			// let tName = cc.sessionsMap.get(sessionID) //cc.sessions.get(sessionID).name
-
-			// let tempName = prompt('Sketch name:', tName)
-			// if(tempName && tempName !== null){
-			// 	let tName = cc.sanitize(tempName)
-			// 	let tSketch = {
-			// 		"name": tName,
-			// 	      "mod": cc.timeDate(),
-			// 	      "type": "sketch",
-			// 	      "code": tCode
-			// 	}
-			// 	tExport.structure.push(tSketch)
-			// 	tExport.count.sketches++
-			// 	let tFilename = 'CC_'+tName + '_' + cc.timeStampFile()
-			// 	cc.exportJSON(tExport, tFilename + '.json')
-			// 	cc.sessionImage(sessionID, tFilename)
-			// }
-		}
-
-		this.sessionImage = function(){
-			// let sessionFrame = cc.classrooms.get(sessionID).iframeContent
-			// sessionFrame.save(filename + '.png');
-		}
-	}
+`;
 }
-
-
-
-
-
