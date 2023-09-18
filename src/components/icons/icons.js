@@ -26,7 +26,7 @@ import user from "../../assets/resource/user.svg";
 import users from "../../assets/resource/users.svg";
 
 export const iconSvg = {
-  new:  filePlus,
+  new: filePlus,
   save: save,
   rename: edit,
   link: link,
@@ -38,8 +38,8 @@ export const iconSvg = {
   about: helpCircle,
   settings: settings,
   shield: {
-    empty:shield,
-    checked: shieldChecked
+    empty: shield,
+    checked: shieldChecked,
   },
   person: user,
   layout: layout,

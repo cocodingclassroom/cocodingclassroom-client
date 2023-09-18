@@ -97,10 +97,11 @@ export class User extends YSyncModel {
     return this.trackingList.get(`${roomId}`);
   }
 
-  hasClaimedRoom = () => {
-    var result = false;
+  canClaimRoom = () => {
+    if (this.isTeacher()) return true;
+    let result = true;
     RoomService.get().rooms.forEach((room) => {
-      if (room.isOwnedBy(this.id)) result = true;
+      if (room.isOwnedBy(this.id)) result = false;
     });
     return result;
   };

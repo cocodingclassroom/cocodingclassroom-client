@@ -76,30 +76,33 @@ export class StudentMenuView extends LitElement {
     if (room.isLobby() && UserService.get().localUser.isStudent()) return "";
 
     if (room.isClaimed()) {
-      if (room.isOwnedByLocalUser()) {
-        return this.#renderOwnedByYou();
+      if (
+        room.isOwnedByLocalUser() ||
+        UserService.get().localUser.isTeacher()
+      ) {
+        return this.#renderOwnedUnlockableByThisUser();
       }
-      return this.#renderOwnedBySomeoneElse();
+      return this.#renderOwnedButNotUnlockableByThisUser();
     }
 
-    return this.#renderUnclaimedRoom();
+    return this.#renderNotOwned();
   };
 
-  #renderOwnedByYou = () => {
+  #renderOwnedUnlockableByThisUser = () => {
     return html`
       <div
-        class="bg2"
+        class="highlight"
         data-tip="Free room"
         @click="${() => {
           RoomService.get().getRoom(this.roomId).removeClaim();
         }}"
       >
-        <cc-icon svg="${iconSvg.unlock}"></cc-icon>
+        <cc-icon svg="${iconSvg.lock}"></cc-icon>
       </div>
     `;
   };
 
-  #renderOwnedBySomeoneElse() {
+  #renderOwnedButNotUnlockableByThisUser() {
     return html`
       <div
         class="disabled"
@@ -113,19 +116,10 @@ export class StudentMenuView extends LitElement {
     `;
   }
 
-  #renderUnclaimedRoom = () => {
-    if (
-      UserService.get().localUser.isTeacher() &&
-      RoomService.get().getRoom(this.roomId).isStudentRoom()
-    ) {
-      return html` <div class="disabled" data-tip="You are a Teacher">
-        <cc-icon svg="${iconSvg.lock}"></cc-icon>
-      </div>`;
-    }
-
-    if (UserService.get().localUser.hasClaimedRoom()) {
+  #renderNotOwned = () => {
+    if (!UserService.get().localUser.canClaimRoom()) {
       return html` <div class="disabled" data-tip="You own another room">
-        <cc-icon svg="${iconSvg.lock}"></cc-icon>
+        <cc-icon svg="${iconSvg.unlock}"></cc-icon>
       </div>`;
     }
 
@@ -137,7 +131,7 @@ export class StudentMenuView extends LitElement {
           RoomService.get().getRoom(this.roomId).claimRoomToLocalUser();
         }}"
       >
-        <cc-icon svg="${iconSvg.lock}"></cc-icon>
+        <cc-icon svg="${iconSvg.unlock}"></cc-icon>
       </div>
     `;
   };
@@ -154,6 +148,10 @@ export class StudentMenuView extends LitElement {
 
       .no-access {
         background-color: #fa5f5f;
+      }
+
+      .red-background {
+        background-color: #6e0909;
       }
     `,
   ];

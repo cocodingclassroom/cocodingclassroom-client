@@ -15,6 +15,9 @@ export const menuBackground2Hover = () => unsafeCSS("#555555");
 export const menuBackground3 = () => unsafeCSS("#666666");
 export const menuBackground3Hover = () => unsafeCSS("#555555");
 
+export const menuHighlight = () => unsafeCSS("#960d0d");
+export const menuHighlightHover = () => unsafeCSS("#960d0d");
+
 export const menuRowStyles = () => css`
   .cc-controls-row {
     display: flex;
@@ -51,6 +54,7 @@ export const menuRowStyles = () => css`
   .cc-controls-row div.bg1 {
     background: ${menuBackground1()};
   }
+
   .cc-controls-row div.bg1:hover {
     background: ${menuBackground1Hover()};
   }
@@ -58,6 +62,7 @@ export const menuRowStyles = () => css`
   .cc-controls-row div.bg2 {
     background: ${menuBackground2()};
   }
+
   .cc-controls-row div.bg2:hover {
     background: ${menuBackground2Hover()};
   }
@@ -65,12 +70,22 @@ export const menuRowStyles = () => css`
   .cc-controls-row div.bg3 {
     background: ${menuBackground3()};
   }
+
   .cc-controls-row div.bg3.active {
     background: ${menuBackground3Hover()};
   }
 
   .cc-controls-row div.bg3:hover {
     background: ${menuBackground3Hover()};
+  }
+
+  .cc-controls-row div.highlight {
+    background: ${menuHighlight()};
+  }
+
+  .cc-controls-row div.highlight:hover {
+    background: ${menuHighlightHover()};
+    animation: pulse 1s linear infinite alternate !important;
   }
 
   .cc-controls-row div.disabled {
