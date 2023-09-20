@@ -3,6 +3,7 @@ import { ClassroomService } from "/src/services/classroom-service.js";
 import { Router } from "@vaadin/router";
 import { safeRegister } from "../util/util";
 import { inputStyle } from "../util/shared-css";
+import { bindings } from "../bindings/bindings-config";
 
 export class Setup extends LitElement {
   initialRoomNumbers = 5;
@@ -15,12 +16,26 @@ export class Setup extends LitElement {
   render() {
     let roomNumbers = Array.from({ length: 16 }, (v, k) => k + 5);
     let secDelays = Array.from({ length: 4 }, (v, k) => (k + 1) / 2);
-
+    let i = 0;
     return html`
       <div class="container-row">
         <div class="container-col">
           <h3 class="p5">COCODING CLASSROOM - SETUP</h3>
           <hr />
+          <div class="p5">
+            <select
+              class="round submit"
+              name="binding"
+              @change="${this.onChangeBinding}"
+            >
+              ${bindings.map(
+                (binding) => html` <option value="${i++}">
+                  ${new binding().bindingName}
+                </option>`
+              )}
+            </select>
+            <label for="binding">Selected Binding</label>
+          </div>
           <div class="p5">
             <select
               class="round submit"
@@ -131,6 +146,10 @@ export class Setup extends LitElement {
     this.password = e.target.value;
   };
 
+  onChangeBinding = (e) => {
+    this.bindingIndex = e.target.value;
+  };
+
   onSubmit = () => {
     let newClassroomId = ClassroomService.get().createNewRoom(
       () => {
@@ -140,7 +159,8 @@ export class Setup extends LitElement {
       this.initialRoomNumbers,
       this.liveCodingOn,
       this.secondsDelay,
-      this.lineNumbersVisible
+      this.lineNumbersVisible,
+      this.bindingIndex
     );
   };
 

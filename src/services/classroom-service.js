@@ -40,7 +40,8 @@ export class ClassroomService {
     numberOfRooms,
     liveCoding,
     liveCodingDelay,
-    lineNumbers
+    lineNumbers,
+    bindingIndex
   ) {
     let newClassroomId = getRandomID();
     SyncService.connectAndSetup(
@@ -54,7 +55,8 @@ export class ClassroomService {
           numberOfRooms,
           liveCoding,
           liveCodingDelay,
-          lineNumbers
+          lineNumbers,
+          bindingIndex
         );
         callback();
       }
@@ -87,7 +89,8 @@ export class ClassroomService {
     numberOfRooms,
     liveCoding,
     liveCodingDelay,
-    lineNumbers
+    lineNumbers,
+    bindingIndex
   ) {
     console.log("sync with new data");
     this._setupData(
@@ -95,7 +98,8 @@ export class ClassroomService {
       numberOfRooms,
       liveCoding,
       liveCodingDelay,
-      lineNumbers
+      lineNumbers,
+      bindingIndex
     );
   }
 
@@ -104,7 +108,8 @@ export class ClassroomService {
     numberOfRooms,
     liveCoding,
     liveCodingDelay,
-    lineNumbers
+    lineNumbers,
+    bindingIndex
   ) {
     this.classroom = new ClassroomModel(
       classroomId,
@@ -112,7 +117,8 @@ export class ClassroomService {
       liveCodingDelay,
       lineNumbers,
       false,
-      2
+      2,
+      bindingIndex
     );
     RoomService.get().init(this.classroom, numberOfRooms);
     UserService.get().init(this.classroom, numberOfRooms !== null);
