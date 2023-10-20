@@ -62,7 +62,7 @@ export class Room extends YSyncModel {
     this.roomName = this.roomName ?? "Room";
     if (this.codeContent === null || this.codeContent === undefined) {
       let activeBinding = BindingService.get().binding;
-      this.codeContent = new YText(activeBinding.codeTemplate ?? "");
+      this.codeContent = new YText(activeBinding.getCodeTemplate() ?? "");
     }
     this.l_changedPositions = [];
   }

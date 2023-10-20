@@ -33,7 +33,7 @@ export class ClassroomModel extends YSyncModel {
     this.teacherRoomIds = [];
     this.mode = ClassroomMode.EDIT;
     this.setup();
-    this.activeBindingType = bindingIndex ?? 0;
+    this.activeBindingType = bindingIndex ?? this.activeBindingType;
     BindingService.get().setBindingByIndex(this.activeBindingType);
     this.liveCoding = liveCoding ?? this.liveCoding;
     this.liveCodingDelay = liveCodingDelay ?? this.liveCodingDelay;

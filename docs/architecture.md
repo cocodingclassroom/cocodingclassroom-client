@@ -64,7 +64,7 @@ export class Room extends YSyncModel {
     // you may setup dynamic Y-synching
     if (this.codeContent === null || this.codeContent === undefined) {
       let activeBinding = BindingService.get().binding;
-      this.codeContent = new Y.Text(activeBinding.codeTemplate ?? "");
+      this.codeContent = new Y.Text(activeBinding.getCodeTemplate() ?? "");
     }
     this.l_changedPositions = [];
   }

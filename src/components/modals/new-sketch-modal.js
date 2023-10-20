@@ -17,7 +17,7 @@ export const setNewSketch = (roomId) => {
       `,
     () => {
       let room = RoomService.get().getRoom(roomId);
-      let template = BindingService.get().binding.codeTemplate;
+      let template = BindingService.get().binding.getCodeTemplate();
       room.codeContent.delete(0, room.codeContent.length);
       room.codeContent.insert(0, template);
       NotifyService.get().notify(

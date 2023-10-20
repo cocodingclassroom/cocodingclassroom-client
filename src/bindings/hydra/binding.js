@@ -1,17 +1,28 @@
-import { BindingBase } from "../binding-base";
+import { BindingBase, JSLoadingConfig } from "../binding-base";
 
 export class binding extends BindingBase {
-  bindingName = "hydra";
-  // default code added to editor
+  bindingName = "Hydra";
 
-  codeTemplate = ``;
+  getCodeTemplate = () => {
+    return `
+ osc(5, 0.9, 0.001)
+ .kaleid([3,4,5,7,8,9,10].fast(0.1))
+ .color(0.5, 0.3)
+ .colorama(0.4)
+ .rotate(0.009,()=>Math.sin(time)* -0.001 )
+ .modulateRotate(o0,()=>Math.sin(time) * 0.003)
+ .modulate(o0, 0.9)
+ .scale(0.9)
+ .out(o0)
+    `;
+  };
 
-  // injected AFTER the main code (for adding extra functions etc)
-  customCode = ``;
+  getCustomCode = () => {
+    return ``;
+  };
 
-  // iframe template for code to live in ()
-  iframeTemplate = `<!DOCTYPE html>
-<html>
+  getIFrameTemplate = () => {
+    return `
 <head>
 	<title>HYRDA</title>
 	<meta charset="utf-8">
@@ -35,18 +46,26 @@ export class binding extends BindingBase {
 			cursor:crosshair;
 		}
 	</style>
-	<script type="text/javascript" src="https://unpkg.com/hydra-synth"></script>
-
+	{SCRIPTS}
 </head>
 <body>
 	<canvas></canvas>
-	<script>
+	<script type="text/javascript">
 		let hydra = new Hydra({
 			detectAudio: false,
 			canvas: document.querySelector('canvas')
 		})
 	</script>
 </body>
-</html>
 `;
+  };
+
+  getScriptTags = () => {
+    return [
+      new JSLoadingConfig(
+        '<script type="text/javascript" src="https://unpkg.com/hydra-synth"></script>',
+        "Hydra"
+      ),
+    ];
+  };
 }
