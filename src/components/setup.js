@@ -162,7 +162,8 @@ export class Setup extends LitElement {
       this.secondsDelay,
       this.lineNumbersVisible,
       this.bindingIndex,
-      this.roomLocksOn
+      this.roomLocksOn,
+      this.password
     );
   };
 

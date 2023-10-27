@@ -42,14 +42,15 @@ export class ClassroomService {
     liveCodingDelay,
     lineNumbers,
     bindingIndex,
-    roomLocks
+    roomLocks,
+    password
   ) {
     let newClassroomId = getRandomID();
     SyncService.connectAndSetup(
       "ws://localhost:1234",
       true,
       newClassroomId,
-      "",
+      password,
       () => {
         this.syncNewSharedData(
           newClassroomId,
