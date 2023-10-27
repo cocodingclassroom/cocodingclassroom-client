@@ -23,6 +23,7 @@ import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { initDataTips } from "../../util/tooltips";
 import { ClassroomService } from "../../services/classroom-service";
 import { clearChat } from "../modals/clear-chat-modal";
+import { ClassroomMode } from "../../models/classroom-model";
 
 export class MenuView extends LitElement {
   static properties = {
@@ -96,10 +97,7 @@ export class MenuView extends LitElement {
         ${this.#renderTrash()}
       </div>
       <div id="message_container" class="messages">
-        ${RoomService.get()
-          .getRoom(this.roomId)
-          .messages.toArray()
-          .map((message) => this.#renderMessage(message))}
+        ${this.#renderMessages()}
       </div>
       <div class="cc-controls-row" style="border-top-style:none;">
         <input
@@ -114,6 +112,19 @@ export class MenuView extends LitElement {
       </div>
     </div>`;
   };
+
+  #renderMessages() {
+    if (ClassroomService.get().classroom.mode === ClassroomMode.GALLERY) {
+      return RoomService.get()
+        .getRoom(this.roomId)
+        .galleryMessages.toArray()
+        .map((message) => this.#renderMessage(message));
+    }
+    return RoomService.get()
+      .getRoom(this.roomId)
+      .messages.toArray()
+      .map((message) => this.#renderMessage(message));
+  }
 
   #renderTrash = () => {
     let room = RoomService.get().getRoom(this.roomId);
@@ -134,7 +145,9 @@ export class MenuView extends LitElement {
     let user = UserService.get().getUserByID(chatMessage.userid);
     let messageNameStyle = {
       "background-color": user.color,
-      color: isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight(),
+      color: isColorLight(user.color)
+        ? menuForegroundDark()
+        : menuForegroundLight(),
     };
     return html` <div class="message row">
       <div class="message-name" style="${styleMap(messageNameStyle)}">
@@ -160,9 +173,15 @@ export class MenuView extends LitElement {
       UserService.get().localUser.id,
       messageContent.value
     );
-    RoomService.get()
-      .getRoom(this.roomId)
-      .messages.push([JSON.stringify(newMessage)]);
+    if (ClassroomService.get().classroom.mode === ClassroomMode.GALLERY) {
+      RoomService.get()
+        .getRoom(this.roomId)
+        .galleryMessages.push([JSON.stringify(newMessage)]);
+    } else {
+      RoomService.get()
+        .getRoom(this.roomId)
+        .messages.push([JSON.stringify(newMessage)]);
+    }
     messageContent.value = "";
   };
 

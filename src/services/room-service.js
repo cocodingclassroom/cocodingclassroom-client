@@ -31,7 +31,7 @@ export class RoomService {
   };
 
   addRoom() {
-    let roomAmountAsNewId = this.rooms.length;
+    let roomAmountAsNewId = this.rooms.length - 1;
     let newRoom = new Room(roomAmountAsNewId);
 
     ClassroomService.get().classroom.roomIds.push([newRoom.id]);
@@ -82,6 +82,12 @@ export class RoomService {
       if (change.target._item.parentSub === "roomIds") {
         this.init(ClassroomService.get().classroom, undefined);
       }
+    });
+  };
+
+  clearAllGalleryChats = () => {
+    this.rooms.forEach((room) => {
+      room.galleryMessages.delete(0, room.galleryMessages.length);
     });
   };
 }

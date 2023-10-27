@@ -66,8 +66,7 @@ export class RoomSelectView extends LitElement {
   };
 
   #getRoomNameDisplay(room) {
-    if (room.isLobby()) return html`${room.roomName}`;
-    return html` ${room.id}_${room.roomName}`;
+    return room.getRoomNameDisplay();
   }
 
   #thisRoomValue(roomId) {

@@ -12,6 +12,8 @@ import {
   toolTipStyle,
 } from "../../util/shared-css";
 import { sendBroadCastMessage } from "../modals/broad-cast-modal";
+import { UserService } from "../../services/user-service";
+import { RoomService } from "../../services/room-service";
 
 export class GalleryModeMenuView extends LitElement {
   static properties = {
@@ -25,6 +27,7 @@ export class GalleryModeMenuView extends LitElement {
   }
 
   render() {
+    let user = UserService.get().localUser;
     return html` <div class="cc-controls-row-container">
       <div class="cc-controls-row">
         <div
@@ -48,13 +51,14 @@ export class GalleryModeMenuView extends LitElement {
         ${this.#renderSettings()}
       </div>
       ${this.settingsOpen ? html` <cc-settings></cc-settings>` : ""}
-      <div class="cc-controls-row">
-        <cc-room-select roomId="${this.roomId}"></cc-room-select>
-        <div
-          style="background: ${menuBackground2()}; border: 1px solid ${menuBorder1()};} border-style:solid solid none none; margin-top:-1px;"
-        ></div>
-      </div>
-      <div class="cc-controls-row">${this.#renderTeacherActions()}</div>
+      ${user.isTeacher()
+        ? html`<div class="cc-controls-row">
+            <cc-room-select roomId="${this.roomId}"></cc-room-select>
+          </div>`
+        : html` <div class="cc-controls-row">
+            ${RoomService.get().getRoom(this.roomId).getRoomNameDisplay()}
+          </div>`}
+      <div class="cc-controls-row">${this.#renderActions()}</div>
     </div>`;
   }
 
@@ -91,6 +95,14 @@ export class GalleryModeMenuView extends LitElement {
     cursorTipStyle(),
     toolTipStyle(),
   ];
+
+  #renderActions = () => {
+    let user = UserService.get().localUser;
+    if (user.isTeacher()) {
+      return this.#renderTeacherActions();
+    }
+    return this.#renderStudentActions();
+  };
 
   #renderTeacherActions() {
     return html` <div data-tip="Walk rooms" class="bg2">

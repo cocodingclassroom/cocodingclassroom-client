@@ -2,6 +2,7 @@ import { YSyncModel } from "/src/models/y-sync-model.js";
 import { Text as YText } from "yjs";
 import { BindingService } from "../services/binding-service";
 import { UserService } from "../services/user-service";
+import { html } from "lit";
 
 export class Room extends YSyncModel {
   id;
@@ -9,6 +10,7 @@ export class Room extends YSyncModel {
   roomType;
   codeContent;
   messages;
+  galleryMessages;
   ownerId;
   writersIds;
   l_changedPositions;
@@ -57,6 +59,7 @@ export class Room extends YSyncModel {
     super(`room_${id}`);
     this.id = id;
     this.messages = [];
+    this.galleryMessages = [];
     this.writersIds = [];
     this.setup();
     this.roomName = this.roomName ?? "Room";
@@ -143,6 +146,11 @@ export class Room extends YSyncModel {
         .length > 0
     );
   };
+
+  getRoomNameDisplay() {
+    if (this.isLobby()) return html`${this.roomName}`;
+    return html` ${this.id}_${this.roomName}`;
+  }
 }
 
 export class RoomType {
