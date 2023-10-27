@@ -161,7 +161,8 @@ export class Setup extends LitElement {
       this.liveCodingOn,
       this.secondsDelay,
       this.lineNumbersVisible,
-      this.bindingIndex
+      this.bindingIndex,
+      this.roomLocksOn
     );
   };
 

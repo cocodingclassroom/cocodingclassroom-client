@@ -41,7 +41,8 @@ export class ClassroomService {
     liveCoding,
     liveCodingDelay,
     lineNumbers,
-    bindingIndex
+    bindingIndex,
+    roomLocks
   ) {
     let newClassroomId = getRandomID();
     SyncService.connectAndSetup(
@@ -56,7 +57,8 @@ export class ClassroomService {
           liveCoding,
           liveCodingDelay,
           lineNumbers,
-          bindingIndex
+          bindingIndex,
+          roomLocks
         );
         callback();
       }
@@ -81,7 +83,7 @@ export class ClassroomService {
 
   syncWithExistingRoomData(classroomId) {
     console.log("Sync with existing data");
-    this._setupData(classroomId, null, null, null, null);
+    this._setupData(classroomId, null, null, null, null, null, null);
   }
 
   syncNewSharedData(
@@ -90,7 +92,8 @@ export class ClassroomService {
     liveCoding,
     liveCodingDelay,
     lineNumbers,
-    bindingIndex
+    bindingIndex,
+    roomLocks
   ) {
     console.log("sync with new data");
     this._setupData(
@@ -99,7 +102,8 @@ export class ClassroomService {
       liveCoding,
       liveCodingDelay,
       lineNumbers,
-      bindingIndex
+      bindingIndex,
+      roomLocks
     );
   }
 
@@ -109,14 +113,15 @@ export class ClassroomService {
     liveCoding,
     liveCodingDelay,
     lineNumbers,
-    bindingIndex
+    bindingIndex,
+    roomLocks
   ) {
     this.classroom = new ClassroomModel(
       classroomId,
       liveCoding,
       liveCodingDelay,
       lineNumbers,
-      false,
+      roomLocks,
       2,
       bindingIndex
     );
