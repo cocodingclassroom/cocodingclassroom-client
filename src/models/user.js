@@ -11,7 +11,7 @@ export class User extends YSyncModel {
   needsHelp = false;
   leftSize = 50;
   selectedRoomLeft = 0;
-  selectedRoomRight = 1;
+  selectedRoomRight = -1;
   activeRoom = 0;
   selection = { start: { row: 0, column: 0 }, end: { row: 0, column: 0 } };
   editorFontSize = 12;
