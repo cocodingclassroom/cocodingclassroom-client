@@ -5,6 +5,8 @@
 import { createMutex } from "lib0/mutex.js";
 import { Awareness } from "y-protocols/awareness.js"; // eslint-disable-line
 import Ace from "ace-builds/src-min-noconflict/ace";
+import { symbol } from "lib0";
+
 const Range = Ace.require("ace/range").Range;
 
 /*
@@ -12,6 +14,8 @@ const Range = Ace.require("ace/range").Range;
 	Binding ace-editor with Yjs
  */
 export class AceBinding {
+  syncing = true;
+
   /**
    * @param {Y.Text} type
    * @param {any} ace
@@ -29,10 +33,13 @@ export class AceBinding {
     this.awareness = awareness;
 
     this._typeObserver = (event) => {
+      if (!this.syncing) return;
+
       const aceDocument = this.aceSession.getDocument();
       mux(() => {
         const delta = event.delta;
         let currentPos = 0;
+
         for (const op of delta) {
           if (op.retain) {
             currentPos += op.retain;
@@ -57,6 +64,7 @@ export class AceBinding {
     this.type.observe(this._typeObserver);
 
     this._aceObserver = (eventType, delta) => {
+      if (!this.syncing) return;
       const aceDocument = this.aceSession.getDocument();
       mux(() => {
         if (eventType.action === "insert") {
@@ -74,11 +82,19 @@ export class AceBinding {
     this.ace.on("change", this._aceObserver);
 
     // initial load of content to ace *** (newly needed, add upstream to lib??)
-    mux(() => {
-      const aceDocument = this.aceSession.getDocument();
-      aceDocument.setValue(type.toString());
-    });
+    // mux(() => {
+    //   const aceDocument = this.aceSession.getDocument();
+    //   aceDocument.setValue(type.toString());
+    // });
   }
+
+  turnSyncOff = () => {
+    this.syncing = false;
+  };
+
+  turnSyncOn = () => {
+    this.syncing = true;
+  };
 
   destroy() {
     // console.log('AceBinding destroyed')

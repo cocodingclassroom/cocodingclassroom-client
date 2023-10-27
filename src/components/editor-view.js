@@ -22,6 +22,7 @@ import {
 } from "../services/notify-service";
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
 import { debugLog } from "../index";
+import { ClassroomMode } from "../models/classroom-model";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -48,11 +49,12 @@ export class EditorView extends LitElement {
     this.shortcutExtension.addShortcuts(this.#shortCuts());
     let localUser = UserService.get().localUser;
     localUser.addListener(() => {
+      if (this.editor == null) return;
       this.editor.setOptions({ fontSize: localUser.getEditorFontSize() });
       this.#updateFollowing(localUser);
     });
     let classroom = ClassroomService.get().classroom;
-    classroom.addListener(() => {
+    classroom.addListener((changes) => {
       this.editor.setOptions({ showLineNumbers: classroom.lineNumbers });
       this.editor.setOptions({ showGutter: classroom.lineNumbers });
       this.requestUpdate();
@@ -62,7 +64,7 @@ export class EditorView extends LitElement {
     });
     NotifyService.get().addListener((notification) => {
       if (notification.type !== NotificationType.FULLREBUILDOFFRAME) return;
-      if (notification.sender.id === UserService.get().localUser.id) return;
+      // if (notification.sender.id === UserService.get().localUser.id) return;
       if (notification.message === parseInt(this.roomId)) {
         this.#runCode(true, false);
       }
@@ -167,6 +169,16 @@ export class EditorView extends LitElement {
           this.#stopLiveCoding();
           this.#startLiveCoding();
         }
+        if (change.keysChanged.has("mode")) {
+          let mode = ClassroomService.get().classroom.mode;
+          if (mode === ClassroomMode.GALLERY) {
+            this.#removeSyncingBinding();
+          }
+          if (mode === ClassroomMode.EDIT) {
+            this.#removeSyncingBinding();
+            this.#setupSyncingBinding();
+          }
+        }
       });
     });
 
@@ -175,21 +187,35 @@ export class EditorView extends LitElement {
 
   #setupContent() {
     if (this.editor === undefined) return;
+    this.#removeSyncingBinding();
+
+    var text = this.room.codeContent.toString();
+    this.editor.getSession().getDocument().setValue("");
+    this.editor.getSession().getDocument().setValue(text);
+
+    if (ClassroomService.get().classroom.mode === ClassroomMode.EDIT) {
+      this.#setupSyncingBinding();
+    }
+
+    this.room.l_editorForRoom = this.editor;
+    this.#runCode(true);
+  }
+
+  #removeSyncingBinding = () => {
     if (this.binding != null) {
       this.binding.destroy();
+      this.binding = null;
     }
+  };
+
+  #setupSyncingBinding = () => {
     let room = RoomService.get().getRoom(this.roomId);
-    room.addListener(() => {
-      this.#updateOnRoomAccess();
-    });
     this.binding = new AceBinding(
       room.codeContent,
       this.editor,
       SyncService.get().getAwareness()
     );
-    this.room.l_editorForRoom = this.editor;
-    this.#runCode(true);
-  }
+  };
 
   #updateOnRoomAccess = () => {
     if (
