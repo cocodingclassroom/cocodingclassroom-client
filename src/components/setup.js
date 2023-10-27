@@ -11,6 +11,7 @@ export class Setup extends LitElement {
   secondsDelay = 0.5;
   lineNumbersVisible = true;
   roomLocksOn = false;
+  bindingIndex = 0;
   password = "";
 
   render() {
@@ -182,7 +183,7 @@ export class Setup extends LitElement {
       }
 
       h3 {
-        margin-bottom: 0px;
+        margin-bottom: 0;
       }
 
       .round {

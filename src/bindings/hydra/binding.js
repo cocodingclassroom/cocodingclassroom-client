@@ -68,4 +68,31 @@ export class binding extends BindingBase {
       ),
     ];
   };
+
+  bindingSpecificSoftCompile = (editor) => {
+    let rawLines = editor.session.getLines(0, editor.session.getLength());
+    let currline = editor.getSelectionRange().start.row;
+    let currCode = editor.session.getLine(currline);
+
+    // search +/- cur pos for new lines
+    let block = currCode;
+    let start = currline;
+    let end = currline;
+
+    let i = currline - 1;
+    while (i >= 0 && rawLines[i].trimStart() !== "") {
+      block = editor.session.getLine(i) + "\n" + block;
+      start--;
+      i--;
+    }
+
+    i = currline + 1;
+    while (i < rawLines.length && rawLines[i].trimStart() !== "") {
+      block += "\n" + editor.session.getLine(i);
+      end++;
+      i++;
+    }
+
+    return block;
+  };
 }

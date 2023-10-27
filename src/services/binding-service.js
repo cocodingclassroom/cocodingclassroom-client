@@ -23,7 +23,7 @@ export class BindingService {
   }
 
   setBindingByIndex(bindingIndex) {
-    let binding = new bindings[parseInt(bindingIndex)]();
-    this.binding = binding;
+    let b = bindings[parseInt(bindingIndex)];
+    this.binding = new b();
   }
 }

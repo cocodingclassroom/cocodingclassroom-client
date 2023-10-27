@@ -17,17 +17,22 @@ export const interpret = (
   let activeBinding = BindingService.get().binding;
   let currentPositions = room.l_changedPositions;
 
-  //TODO: variables like this should be in the specific bindings.
-  let pVars = {};
-  if (iframeContent.frameCount !== undefined) {
-    pVars.frameCount = iframeContent.frameCount + 1;
-    pVars.mouseX = iframeContent.mouseX;
-    pVars.mouseY = iframeContent.mouseY;
-  }
-
   let codeNoComments = removeComments(editor.getValue());
 
   if (!fullRebuild && !activeError) {
+    let softInterpretResultFromBinding =
+      activeBinding.bindingSpecificSoftCompile(editor);
+    if (softInterpretResultFromBinding) {
+      try {
+        iframeContent.eval(softInterpretResultFromBinding);
+        compilationOkayCallback();
+        return;
+      } catch (e) {
+        errorCallback(`👀 error found:, "${e}"`);
+        return;
+      }
+    }
+
     trySoftInterpretation(
       iframeContent,
       editor,
@@ -49,7 +54,6 @@ export const interpret = (
     iframe,
     iframeContent,
     messageCallback,
-    pVars,
     compilationOkayCallback
   );
 };
@@ -63,7 +67,6 @@ const fullRebuildOfIframe = (
   iframe,
   iframeContent,
   messageCallback,
-  pVars,
   compilationOkayCallback
 ) => {
   let el = document.createElement("html");
@@ -132,15 +135,7 @@ const fullRebuildOfIframe = (
     };
 
     iframeContent.document.body.appendChild(s);
-    // this.validCode = true
-    // this.consoleClear()
 
-    // p5 specific
-    if (pVars.hasOwnProperty("frameCount")) {
-      iframeContent.frameCount = 0;
-      iframeContent.mouseX = pVars.mouseX;
-      iframeContent.mouseY = pVars.mouseY;
-    }
     compilationOkayCallback();
   };
 };
@@ -154,7 +149,7 @@ const trySoftInterpretation = (
   errorCallback,
   compilationOkayCallback
 ) => {
-  if (iframeContent.frameCount !== undefined) {
+  if (iframeContent !== undefined) {
     let drawPos = []; //{};
     let drawPosSel = -1;
     let countBrackets = false;

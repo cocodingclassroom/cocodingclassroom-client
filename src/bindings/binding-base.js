@@ -93,6 +93,16 @@ export class BindingBase {
 </body>`;
   };
 
+  /**
+   *
+   *
+   * @param editor AceEditor
+   * @returns {string | undefined} Code to Eval in Iframe
+   */
+  bindingSpecificSoftCompile = (editor) => {
+    return undefined;
+  };
+
   getIInAppFrameTemplate = () => {
     return `
     <!DOCTYPE html>
