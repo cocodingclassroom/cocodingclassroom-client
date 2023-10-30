@@ -44,8 +44,7 @@ export class EditorView extends LitElement {
         this.editorIdentifier = `editor-${this.roomId}`;
         this.room = RoomService.get().getRoom(this.roomId);
         this.editorVisible = true;
-        this.shortcutExtension = new ShortcutExtension();
-        this.shortcutExtension.register();
+        this.shortcutExtension = ShortcutExtension.get();
         this.shortcutExtension.addShortcuts(this.#shortCuts());
         let localUser = UserService.get().localUser;
         localUser.addListener(() => {
@@ -98,7 +97,7 @@ export class EditorView extends LitElement {
 
     disconnectedCallback() {
         this.editor.getSession().off("change", this.#onEditorChange);
-        this.shortcutExtension.unregister();
+        this.shortcutExtension.releaseShortcuts(this.#shortCuts);
         super.disconnectedCallback();
     }
 
