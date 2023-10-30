@@ -414,7 +414,7 @@ export class UserListView extends LitElement {
       .splitindicator {
         position: absolute;
         z-index: 0;
-        filter: brightness(1);
+        filter: brightness(3);
         height: 26px;
         border-left: 4px solid rgb(102, 102, 102, 0.4)
       }
