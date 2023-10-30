@@ -93,7 +93,7 @@ export class UserListView extends LitElement {
         .map((user) => {
           let backgroundColorStyle = {
             backgroundColor: user.color,
-            filter: user.isOnline ? "" : "grayscale(50%)",
+            filter: user.isOnline ? "" : "grayscale(70%)",
           };
           return html` <div
             class="row center border ${user.needsHelp ? "pulse-on" : ""}"
