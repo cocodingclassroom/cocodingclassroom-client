@@ -113,7 +113,7 @@ const fullRebuildOfIframe = (
     }
   }
 
-  s.innerHTML = activeBinding.customCode + "\n\n" + sketchCode;
+  s.innerHTML = activeBinding.getCustomCode() + "\n\n" + sketchCode;
 
   // set template as iframe srcdoc
   iframe.sandbox =
