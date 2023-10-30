@@ -1,6 +1,7 @@
 import { Doc as YDoc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { murmurhash3_32_gc, toNumbers } from "/src/util/cc-auth.js";
+import { Router } from "@vaadin/router";
 
 export class SyncService {
   static #instance;
@@ -31,10 +32,33 @@ export class SyncService {
       SyncService.#instance = new SyncService();
     let options = this._getOptions(classroomID, password, createRoom);
 
-    // console.log(
-    //   `opts: authId: ${options.params.authID} authSet: ${options.params.authSet} authToken: ${options.params.authToken} auth: ${options.params.auth}`
-    // );
+    if (createRoom) {
+      sessionStorage.setItem("auth", options.params.authSet.toString());
+    }
 
+    this.connectWithOptions(url, classroomID, options, connectedCallback);
+  }
+
+  static connectAndSetupWithHash(
+    url,
+    createRoom,
+    classroomID,
+    hash,
+    connectedCallback
+  ) {
+    if (SyncService.#instance === undefined)
+      SyncService.#instance = new SyncService();
+    let options = {
+      params: {
+        authID: classroomID,
+        auth: hash,
+        // auth: password,
+      },
+    };
+    this.connectWithOptions(url, classroomID, options, connectedCallback);
+  }
+
+  static connectWithOptions(url, classroomID, options, connectedCallback) {
     this.#instance.#yDoc = new YDoc();
     let websocketProvider = new WebsocketProvider(
       url,
@@ -56,12 +80,13 @@ export class SyncService {
         // auth: password,
       },
     };
+
     if (createRoom) {
       options = {
         params: {
           authID: classroomID,
           authSet: murmurhash3_32_gc(classroomID, toNumbers(password)),
-          // authSet: password,
+          // auth: password,
         },
       };
     }

@@ -135,11 +135,6 @@ export class EditorView extends LitElement {
       fontSize: UserService.get().localUser.getEditorFontSize(),
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
-    this.editor.commands.removeCommands([
-      "gotolineend", // ctrl + e
-      "transposeletters", // ctrl + t,
-      "macrosreplay",
-    ]);
 
     if (
       this.room.roomType === RoomType.TEACHER &&
@@ -169,15 +164,14 @@ export class EditorView extends LitElement {
           this.#startLiveCoding();
         }
         if (change.keysChanged.has("mode")) {
-          location.reload();
-          // let mode = ClassroomService.get().classroom.mode;
-          // if (mode === ClassroomMode.GALLERY) {
-          //   this.#removeSyncingBinding();
-          // }
-          // if (mode === ClassroomMode.EDIT) {
-          //   this.#removeSyncingBinding();
-          //   this.#setupSyncingBinding();
-          // }
+          let mode = ClassroomService.get().classroom.mode;
+          if (mode === ClassroomMode.GALLERY) {
+            this.#removeSyncingBinding();
+          }
+          if (mode === ClassroomMode.EDIT) {
+            this.#removeSyncingBinding();
+            this.#setupSyncingBinding();
+          }
         }
       });
     });
@@ -187,12 +181,14 @@ export class EditorView extends LitElement {
 
   #setupContent() {
     if (this.editor === undefined) return;
+    this.#removeSyncingBinding();
 
-    if (ClassroomService.get().classroom.isEditMode()) {
-      this.#removeSyncingBinding();
+    var text = this.room.codeContent.toString();
+    this.editor.getSession().getDocument().setValue("");
+    this.editor.getSession().getDocument().setValue(text);
+
+    if (ClassroomService.get().classroom.mode === ClassroomMode.EDIT) {
       this.#setupSyncingBinding();
-    } else {
-      this.editor.getSession().setValue(this.room.codeContent.toString());
     }
 
     this.room.l_editorForRoom = this.editor;
@@ -264,7 +260,7 @@ export class EditorView extends LitElement {
       ...Shortcut.fromPattern(
         "hard-compile",
         ["ctrl+shift+enter"],
-        ["ctrl+shift+enter"],
+        ["cmd+shift+enter"],
         () => {
           this.#runCode(true);
         },
@@ -275,7 +271,7 @@ export class EditorView extends LitElement {
       ...Shortcut.fromPattern(
         "soft-compile",
         ["ctrl+enter"],
-        ["ctrl+enter"],
+        ["cmd+enter"],
         () => {
           this.#runCode(false);
         },
@@ -284,20 +280,9 @@ export class EditorView extends LitElement {
         }
       ),
       ...Shortcut.fromPattern(
-        "export snapshot",
-        ["ctrl+shift+e"],
-        ["ctrl+shift+e"],
-        () => {
-          console.log("snapshot");
-        },
-        () => {
-          return true;
-        }
-      ),
-      ...Shortcut.fromPattern(
         "toggle editor",
         ["ctrl+e"],
-        ["ctrl+e"],
+        ["cmd+e"],
         () => {
           this.#toggleEditor();
         },
@@ -307,19 +292,19 @@ export class EditorView extends LitElement {
       ),
       ...Shortcut.fromPattern(
         "toggle menu",
-        ["ctrl+m"],
-        ["ctrl+m"],
+        ["ctrl+alt+t"],
+        ["cmd+alt+t"],
         () => {
           this.#toggleMenu();
         },
         () => {
-          return true;
+          return this.#isEditorFocused();
         }
       ),
       ...Shortcut.fromPattern(
         "tidy code",
-        ["ctrl+shift+t"],
-        ["ctrl+shift+t", "ctrl+t"],
+        ["ctrl+alt+t"],
+        ["cmd+alt+t"],
         () => {
           formatCode(this.editor);
         },
