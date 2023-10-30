@@ -1,5 +1,7 @@
 import { SyncService } from "/src/services/sync-service.js";
 import { User, UserRole } from "/src/models/user.js";
+import { debugLog } from "../index";
+
 export class UserService {
   static _instance;
   localUser;
@@ -12,7 +14,27 @@ export class UserService {
       );
     }
     this.otherUsers = [];
+
+    document.addEventListener("visibilitychange", () => {
+      debugLog("Current State: ", document.visibilityState);
+      if (this.localUser) {
+        this.localUser.isOnline = document.visibilityState === "visible";
+      }
+    });
   }
+
+  setup = () => {
+    // SyncService.get()
+    //   .getAwareness()
+    //   .on("change", ({ added, updated, removed }) => {
+    //     if (added.length > 0) {
+    //       this.#OnUserJoined(added);
+    //     }
+    //     if (removed.length > 0) {
+    //       this.#OnUserLeft(removed);
+    //     }
+    //   });
+  };
 
   static get() {
     if (UserService._instance === undefined)
@@ -25,6 +47,7 @@ export class UserService {
     if (user == null) {
       user = this._createNewLocalUser();
     }
+    user.isOnline = true;
 
     if (classroom.teacherIds.toArray().includes(user.id)) {
       user.role = UserRole.TEACHER;
@@ -60,6 +83,7 @@ export class UserService {
     let id = SyncService.get().getSyncId();
     this.localUser = new User(id);
     this._saveLocalUser(this.localUser);
+    this.localUser.awarenessId = SyncService.get().getAwareness().clientID;
     return this.localUser;
   };
 
@@ -80,6 +104,10 @@ export class UserService {
 
   getUserByID = (id) => {
     return this.getAllUsers().find((user) => user.id === id);
+  };
+
+  getUserByAwarenessID = (id) => {
+    return this.getAllUsers().find((user) => user.awarenessId === id);
   };
 
   getFollowedBy = (roomId) => {

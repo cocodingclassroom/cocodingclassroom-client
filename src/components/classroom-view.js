@@ -24,6 +24,7 @@ export class ClassRoomView extends LitElement {
       () => {
         this._setMembers();
         ClassroomService.get().classroom.addListener(this.localUpdate);
+        UserService.get().setup();
         UserService.get().localUser.addListener(this.localUpdate);
       }
     );

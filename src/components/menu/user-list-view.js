@@ -10,6 +10,8 @@ import {
   toolTipStyle,
   menuForegroundLight,
   menuForegroundDark,
+  menuBackground3,
+  menuBorder1,
 } from "../../util/shared-css";
 import { initDataTips } from "../../util/tooltips";
 import { UserColorRenameModal } from "../user-color-rename-modal";
@@ -89,7 +91,10 @@ export class UserListView extends LitElement {
         .sort((a, b) => sortUsers(a, b, this.roomId))
         .reverse()
         .map((user) => {
-          let backgroundColorStyle = { backgroundColor: user.color };
+          let backgroundColorStyle = {
+            backgroundColor: user.color,
+            filter: user.isOnline ? "" : "grayscale(50%)",
+          };
           return html` <div
             class="row center border ${user.needsHelp ? "pulse-on" : ""}"
             style="${styleMap(backgroundColorStyle)}"
@@ -108,6 +113,7 @@ export class UserListView extends LitElement {
         ? menuForegroundDark()
         : menuForegroundLight(),
     };
+
     if (user.isLocalUser()) {
       return html` <div
         class="row user-row grow pointer font"
@@ -157,7 +163,7 @@ export class UserListView extends LitElement {
     let localUser = UserService.get().localUser;
     let splitindicator =
       localUser.isTeacher() &&
-      user != localUser &&
+      user !== localUser &&
       user.isRoomLeft(this.roomId);
     if (splitindicator) {
       let leftSize =

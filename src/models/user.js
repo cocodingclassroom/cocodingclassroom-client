@@ -5,6 +5,8 @@ import { RoomService } from "../services/room-service.js";
 
 export class User extends YSyncModel {
   id;
+  awarenessId;
+  isOnline;
   role = UserRole.STUDENT;
   name;
   color;
