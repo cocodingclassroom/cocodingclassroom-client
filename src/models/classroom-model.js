@@ -48,6 +48,13 @@ export class ClassroomModel extends YSyncModel {
     if (!this.peopleIds.toArray().includes(user.id))
       this.peopleIds.push([user.id]);
   }
+
+  isGalleryMode = () => {
+    return this.mode === ClassroomMode.GALLERY;
+  };
+  isEditMode = () => {
+    return this.mode === ClassroomMode.EDIT;
+  };
 }
 
 export class BindingType {

@@ -156,7 +156,9 @@ export class UserListView extends LitElement {
   #renderSplitIndicator(user) {
     let localUser = UserService.get().localUser;
     let splitindicator =
-      localUser.isTeacher() && user != localUser && user.isRoomLeft(this.roomId);
+      localUser.isTeacher() &&
+      user != localUser &&
+      user.isRoomLeft(this.roomId);
     if (splitindicator) {
       let leftSize =
         user.leftSize <= 0.5
@@ -198,6 +200,7 @@ export class UserListView extends LitElement {
   }
 
   #renderNeedsHelp = (user) => {
+    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
     let localIsStudent = UserService.get().localUser.isStudent();
     if (user.needsHelp) {
       return html` <div
@@ -259,6 +262,8 @@ export class UserListView extends LitElement {
   }
 
   #renderRoomAccessTeacherRoom = (user) => {
+    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
+
     let room = RoomService.get().getRoom(this.roomId);
 
     if (UserService.get().localUser.isStudent()) {
@@ -299,8 +304,8 @@ export class UserListView extends LitElement {
   };
 
   #renderRoomAccessStudentRoom = (user) => {
+    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
     if (!ClassroomService.get().classroom.roomLocks) return html``;
-
     if (RoomService.get().getRoom(this.roomId).isUnclaimed()) return html``;
 
     if (RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)) {
