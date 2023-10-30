@@ -52,11 +52,17 @@ export class GalleryModeMenuView extends LitElement {
       </div>
       ${this.settingsOpen ? html` <cc-settings></cc-settings>` : ""}
       ${user.isTeacher()
-        ? html`<div class="cc-controls-row">
-            <cc-room-select roomId="${this.roomId}"></cc-room-select>
+        ? html` <div class="cc-controls-row">
+            <div class="grow bg2">
+              <cc-room-select roomId="${this.roomId}"></cc-room-select>
+            </div>
           </div>`
-        : html` <div class="cc-controls-row">
-            ${RoomService.get().getRoom(this.roomId).getRoomNameDisplay()}
+        : html`
+          <div class="cc-controls-row">
+            <div class="grow bg2">
+              ${RoomService.get().getRoom(this.roomId).getRoomNameDisplay()}
+            </div>
+          </div>
           </div>`}
       <div class="cc-controls-row">${this.#renderActions()}</div>
     </div>`;
