@@ -174,6 +174,7 @@ export class UserListView extends LitElement {
   }
 
   #renderJumpToRoomElement(user) {
+    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
     if (RoomService.get().getRoom(this.roomId).isStudentRoom()) return "";
     let isLight = isColorLight(user.color);
     let backgroundStyle = {
