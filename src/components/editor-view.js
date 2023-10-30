@@ -149,14 +149,8 @@ export class EditorView extends LitElement {
 
     this.editor.session.on("change", (x) => {
       this.#onEditorChange(x);
-    });
-
-    this.editor.commands.on("afterExec", (data) => {
-      let commands = ["insertstring", "backspace", "cut", "paste"];
-      if (commands.includes(data.command.name)) {
-        this.#stopLiveCoding();
-        this.#startLiveCoding();
-      }
+      this.#stopLiveCoding();
+      this.#startLiveCoding();
     });
 
     ClassroomService.get().classroom.addListener((changes) => {
