@@ -53,7 +53,6 @@ export class ClassRoomView extends LitElement {
 
   _setMembers() {
     this.localUser = UserService.get().localUser;
-
     this.localUser.addListener(this.localUpdate);
   }
 
@@ -62,7 +61,8 @@ export class ClassRoomView extends LitElement {
   };
 
   getPasswordAuth = () => {
-    return sessionStorage.getItem("auth");
+    let auth = sessionStorage.getItem("auth");
+    return auth;
   };
 
   render() {
@@ -95,15 +95,17 @@ export class ClassRoomView extends LitElement {
   };
 
   onSubmit = () => {
-    if (this.password && this.password !== "") {
-      sessionStorage.setItem(
-        "auth",
-        murmurhash3_32_gc(
-          this.location.params.id,
-          toNumbers(this.password)
-        ).toString()
-      );
+    if (!this.password) {
+      this.password = "";
     }
+
+    sessionStorage.setItem(
+      "auth",
+      murmurhash3_32_gc(
+        this.location.params.id,
+        toNumbers(this.password)
+      ).toString()
+    );
 
     this.connectWithHash();
     this.requestUpdate();
