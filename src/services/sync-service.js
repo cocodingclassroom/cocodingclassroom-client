@@ -1,6 +1,6 @@
 import { Doc as YDoc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
-import { murmurhash3_32_gc } from "/src/util/cc-auth.js";
+import { murmurhash3_32_gc, toNumbers } from "/src/util/cc-auth.js";
 
 export class SyncService {
   static #instance;
@@ -52,14 +52,16 @@ export class SyncService {
     let options = {
       params: {
         authID: classroomID,
-        auth: murmurhash3_32_gc(classroomID, password),
+        auth: murmurhash3_32_gc(classroomID, toNumbers(password)),
+        // auth: password,
       },
     };
     if (createRoom) {
       options = {
         params: {
           authID: classroomID,
-          authSet: murmurhash3_32_gc(classroomID, password),
+          authSet: murmurhash3_32_gc(classroomID, toNumbers(password)),
+          // authSet: password,
         },
       };
     }

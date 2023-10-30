@@ -5,7 +5,7 @@ function zeroPad(n, w) {
   return n;
 }
 
-function toNumbers(s) {
+export function toNumbers(s) {
   var nums = "";
   for (var i = 0; i < s.length; i++) {
     nums += zeroPad(s.charCodeAt(i), 3);
