@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { ClassroomService } from "/src/services/classroom-service.js";
 import { Router } from "@vaadin/router";
 import { safeRegister } from "../util/util";
-import { inputStyle } from "../util/shared-css";
+import { inputStyle, menuBackground1, menuForegroundLight } from "../util/shared-css";
 import { bindings } from "../bindings/bindings-config";
 import { number } from "lib0";
 
@@ -25,7 +25,7 @@ export class Setup extends LitElement {
         <div class="container-col">
           <h3 class="p5">COCODING CLASSROOM - SETUP</h3>
           <hr />
-          <div class="p5">
+          <div class="p5 tooltip" data-tip="Backend technology to be used for class.">
             <select
               class="round submit"
               name="binding"
@@ -39,7 +39,7 @@ export class Setup extends LitElement {
             </select>
             <label for="binding">Selected Binding</label>
           </div>
-          <div class="p5">
+          <div class="p5 tooltip" data-tip="Room count (${this.minRoomNumbers}-${this.maxRoomNumbers})">
             <input
               class="round w55"
               @change="${this.onChangeRoomNumbers}"
@@ -51,7 +51,7 @@ export class Setup extends LitElement {
             <label for="rooms">initial Rooms (${this.minRoomNumbers}-${this.maxRoomNumbers})</label>
           </div>
           <hr />
-          <div class="p5">
+          <div class="p5 tooltip" data-tip="Auto compile code with __ sec delay on keyup">
             <input
               type="checkbox"
               name="LiveCoding"
@@ -74,7 +74,7 @@ export class Setup extends LitElement {
             >
           </div>
           <hr />
-          <div class="p5">
+          <div class="p5 tooltip" data-tip="Display code line numbers">
             <input
               @change="${this.onChangeLineNumbers}"
               type="checkbox"
@@ -84,7 +84,7 @@ export class Setup extends LitElement {
             <label for="line-numbers">Line Numbers</label>
           </div>
           <hr />
-          <div class="p5">
+          <div class="p5 tooltip" data-tip="Allow peers to lock their room">
             <input
               @change="${this.onChangeRoomLocks}"
               type="checkbox"
@@ -93,7 +93,7 @@ export class Setup extends LitElement {
             <label for="room-locks">Room Locks</label>
           </div>
           <hr />
-          <div class="p5">
+          <div class="p5 tooltip" data-tip="Require password to enter Classroom">
             <input
               class="round"
               @change="${this.onChangePassword}"
@@ -239,6 +239,39 @@ export class Setup extends LitElement {
       option {
         font-family: inherit;
       }
+
+        div.tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        div.tooltip::before {
+            content: attr(data-tip);
+            position: absolute;
+            z-index: 999;
+            width: 200px;
+            height: 80px;
+            bottom: 9999px;
+            background: #222222;
+            color: #e0e0e0;
+            padding: 7px;
+            line-height: 24px;
+            top: -25px;
+            vertical-align: middle;
+            left: 102%;
+            opacity: 0;
+            -webkit-transition: opacity 0.4s ease-out;
+            -moz-transition: opacity 0.4s ease-out;
+            -o-transition: opacity 0.4s ease-out;
+            transition: opacity 0.4s ease-out;
+            text-shadow: none;
+        }
+        
+        div.tooltip:hover::before {
+            opacity: 1;
+            /* bottom: -35px; */
+        }
+
     `,
         inputStyle(),
     ];
