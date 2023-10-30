@@ -82,10 +82,10 @@ export class AceBinding {
     this.ace.on("change", this._aceObserver);
 
     // initial load of content to ace *** (newly needed, add upstream to lib??)
-    // mux(() => {
-    //   const aceDocument = this.aceSession.getDocument();
-    //   aceDocument.setValue(type.toString());
-    // });
+    mux(() => {
+      const aceDocument = this.aceSession.getDocument();
+      aceDocument.setValue(type.toString());
+    });
   }
 
   turnSyncOff = () => {

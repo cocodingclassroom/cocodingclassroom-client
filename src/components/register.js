@@ -15,4 +15,3 @@ import { ClassRoomView } from "./classroom-view";
 import { FrameView } from "./frame-view";
 import { OutputView } from "./output-view";
 import { RoomView } from "./room-view";
-import { PasswordSetup } from "./password-setup";

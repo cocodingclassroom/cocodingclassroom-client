@@ -169,14 +169,15 @@ export class EditorView extends LitElement {
           this.#startLiveCoding();
         }
         if (change.keysChanged.has("mode")) {
-          let mode = ClassroomService.get().classroom.mode;
-          if (mode === ClassroomMode.GALLERY) {
-            this.#removeSyncingBinding();
-          }
-          if (mode === ClassroomMode.EDIT) {
-            this.#removeSyncingBinding();
-            this.#setupSyncingBinding();
-          }
+          location.reload();
+          // let mode = ClassroomService.get().classroom.mode;
+          // if (mode === ClassroomMode.GALLERY) {
+          //   this.#removeSyncingBinding();
+          // }
+          // if (mode === ClassroomMode.EDIT) {
+          //   this.#removeSyncingBinding();
+          //   this.#setupSyncingBinding();
+          // }
         }
       });
     });
@@ -186,14 +187,12 @@ export class EditorView extends LitElement {
 
   #setupContent() {
     if (this.editor === undefined) return;
-    this.#removeSyncingBinding();
 
-    var text = this.room.codeContent.toString();
-    this.editor.getSession().getDocument().setValue("");
-    this.editor.getSession().getDocument().setValue(text);
-
-    if (ClassroomService.get().classroom.mode === ClassroomMode.EDIT) {
+    if (ClassroomService.get().classroom.isEditMode()) {
+      this.#removeSyncingBinding();
       this.#setupSyncingBinding();
+    } else {
+      this.editor.getSession().setValue(this.room.codeContent.toString());
     }
 
     this.room.l_editorForRoom = this.editor;
