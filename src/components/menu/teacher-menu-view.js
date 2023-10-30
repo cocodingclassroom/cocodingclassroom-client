@@ -67,7 +67,9 @@ export class TeacherMenuView extends LitElement {
             <cc-icon svg="${iconSvg.about}"></cc-icon>
           </div>
           <div
-            class="cc-nav-settings ${this.settingsOpen ? 'bg3 active' : 'bg3 help'}"
+            class="cc-nav-settings ${this.settingsOpen
+              ? "bg3 active"
+              : "bg3 help"}"
             @click="${() => {
               this.settingsOpen = !this.settingsOpen;
               initDataTips(this.renderRoot);
@@ -93,20 +95,20 @@ export class TeacherMenuView extends LitElement {
         <div data-tip="New Sketch" class="bg2">
           <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
         </div>
-        <div data-tip="Push code to all rooms"  class="bg2">
+        <div data-tip="Sync code" class="bg2">
           <cc-sync-code roomId="${this.roomId}"></cc-sync-code>
         </div>
         ${this._renderActionsForStudents()}
       </div>
       <div class="cc-controls-row">
-        <div data-tip="Add room" @click="${() => this._addRoom()}"  class="bg2">
+        <div data-tip="Add room" @click="${() => this._addRoom()}" class="bg2">
           <cc-icon svg="${iconSvg.layers}"></cc-icon>
         </div>
         <div data-tip="Walk rooms" class="bg2">
           <cc-walk-room roomId="${this.roomId}"></cc-walk-room>
         </div>
         <div
-          data-tip="Send message to all students" 
+          data-tip="Broadcast message"
           class="bg2"
           @click="${() => {
             sendBroadCastMessage();
@@ -115,7 +117,7 @@ export class TeacherMenuView extends LitElement {
           <cc-icon svg="${iconSvg.message}"></cc-icon>
         </div>
         <div
-          data-tip="Set split screen"
+          data-tip="Sync split-screen"
           @click="${() => forceSplitView()}"
           class="bg2"
         >
@@ -127,11 +129,11 @@ export class TeacherMenuView extends LitElement {
 
   _renderActionsForStudents = () => {
     return html`
-      <div data-tip="Export Code" class="bg2">
-        <cc-export-code roomId="${this.roomId}"></cc-export-code>
-      </div>
       <div data-tip="Compare Code" class="bg2">
         <cc-compare-code-view></cc-compare-code-view>
+      </div>
+      <div data-tip="Export" class="bg2">
+        <cc-export-code roomId="${this.roomId}"></cc-export-code>
       </div>
     `;
   };

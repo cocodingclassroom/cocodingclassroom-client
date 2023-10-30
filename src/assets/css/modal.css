@@ -109,6 +109,12 @@
     animation: modal-pulse 1.1s infinite;
 }
 
+.modal-ok-button:disabled {
+    background-color: #6FA3E6;
+    color: white;
+    animation: none;
+}
+
 @keyframes modal-pulse {
     0% {
         box-shadow: inset 0 0 0 300px transparent;
