@@ -3,6 +3,7 @@ import checkCircle from "../../assets/resource/check-circle.svg";
 import code from "../../assets/resource/code.svg";
 import edit from "../../assets/resource/edit-3.svg";
 import filePlus from "../../assets/resource/file-plus.svg";
+import fileText from "../../assets/resource/file-text.svg";
 import merge from "../../assets/resource/git-merge.svg";
 import helpCircle from "../../assets/resource/help-circle.svg";
 import layers from "../../assets/resource/layers.svg";
@@ -33,7 +34,7 @@ export const iconSvg = {
   room: layers,
   layers: layers,
   trash: trash,
-  merge: merge,
+  merge: fileText,
   shuffle: shuffle,
   about: helpCircle,
   settings: settings,
