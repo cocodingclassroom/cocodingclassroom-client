@@ -8,6 +8,8 @@ import { number } from "lib0";
 
 export class Setup extends LitElement {
     initialRoomNumbers = 5;
+    minRoomNumbers = 2;
+    maxRoomNumbers = 30;
     liveCodingOn = true;
     secondsDelay = 0.5;
     lineNumbersVisible = true;
@@ -43,10 +45,10 @@ export class Setup extends LitElement {
               @change="${this.onChangeRoomNumbers}"
               @input="${this.onInputRoomNumbers}"
               type="text"
-              value="5"
+              value="${this.initialRoomNumbers}"
               name="rooms"
             />
-            <label for="rooms">initial Rooms (2-30)</label>
+            <label for="rooms">initial Rooms (${this.minRoomNumbers}-${this.maxRoomNumbers})</label>
           </div>
           <hr />
           <div class="p5">
@@ -126,11 +128,11 @@ export class Setup extends LitElement {
         var value = rooms;
         // if not a number
         if (isNaN(rooms)) {
-            value = 5;
-        } else if (rooms < 2) {
-            value = 2;
-        } else if (rooms > 30) {
-            value = 30;
+            value = initialRoomNumbers;
+        } else if (rooms < this.minRoomNumbers) {
+            value = this.minRoomNumbers;
+        } else if (rooms > this.maxRoomNumbers) {
+            value = this.maxRoomNumbers;
         }
         e.target.value = value;
         this.initialRoomNumbers = value;
