@@ -319,6 +319,7 @@ export class EditorView extends LitElement {
         }
       ),
       /**
+       This is already provided by most browsers.
        ...Shortcut.fromPattern(
        "decrease fontsize",
        ["ctrl+-"],
