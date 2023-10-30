@@ -9,6 +9,7 @@ import {
   NotifyService,
   Notification,
 } from "./notify-service";
+import { murmurhash3_32_gc, toNumbers } from "../util/cc-auth";
 
 export class ClassroomService {
   static _instance;
@@ -68,12 +69,26 @@ export class ClassroomService {
     return newClassroomId;
   }
 
-  connectToExistingRoom(classroomId, callback) {
+  connectToExistingRoom(classroomId, password, callback) {
     SyncService.connectAndSetup(
       "ws://localhost:1234",
       false,
       classroomId,
-      "",
+      password,
+      () => {
+        console.log("Connected to existing room");
+        this.syncWithExistingRoomData(classroomId);
+        callback();
+      }
+    );
+  }
+
+  connectToExistingRoomWithHash(classroomId, hash, callback) {
+    SyncService.connectAndSetupWithHash(
+      "ws://localhost:1234",
+      false,
+      classroomId,
+      hash,
       () => {
         console.log("Connected to existing room");
         this.syncWithExistingRoomData(classroomId);

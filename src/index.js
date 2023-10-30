@@ -15,11 +15,16 @@ window.onload = () => {
       path: "/",
       component: "cc-setup",
     },
+    // {
+    //   path: "/:id/passwordmissing",
+    //   component: "cc-password-setup",
+    // },
     {
       path: "/:id",
       component: "cc-classroom",
     },
   ];
+
   const outlet = document.getElementById("outlet");
   const router = new Router(outlet);
   router.setRoutes(routes);

@@ -6,6 +6,7 @@ import { UserService } from "/src/services/user-service.js";
 import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle, safeRegister } from "../util/util";
 import { clearSelection } from "../util/clear-selection";
+import { murmurhash3_32_gc, toNumbers } from "../util/cc-auth";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
@@ -13,22 +14,32 @@ export class ClassRoomView extends LitElement {
     localUser: { type: User, state: true, attribute: false },
   };
 
+  authed = false;
+
   constructor() {
     super();
   }
 
   firstUpdated(changes) {
     super.firstUpdated(changes);
-    ClassroomService.get().connectToExistingRoom(
+    this.connectWithHash();
+    window.addEventListener("resize", this.onResize);
+  }
+
+  connectWithHash = () => {
+    let hash = this.getPasswordAuth();
+    ClassroomService.get().connectToExistingRoomWithHash(
       this.location.params.id,
+      hash,
       () => {
         this._setMembers();
         ClassroomService.get().classroom.addListener(this.localUpdate);
         UserService.get().localUser.addListener(this.localUpdate);
+        this.authed = true;
+        this.requestUpdate();
       }
     );
-    window.addEventListener("resize", this.onResize);
-  }
+  };
 
   disconnectedCallback() {
     window.removeEventListener("resize", this.onResize);
@@ -50,7 +61,26 @@ export class ClassRoomView extends LitElement {
     this.requestUpdate();
   };
 
+  getPasswordAuth = () => {
+    return sessionStorage.getItem("auth");
+  };
+
   render() {
+    if (!this.authed) {
+      return html` <div class="row">
+        <div class="col">
+          <label for="password">Password</label>
+          <input
+            name="password"
+            type="text"
+            placeholder="password"
+            @change="${this.onChangePassword}"
+          />
+          <button @click="${this.onSubmit}">Enter!</button>
+        </div>
+      </div>`;
+    }
+
     if (this.localUser === null || this.localUser === undefined) return "";
 
     if (ClassroomService.get().isGalleryMode()) {
@@ -59,6 +89,25 @@ export class ClassRoomView extends LitElement {
 
     return this.#renderEditMode();
   }
+
+  onChangePassword = (e) => {
+    this.password = e.target.value;
+  };
+
+  onSubmit = () => {
+    if (this.password && this.password !== "") {
+      sessionStorage.setItem(
+        "auth",
+        murmurhash3_32_gc(
+          this.location.params.id,
+          toNumbers(this.password)
+        ).toString()
+      );
+    }
+
+    this.connectWithHash();
+    this.requestUpdate();
+  };
 
   #renderGalleryMode() {
     let hiddenStyle = { display: "none" };
