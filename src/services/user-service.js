@@ -23,19 +23,6 @@ export class UserService {
     });
   }
 
-  setup = () => {
-    // SyncService.get()
-    //   .getAwareness()
-    //   .on("change", ({ added, updated, removed }) => {
-    //     if (added.length > 0) {
-    //       this.#OnUserJoined(added);
-    //     }
-    //     if (removed.length > 0) {
-    //       this.#OnUserLeft(removed);
-    //     }
-    //   });
-  };
-
   static get() {
     if (UserService._instance === undefined)
       UserService._instance = new UserService();

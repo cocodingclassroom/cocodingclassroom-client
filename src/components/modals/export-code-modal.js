@@ -51,6 +51,7 @@ export const exportCode = (roomId) => {
           BindingService.get().binding.exportPicture(
             RoomService.get().getRoom(roomId)
           );
+          break;
         case "export-classroom-js":
           console.log(exportType);
           BindingService.get().binding.exportClassroomJS(filename);
