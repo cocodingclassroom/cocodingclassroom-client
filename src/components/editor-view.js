@@ -135,6 +135,11 @@ export class EditorView extends LitElement {
       fontSize: UserService.get().localUser.getEditorFontSize(),
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
+    this.editor.commands.removeCommands([
+      "gotolineend", // ctrl + e
+      "transposeletters", // ctrl + t,
+      "macrosreplay",
+    ]);
 
     if (
       this.room.roomType === RoomType.TEACHER &&
@@ -260,7 +265,7 @@ export class EditorView extends LitElement {
       ...Shortcut.fromPattern(
         "hard-compile",
         ["ctrl+shift+enter"],
-        ["cmd+shift+enter"],
+        ["ctrl+shift+enter"],
         () => {
           this.#runCode(true);
         },
@@ -271,7 +276,7 @@ export class EditorView extends LitElement {
       ...Shortcut.fromPattern(
         "soft-compile",
         ["ctrl+enter"],
-        ["cmd+enter"],
+        ["ctrl+enter"],
         () => {
           this.#runCode(false);
         },
@@ -280,9 +285,20 @@ export class EditorView extends LitElement {
         }
       ),
       ...Shortcut.fromPattern(
+        "export snapshot",
+        ["ctrl+shift+e"],
+        ["ctrl+shift+e"],
+        () => {
+          console.log("snapshot");
+        },
+        () => {
+          return true;
+        }
+      ),
+      ...Shortcut.fromPattern(
         "toggle editor",
         ["ctrl+e"],
-        ["cmd+e"],
+        ["ctrl+e"],
         () => {
           this.#toggleEditor();
         },
@@ -292,19 +308,19 @@ export class EditorView extends LitElement {
       ),
       ...Shortcut.fromPattern(
         "toggle menu",
-        ["ctrl+alt+t"],
-        ["cmd+alt+t"],
+        ["ctrl+m"],
+        ["ctrl+m"],
         () => {
           this.#toggleMenu();
         },
         () => {
-          return this.#isEditorFocused();
+          return true;
         }
       ),
       ...Shortcut.fromPattern(
         "tidy code",
-        ["ctrl+alt+t"],
-        ["cmd+alt+t"],
+        ["ctrl+shift+t"],
+        ["ctrl+shift+t", "ctrl+t"],
         () => {
           formatCode(this.editor);
         },
