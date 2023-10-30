@@ -1,5 +1,7 @@
 import { formatCode } from "./compiler";
 
+
+// TODO: Remove class, not in use anymore.
 const shortcuts = {
   // 'softcompile':{
   // 	'name':'Soft-Compile'
