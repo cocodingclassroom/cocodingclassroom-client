@@ -305,17 +305,6 @@ export class EditorView extends LitElement {
                 }
             ),
             ...Shortcut.fromPattern(
-                "toggle menu",
-                ["ctrl+m"],
-                ["ctrl+m"],
-                () => {
-                    this.#toggleMenu();
-                },
-                () => {
-                    return true;
-                }
-            ),
-            ...Shortcut.fromPattern(
                 "tidy code",
                 ["ctrl+shift+t"],
                 ["ctrl+shift+t", "ctrl+t"],
@@ -425,10 +414,6 @@ export class EditorView extends LitElement {
 
     #toggleEditor = () => {
         this.editorVisible = !this.editorVisible;
-    };
-
-    #toggleMenu = () => {
-        debugLog("toggle menu not implemented yet");
     };
 
     render() {

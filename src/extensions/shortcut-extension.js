@@ -68,28 +68,33 @@ export class ShortcutExtension {
         }
 
         this._pressedKeys.add(event.key.toLowerCase());
-
+        var success = false;
         for (let i = 0; i < this._shortcuts.length; i++) {
             let shortcut = this._shortcuts[i];
 
             if (shortcut.preValidation !== undefined && !shortcut.preValidation())
-                return;
+                continue;
 
             let hasKey = this._pressedKeys.has(shortcut.keyBind.toLowerCase());
             if (!hasKey) {
                 continue;
             }
 
-            if (!event.ctrlKey && shortcut.ctrlKey) continue;
-            if (!event.metaKey && shortcut.cmdKey) continue;
-            if (!event.altKey && shortcut.altKey) continue;
-            if (!event.shiftKey && shortcut.shiftKey) continue;
+            if (event.ctrlKey !== shortcut.ctrlKey) continue;
+            if (event.metaKey !== shortcut.cmdKey) continue;
+            if (event.altKey !== shortcut.altKey) continue;
+            if (event.shiftKey !== shortcut.shiftKey) continue;
 
             shortcut.command();
-            this._pressedKeys.clear();
-            event.stopPropagation();
-            return;
+            success == true;
         }
+        if (success) {
+            this._pressedKeys.clear();
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+        return true;
     };
 }
 
