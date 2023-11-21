@@ -59,12 +59,18 @@ export class ShortcutExtension {
     }
 
     keyLifted = (event) => {
-        this._pressedKeys.delete(event.key.toLowerCase());
+        if (!this._pressedKeys.delete(event.key.toLowerCase())) {
+            
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+        return true;
     };
 
     keyPressed = (event) => {
         if (!this._check()) {
-            return;
+            return false;
         }
 
         this._pressedKeys.add(event.key.toLowerCase());
@@ -86,7 +92,7 @@ export class ShortcutExtension {
             if (event.shiftKey !== shortcut.shiftKey) continue;
 
             shortcut.command();
-            success == true;
+            success= true;
         }
         if (success) {
             this._pressedKeys.clear();
