@@ -1,7 +1,6 @@
 import { Doc as YDoc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { murmurhash3_32_gc, toNumbers } from "/src/util/cc-auth.js";
-import { Router } from "@vaadin/router";
 
 export class SyncService {
   static #instance;
@@ -33,10 +32,22 @@ export class SyncService {
     let options = this._getOptions(classroomID, password, createRoom);
 
     if (createRoom) {
-      sessionStorage.setItem("auth", options.params.authSet.toString());
+      this.saveHash(options.params.authSet.toString(), classroomID);
     }
 
     this.connectWithOptions(url, classroomID, options, connectedCallback);
+  }
+
+  static saveHash(hash, classroomID) {
+    sessionStorage.setItem("auth_" + classroomID, hash);
+  }
+
+  static getHash(classroomId) {
+    let hash = sessionStorage.getItem("auth_" + classroomId);
+    if (!hash) {
+      hash = murmurhash3_32_gc(classroomId, toNumbers(""));
+    }
+    return hash;
   }
 
   static connectAndSetupWithHash(

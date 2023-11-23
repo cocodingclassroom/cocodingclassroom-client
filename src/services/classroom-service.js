@@ -3,13 +3,6 @@ import { getRandomID } from "/src/util/util.js";
 import { ClassroomMode, ClassroomModel } from "/src/models/classroom-model.js";
 import { RoomService } from "/src/services/room-service.js";
 import { UserService } from "/src/services/user-service.js";
-import { live } from "lit-html/directives/live.js";
-import {
-  NotificationType,
-  NotifyService,
-  Notification,
-} from "./notify-service";
-import { murmurhash3_32_gc, toNumbers } from "../util/cc-auth";
 
 export class ClassroomService {
   static _instance;

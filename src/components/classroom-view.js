@@ -7,6 +7,7 @@ import { RoomService } from "/src/services/room-service.js";
 import { getSplitScreenWidthAndAlignStyle, safeRegister } from "../util/util";
 import { clearSelection } from "../util/clear-selection";
 import { murmurhash3_32_gc, toNumbers } from "../util/cc-auth";
+import { SyncService } from "../services/sync-service";
 
 export class ClassRoomView extends LitElement {
   static MIN_WIDTH = 5; //percent of screen width
@@ -27,7 +28,7 @@ export class ClassRoomView extends LitElement {
   }
 
   connectWithHash = () => {
-    let hash = this.getPasswordAuth();
+    let hash = SyncService.getHash(this.location.params.id);
     ClassroomService.get().connectToExistingRoomWithHash(
       this.location.params.id,
       hash,
@@ -58,11 +59,6 @@ export class ClassRoomView extends LitElement {
 
   onResize = () => {
     this.requestUpdate();
-  };
-
-  getPasswordAuth = () => {
-    let auth = sessionStorage.getItem("auth");
-    return auth;
   };
 
   render() {
@@ -99,13 +95,12 @@ export class ClassRoomView extends LitElement {
       this.password = "";
     }
 
-    sessionStorage.setItem(
-      "auth",
-      murmurhash3_32_gc(
-        this.location.params.id,
-        toNumbers(this.password)
-      ).toString()
-    );
+    let hash = murmurhash3_32_gc(
+      this.location.params.id,
+      toNumbers(this.password)
+    ).toString();
+
+    SyncService.saveHash(hash, this.location.params.id);
 
     this.connectWithHash();
     this.requestUpdate();
