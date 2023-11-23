@@ -10,7 +10,7 @@ import { murmurhash3_32_gc, toNumbers } from "../util/cc-auth";
 import { SyncService } from "../services/sync-service";
 
 export class ClassRoomView extends LitElement {
-  static MIN_WIDTH = 16; //percent of screen width
+  static MIN_WIDTH = 6; //percent of screen width
   static properties = {
     localUser: { type: User, state: true, attribute: false },
   };
