@@ -131,7 +131,10 @@ export class BindingBase {
   };
 
   exportRoomJS = (room) => {
-    download(`${room.l_filename}.js`, room.codeContent);
+    download(
+      `${room.l_filename}_${new Date().toLocaleString()}.js`,
+      room.codeContent
+    );
   };
 
   exportPicture = (room) => {

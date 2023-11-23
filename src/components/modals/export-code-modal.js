@@ -13,9 +13,8 @@ export const exportCode = (roomId) => {
               <div>
                 Export:<br>
                 <select id="export-type" style="">
-                <option value="export-room-js">Room as .js</option>
+                <option value="export-room-js">Room as .js and screenshot</option>
                 <option value="export-room-html">Room as .html</option>
-                <option value="export-room-image">Room as screenshot</option>
                 <option value="export-classroom-js">Classroom Session as .js</option>
                 <option value="export-classroom-html" disabled>Classroom Session as .html</option>
                 </select>
@@ -38,17 +37,14 @@ export const exportCode = (roomId) => {
           BindingService.get().binding.exportRoomJS(
             RoomService.get().getRoom(roomId)
           );
+          BindingService.get().binding.exportPicture(
+            RoomService.get().getRoom(roomId)
+          );
           break;
         case "export-room-html":
           console.log(exportType);
           room.l_filename = filename;
           BindingService.get().binding.exportRoomHTML(
-            RoomService.get().getRoom(roomId)
-          );
-          break;
-        case "export-room-image":
-          console.log(exportType);
-          BindingService.get().binding.exportPicture(
             RoomService.get().getRoom(roomId)
           );
           break;
