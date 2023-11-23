@@ -27,6 +27,7 @@ export class OutputView extends LitElement {
       border: none;
       border-top: 1px solid #222;
       margin: 0 0 0 0;
+      overflow-x: hidden;
     }
   `;
 }
