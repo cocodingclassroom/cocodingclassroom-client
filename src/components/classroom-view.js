@@ -35,17 +35,45 @@ export class ClassRoomView extends LitElement {
       () => {
         this._setMembers();
         ClassroomService.get().classroom.addListener(this.localUpdate);
-        UserService.get().localUser.addListener(this.localUpdate);
+
+        UserService.get().localUser.addListener((changes) => {
+          this.#localUserUpdate(changes);
+        });
+
+        this.rightRoom = RoomService.get().getRoom(
+          this.localUser.selectedRoomRight
+        );
+
         this.authed = true;
         this.requestUpdate();
       }
     );
   };
 
+  #localUserUpdate(changes) {
+    changes.forEach((change) => {
+      if (change.keysChanged.has("selectedRoomRight")) {
+        this.rightRoom = undefined;
+        this.requestUpdate();
+        /*
+         Christoph 23.11.2023:
+         Set the rightRoom to undefined to trigger a complete rebuild of the editor on the right side
+         this is need to ensure proper setup
+         */
+        setTimeout(() => {
+          this.rightRoom = RoomService.get().getRoom(
+            this.localUser.selectedRoomRight
+          );
+          this.requestUpdate();
+        }, 0);
+      }
+    });
+  }
+
   disconnectedCallback() {
     window.removeEventListener("resize", this.onResize);
     ClassroomService.get().classroom.removeListener(this.localUpdate);
-    UserService.get().localUser.addListener(this.localUpdate);
+    UserService.get().localUser.removeListener(this.#localUserUpdate);
   }
 
   localUpdate = () => {
@@ -54,7 +82,7 @@ export class ClassRoomView extends LitElement {
 
   _setMembers() {
     this.localUser = UserService.get().localUser;
-    this.localUser.addListener(this.localUpdate);
+    // this.localUser.addListener(this.localUpdate);
   }
 
   onResize = () => {
@@ -159,11 +187,10 @@ export class ClassRoomView extends LitElement {
   #renderRightRoom = (rightWidth) => {
     let rightStyle = getSplitScreenWidthAndAlignStyle(rightWidth, 1);
     if (100 - this.localUser.leftSize < ClassRoomView.MIN_WIDTH) return "";
-
-    let rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight);
+    if (!this.rightRoom) return "";
     return html` <div style="${styleMap(rightStyle)}">
       <cc-room
-        roomId="${rightRoom.id}"
+        roomId="${this.rightRoom.id}"
         width="${rightWidth}"
         isLeft="${1}"
       ></cc-room>
