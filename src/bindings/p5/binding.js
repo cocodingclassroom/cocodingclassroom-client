@@ -83,6 +83,13 @@ function draw() {
       ),
     ];
   };
+
+  exportPicture = (room) => {
+    room.l_iframeForRoom.contentWindow.saveCanvas(
+      `${room.l_filename}_screenshot`,
+      "png"
+    );
+  };
 }
 
 /*
