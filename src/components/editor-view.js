@@ -23,6 +23,7 @@ import {
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
 import { debugLog } from "../index";
 import { ClassroomMode } from "../models/classroom-model";
+import { BindingService } from "../services/binding-service";
 
 export class EditorView extends LitElement {
   static properties = {
@@ -348,6 +349,17 @@ export class EditorView extends LitElement {
           return this.#isEditorFocused();
         }
       ),
+      ...Shortcut.fromPattern(
+        "export picture",
+        ["shift+ctrl+s"],
+        ["shift+ctrl+s"],
+        () => {
+            this.#exportPicture();
+        },
+        () => {
+            return this.#isEditorFocused();
+        }
+    ),
     ];
   };
 
@@ -415,6 +427,14 @@ export class EditorView extends LitElement {
   #toggleEditor = () => {
     this.editorVisible = !this.editorVisible;
   };
+
+
+  #exportPicture = () => {
+    console.log("export picture")
+    BindingService.get().binding.exportPicture(
+        RoomService.get().getRoom(this.room.id)
+    );
+  }
 
   render() {
     const hiddenStyle = {};
