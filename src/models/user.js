@@ -8,6 +8,7 @@ export class User extends YSyncModel {
   awarenessId;
   isOnline;
   role = UserRole.STUDENT;
+  isNew = true;
   name;
   color;
   needsHelp = false;
@@ -24,6 +25,7 @@ export class User extends YSyncModel {
     this.id = id;
     this.trackingList = new Map();
     this.setup();
+    this.isNew = this.name ? false : true;
     this.name = this.name ?? generateName();
     this.color =
       this.color ?? "#" + Math.floor(Math.random() * 16777215).toString(16);

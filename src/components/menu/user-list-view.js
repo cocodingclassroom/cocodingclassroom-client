@@ -59,6 +59,9 @@ export class UserListView extends LitElement {
   firstUpdated(_changedProperties) {
     super.firstUpdated(_changedProperties);
     initDataTips(this.renderRoot);
+    const localUser = UserService.get().localUser
+    if (localUser.isNew)
+        UserColorRenameModal(localUser);
   }
 
   updated(_changedProperties) {
