@@ -326,7 +326,8 @@ export class UserListView extends LitElement {
     if (
       RoomService.get()
         .getRoom(this.roomId)
-        .isWriter(UserService.get().localUser.id)
+        .isWriter(UserService.get().localUser.id) ||
+      UserService.get().localUser.isTeacher()
     ) {
       if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
         // make sure you cannot remove yourself from the list of writers.
