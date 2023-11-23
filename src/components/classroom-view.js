@@ -66,7 +66,10 @@ export class ClassRoomView extends LitElement {
           );
           this.requestUpdate();
         }, 0);
+        return;
       }
+
+      this.requestUpdate();
     });
   }
 
