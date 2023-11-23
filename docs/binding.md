@@ -1,8 +1,16 @@
 # p5 binding
 
-## loadLibrary
+## @script
 
-`function loadLibrary(path_to_library);`
+The `// @script` directive loads an external resource before playing the current sketch.
+
+```javascript
+// @script='path_to_library'
+or
+// @script="path_to_library"
+or
+/* @script='path_to_library' */
+```
 
 Load an additional library. 
 Place at the beginning of your p5 file.
@@ -10,27 +18,54 @@ Place at the beginning of your p5 file.
 `path_to_library` absolute URL to the javascript library to be loaded.
 
 ### Example
-Load p5.sound.js from CDN.
+Load p5.tween.js from CDN.
 
 ```javascript
-loadLibrary('https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/addons/p5.sound.js')
+// @script='https://unpkg.com/p5.tween/dist/p5.tween.min.js';
+const myShape = {
+  x: 200,
+  y: 100,
+  w: 50,
+  h: 50
+}
 
-let song;
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  rectMode(CENTER)
 
-function preload() {
-  song = loadSound('https://cdn.freesound.org/previews/243/243628_3509815-lq.mp3');
+  p5.tween.manager.addTween(myShape, 'tween1')
+    .addMotions([
+      { key: 'y', target: height },
+      { key: 'w', target: 30 },
+      { key: 'h', target: 80 },
+    ], 600, 'easeInQuad')
+    .addMotions([
+        { key: 'w', target: 100 },
+        { key: 'h', target: 10 },
+      ], 120)
+    .addMotions([
+        { key: 'w', target: 10 },
+        { key: 'h', target: 100 },
+      ], 100)
+    .addMotions([
+        { key: 'w', target: 50 },
+        { key: 'h', target: 50 },
+        { key: 'y', target: 100 }
+     ], 500, 'easeOutQuad')
+    .startLoop()
+}
+
+function draw() {
+  background(0);
+  noStroke()
+  fill(255, 0, 0)
+  ellipse(myShape.x, myShape.y, myShape.w, myShape.h)
 }
 
 function mousePressed() {
-    if (song.isPlaying()) {
-      // .isPlaying() returns a boolean
-      song.stop();
-      background(255, 0, 0);
-    } else {
-      song.play();
-      background(0, 255, 0);
-    }
-  }
-  
+  let tween = p5.tween.manager.getTween('tween1')
 
+  if(tween.isPaused)  tween.resume()
+  else                tween.pause()
+}
 ```

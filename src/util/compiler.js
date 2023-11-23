@@ -48,7 +48,6 @@ export const interpret = (
   fullRebuildOfIframe(
     activeBinding,
     iframeMeta,
-    codeNoComments,
     editor,
     errorCallback,
     iframe,
@@ -61,7 +60,6 @@ export const interpret = (
 const fullRebuildOfIframe = (
   activeBinding,
   iframeMeta,
-  codeNoComments,
   editor,
   errorCallback,
   iframe,
@@ -79,25 +77,19 @@ const fullRebuildOfIframe = (
   sMeta.type = "text/javascript";
   sMeta.innerHTML = iframeMeta;
   iFrameHead.appendChild(sMeta);
+  let sketchCode = editor.getValue();
 
-  let scriptsCol = [];
-  let scriptsList = processLibs(codeNoComments);
-  for (let i = 0; i < scriptsList.length; i++) {
-    scriptsCol.push(scriptsList[i]);
-  }
-
-  for (let sc of scriptsCol) {
+  let scriptsList = processLibs(sketchCode);
+  for (let sc of scriptsList) {
     let s = document.createElement("script");
     s.type = "text/javascript";
     s.src = sc;
-    // s.async = false;
     iFrameHead.appendChild(s);
   }
 
   // sketch as script tag
   let s = document.createElement("script");
   s.type = "text/javascript";
-  let sketchCode = editor.getValue();
 
   // break infinite loops
   if (!sketchCode.match(/(\/\/).*(no.*protect)/g)) {
@@ -321,24 +313,26 @@ const removeComments = (code) => {
   );
 };
 
+// https://regex101.com/r/9Q7JOj/1
+const regex = /\/[\/\*]+\s*@script\s*=\s*(?<link>"[^"]+"|'[^']+')\s*/gm;
+//  // @script='https://xpy.com?query=st_-ring'
+//  // @script =  "https://xpy.com?query=t_e-s%3At"
+//  /* @script= "https://xpy.com?query=t_e-s%3At" */
+//  /** @script=  "https://xpy.com?query=t_e-s%3At" */
 const processLibs = (code) => {
-  let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, "");
-  let sketchScriptsString = sketchTest.match(
-    /(?=loadScripts|libs|scripts).*?(\])/
-  );
-  let scriptsList = [];
-  if (sketchScriptsString !== null) {
-    let sketchLoadScripts = sketchScriptsString[0].match(
-      /(["'])(?:(?=(\\?))\2.)*?\1/g
-    );
-    for (let i = 0; i < sketchLoadScripts.length; i++) {
-      if (sketchLoadScripts[i] !== "") {
-        scriptsList.push(sketchLoadScripts[i].replace(/["']/g, ""));
-      }
+    let m;
+    let scriptsList = [];  
+    while ((m = regex.exec(code)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+        }
+        const link = m.groups["link"].replace(/["']/g, "")
+        if (link !== "")
+            scriptsList.push(link)
     }
-  }
-  return scriptsList;
-};
+    return scriptsList;
+}
 
 export const formatCode = (editor) => {
   // beautify!
