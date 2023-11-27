@@ -192,10 +192,6 @@ export class SettingsView extends LitElement {
         let newMode = this._getSelectedMode()
         ClassroomService.get().classroom.mode = newMode
 
-        if (newMode === ClassroomMode.EDIT) {
-            RoomService.get().clearAllGalleryChats()
-        }
-
         if (newMode === ClassroomMode.GALLERY) {
             UserService.get().localUser.selectedRoomRight = -1
         }
