@@ -1,9 +1,13 @@
 import { css, html, LitElement } from 'lit'
 import { ClassroomService } from '/src/services/classroom-service.js'
+import { initDataTips } from '../util/tooltips'
 import { Router } from '@vaadin/router'
 import { safeRegister } from '../util/util'
-import { inputStyle } from '../util/shared-css'
 import { bindings } from '../bindings/bindings-config'
+import {
+    inputStyle,
+    toolTipStyle,
+} from '../util/shared-css'
 
 export class Setup extends LitElement {
     initialRoomNumbers = 5
@@ -16,6 +20,9 @@ export class Setup extends LitElement {
     bindingIndex = 0
     password = ''
 
+    firstUpdated(_changedProperties) {
+        initDataTips(this.renderRoot);
+    }
     render() {
         let secDelays = Array.from({ length: 4 }, (v, k) => (k + 1) / 2)
         let i = 0
@@ -24,16 +31,16 @@ export class Setup extends LitElement {
                 <div class="container-col">
                     <h3 class="p5">SETUP</h3>
                     <hr class="hr2" />
-                    <div class="p5 tooltip" data-tip="Backend technology to be used for class." data-tip-left>
+                    <div class="p5" data-tip="Run code with\nthis library" data-tip-left>
                         <select class="round submit" name="binding" @change="${this.onChangeBinding}">
                             ${bindings.map(
                                 (binding) => html` <option value="${i++}">${new binding().bindingName}</option>`
                             )}
                         </select>
-                        <label for="binding">Selected Binding</label>
+                        <label for="binding">Binding Framework</label>
                     </div>
                     <hr />
-                    <div class="p5 tooltip" data-tip="Room count (${this.minRoomNumbers}-${this.maxRoomNumbers})">
+                    <div class="p5" data-tip="Number of student \nrooms (${this.minRoomNumbers}-${this.maxRoomNumbers})" data-tip-left>
                         <input
                             class="round w55"
                             @change="${this.onChangeRoomNumbers}"
@@ -42,10 +49,10 @@ export class Setup extends LitElement {
                             value="${this.initialRoomNumbers}"
                             name="rooms"
                         />
-                        <label for="rooms">initial Rooms (${this.minRoomNumbers}-${this.maxRoomNumbers})</label>
+                        <label for="rooms">Room Count</label>
                     </div>
                     <hr />
-                    <div class="p5 tooltip" data-tip="Auto compile code with __ sec delay on keyup">
+                    <div class="p5" data-tip="Auto compile \ncode on keyup" data-tip-left>
                         <input
                             type="checkbox"
                             name="LiveCoding"
@@ -53,7 +60,7 @@ export class Setup extends LitElement {
                             @change="${this.onChangeLiveDelay}"
                         />
                         <label for="LiveCoding"
-                            >Live Coding w/
+                            >Live Coding –
                             <select @change="${this.onChangeSecondsDelay}" class="round submit">
                                 ${secDelays.map((secDelay) => html` <option value="${secDelay}">${secDelay}</option> `)}
                             </select>
@@ -61,7 +68,7 @@ export class Setup extends LitElement {
                         >
                     </div>
                     <hr />
-                    <div class="p5 tooltip" data-tip="Display code line numbers">
+                    <div class="p5" data-tip="Display code \nline numbers" data-tip-left>
                         <input
                             @change="${this.onChangeLineNumbers}"
                             type="checkbox"
@@ -71,12 +78,12 @@ export class Setup extends LitElement {
                         <label for="line-numbers">Line Numbers</label>
                     </div>
                     <hr />
-                    <div class="p5 tooltip" data-tip="Allow peers to lock their room">
+                    <div class="p5" data-tip="Peers can lock \nroom from edits" data-tip-left>
                         <input @change="${this.onChangeRoomLocks}" type="checkbox" name="room-locks" />
                         <label for="room-locks">Room Locks</label>
                     </div>
                     <hr />
-                    <div class="p5 tooltip" data-tip="Require password to enter Classroom">
+                    <div class="p5" data-tip="Require password \nto enter classroom" data-tip-left>
                         <input
                             class="round"
                             @change="${this.onChangePassword}"
@@ -174,7 +181,7 @@ export class Setup extends LitElement {
     }
 
     static styles = [
-        // toolTipStyle(),
+        toolTipStyle(),
         css`
             .container-col {
                 display: flex;
@@ -250,12 +257,12 @@ export class Setup extends LitElement {
                 font-family: inherit;
             }
 
-            div.tooltip {
+            div.tooltip2 {
                 position: relative;
                 display: inline-block;
             }
 
-            div.tooltip::before {
+            div.tooltip2::before {
                 content: attr(data-tip);
                 position: absolute;
                 z-index: 999;
@@ -277,7 +284,7 @@ export class Setup extends LitElement {
                 text-shadow: none;
             }
 
-            div.tooltip:hover::before {
+            div.tooltip2:hover::before {
                 opacity: 1;
                 /* bottom: -35px; */
             }
