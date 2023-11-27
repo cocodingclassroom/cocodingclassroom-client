@@ -2,10 +2,8 @@ import { css, html, LitElement } from 'lit'
 import { ClassroomService } from '/src/services/classroom-service.js'
 import { Router } from '@vaadin/router'
 import { safeRegister } from '../util/util'
-import { inputStyle, menuBackground1, menuForegroundLight, toolTipStyle } from '../util/shared-css'
+import { inputStyle } from '../util/shared-css'
 import { bindings } from '../bindings/bindings-config'
-import { number } from 'lib0'
-import { initDataTips } from '../util/tooltips'
 
 export class Setup extends LitElement {
     initialRoomNumbers = 5
