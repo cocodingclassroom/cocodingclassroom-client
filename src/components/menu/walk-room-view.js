@@ -17,6 +17,9 @@ export class WalkRoomView extends LitElement {
 
     connectedCallback() {
         this.classroom = ClassroomService.get().classroom
+        this.classroom.addListener(() => {
+            this.requestUpdate()
+        })
         super.connectedCallback()
     }
 
