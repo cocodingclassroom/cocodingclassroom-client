@@ -8,6 +8,8 @@ import { getSplitScreenWidthAndAlignStyle, safeRegister } from '../util/util'
 import { clearSelection } from '../util/clear-selection'
 import { murmurhash3_32_gc, toNumbers } from '../util/cc-auth'
 import { SyncService } from '../services/sync-service'
+import { Notification, NotificationType, NotifyService } from '../services/notify-service'
+import { showBroadcastViewModal } from './modals/broad-cast-modal'
 
 export class ClassRoomView extends LitElement {
     static MIN_WIDTH = 6 //percent of screen width
@@ -51,6 +53,13 @@ export class ClassRoomView extends LitElement {
 
             this.authed = true
             this.requestUpdate()
+
+            NotifyService.get().addListener((notification) => {
+                if (notification.type !== NotificationType.BROADCAST) return
+                if (!Notification.isSentByMe(notification)) {
+                    showBroadcastViewModal(notification.message)
+                }
+            })
         })
     }
 
@@ -150,7 +159,7 @@ this is need to ensure proper setup
         let pixelWidthPerPercent = width / 100
         let leftWidth = (this.localUser?.leftSize ?? 50) * pixelWidthPerPercent
         let rightWidth = width - leftWidth
-        leftWidth = width - rightWidth
+        leftWidth = width - rightWidth - 6
 
         return html`
             ${this.#renderLeftRoom(leftWidth)} ${this.#renderRightRoom(rightWidth)}
@@ -214,7 +223,7 @@ this is need to ensure proper setup
 
     static styles = css`
         .middle-bar {
-            z-index: 65;
+            z-index: 55;
             position: absolute;
             height: 100vh;
             top: 0;
