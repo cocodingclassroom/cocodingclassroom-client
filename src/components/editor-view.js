@@ -165,14 +165,6 @@ export class EditorView extends LitElement {
                 }
                 if (change.keysChanged.has('mode')) {
                     location.reload()
-                    // let mode = ClassroomService.get().classroom.mode;
-                    // if (mode === ClassroomMode.GALLERY) {
-                    //   this.#removeSyncingBinding();
-                    // }
-                    // if (mode === ClassroomMode.EDIT) {
-                    //   this.#removeSyncingBinding();
-                    //   this.#setupSyncingBinding();
-                    // }
                 }
             })
         })
@@ -191,7 +183,7 @@ export class EditorView extends LitElement {
         }
 
         this.room.l_editorForRoom = this.editor
-        this.#runCode(true)
+        this.#runCode(true, false)
     }
 
     #removeSyncingBinding = () => {
