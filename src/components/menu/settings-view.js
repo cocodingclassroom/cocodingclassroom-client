@@ -194,6 +194,7 @@ export class SettingsView extends LitElement {
 
         if (newMode === ClassroomMode.GALLERY) {
             UserService.get().localUser.selectedRoomRight = -1
+            ClassroomService.get().classroom.isWalking = false
         }
     }
 
