@@ -52,7 +52,7 @@ export class binding extends BindingBase {
 		});
 		setTimeout(() =>  {
       	setResolution(window.innerWidth, window.innerHeight);
-		}, 10);
+		}, 50);
 	</script>
 </body>
 `
