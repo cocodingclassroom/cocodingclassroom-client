@@ -22,7 +22,17 @@ export class Setup extends LitElement {
 
     firstUpdated(_changedProperties) {
         initDataTips(this.renderRoot);
+        window.addEventListener('resize', this.onResize)
     }
+
+    disconnectedCallback() {
+        window.removeEventListener('resize', this.onResize)
+    }
+
+    onResize = () => {
+        initDataTips(this.renderRoot);
+    }
+
     render() {
         let secDelays = Array.from({ length: 4 }, (v, k) => (k + 1) / 2)
         let i = 0
