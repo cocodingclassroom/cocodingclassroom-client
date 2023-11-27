@@ -1,4 +1,5 @@
 import { BindingBase, JSLoadingConfig } from "../binding-base";
+import hydraAutocomplete from "./hydra_autocomplete.json";
 
 export class binding extends BindingBase {
   bindingName = "Hydra";
@@ -92,5 +93,9 @@ export class binding extends BindingBase {
 
   exportPicture = (room) => {
     room.l_iframeForRoom.contentWindow.exportImage();
+  };
+
+  getAutoCompleteJson = () => {
+    return hydraAutocomplete;
   };
 }

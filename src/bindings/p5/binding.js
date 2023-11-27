@@ -1,6 +1,7 @@
 // p5 binding
 
 import { BindingBase, JSLoadingConfig } from "../binding-base";
+import p5AutocompleteJson from "./p5_autocomplete.json";
 
 export class binding extends BindingBase {
   bindingName = "p5";
@@ -89,5 +90,9 @@ function draw() {
       `${room.l_filename}_screenshot`,
       "png"
     );
+  };
+
+  getAutoCompleteJson = () => {
+    return p5AutocompleteJson;
   };
 }

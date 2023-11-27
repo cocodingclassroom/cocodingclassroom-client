@@ -209,4 +209,8 @@ export class JSLoadingConfig {
 
     return this.remoteScriptTag;
   }
+
+  getAutoCompleteJson = () => {
+    return {};
+  };
 }

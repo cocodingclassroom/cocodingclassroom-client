@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import * as ace from "ace-builds";
 import "ace-builds/src-noconflict/theme-cobalt";
 import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/ext-language_tools";
 import { styleMap } from "lit/directives/style-map.js";
 import { RoomService } from "../services/room-service";
 import { AceBinding } from "../util/y-ace";
@@ -22,8 +23,10 @@ import {
 } from "../services/notify-service";
 import { CursorSyncExtension } from "../extensions/cursor-sync-extension";
 import { debugLog } from "../index";
-import { ClassroomMode } from "../models/classroom-model";
 import { BindingService } from "../services/binding-service";
+import { loadAutoComplete } from "../util/ace-autocomplete";
+
+const langTools = ace.require("ace/ext/language_tools");
 
 export class EditorView extends LitElement {
   static properties = {
@@ -119,7 +122,8 @@ export class EditorView extends LitElement {
     this.editor = ace.edit(cont);
     this.editor.renderer.attachToShadowRoot();
     this.editor.setTheme("ace/theme/cobalt");
-    ace.require("ace/ext/language_tools");
+    let activeBinding = BindingService.get().binding;
+    loadAutoComplete(langTools, activeBinding.getAutoCompleteJson());
     this.editor.getSession().setMode("ace/mode/javascript");
     this.editor.session.setMode("ace/mode/javascript");
     let classroom = ClassroomService.get().classroom;
@@ -358,12 +362,12 @@ export class EditorView extends LitElement {
         ["shift+ctrl+s"],
         ["shift+ctrl+s"],
         () => {
-            this.#exportPicture();
+          this.#exportPicture();
         },
         () => {
-            return this.#isEditorFocused();
+          return this.#isEditorFocused();
         }
-    ),
+      ),
     ];
   };
 
@@ -432,13 +436,12 @@ export class EditorView extends LitElement {
     this.editorVisible = !this.editorVisible;
   };
 
-
   #exportPicture = () => {
-    console.log("export picture")
+    console.log("export picture");
     BindingService.get().binding.exportPicture(
-        RoomService.get().getRoom(this.room.id)
+      RoomService.get().getRoom(this.room.id)
     );
-  }
+  };
 
   render() {
     const hiddenStyle = {};
