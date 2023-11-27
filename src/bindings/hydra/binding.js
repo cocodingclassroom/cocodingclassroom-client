@@ -62,7 +62,8 @@ export class binding extends BindingBase {
         return [
             new JSLoadingConfig(
                 '<script type="text/javascript" src="https://unpkg.com/hydra-synth"></script>',
-                'Hydra'
+                'Hydra',
+                './bindings/hydra/hydra-synth.js'
             ),
         ]
     }
