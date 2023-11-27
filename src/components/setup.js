@@ -87,7 +87,10 @@ export class Setup extends LitElement {
                         <label for="password">Password</label>
                     </div>
                     <hr class="hr2" />
-                    <div class="p5" style="display: flex; flex-direction: column; justify-content: center">
+                    <div
+                        class="p5 nohover"
+                        style="display: flex; flex-direction: column; justify-content: center;padding-left:0;"
+                    >
                         <input
                             class="p5 round submit"
                             @click="${() => this.onSubmit()}"
@@ -181,11 +184,17 @@ export class Setup extends LitElement {
                 background: rgba(0, 0, 0, 0.75);
                 border: 1px solid rgba(255, 255, 255, 0.5);
             }
+
             .container-col div {
                 padding: 10px 0 10px 10px;
             }
+
             .container-col div:hover {
                 background: rgba(255, 255, 255, 0.15);
+            }
+
+            .nohover {
+                background: none !important;
             }
 
             .container-row {
@@ -216,7 +225,11 @@ export class Setup extends LitElement {
             .submit {
                 font-family: Roboto Mono, sans-serif;
                 background-color: white;
-                text-transform: uppercase;
+                font-size: 1.2em;
+                cursor: pointer;
+            }
+            .submit:hover {
+                background-color: #eee;
             }
 
             hr {
