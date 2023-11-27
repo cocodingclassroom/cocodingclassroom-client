@@ -6,8 +6,7 @@ import { iconSvg } from '../icons/icons'
 import { UserService } from '../../services/user-service'
 import { RoomService } from '../../services/room-service'
 import { safeRegister } from '../../util/util'
-import { NotifyService, Notification, NotificationType } from '../../services/notify-service'
-import { sendBroadCastMessage, showBroadcastViewModal } from '../modals/broad-cast-modal'
+import { sendBroadCastMessage } from '../modals/broad-cast-modal'
 import { forceSplitView } from '../modals/split-view-modal'
 import { showAbout } from '../modals/about-modal'
 
@@ -22,12 +21,6 @@ export class TeacherMenuView extends LitElement {
         initDataTips(this.renderRoot)
         UserService.get().localUser.addListener(() => {
             initDataTips(this.renderRoot)
-        })
-        NotifyService.get().addListener((notification) => {
-            if (notification.type !== NotificationType.BROADCAST) return
-            if (!Notification.isSentByMe(notification)) {
-                showBroadcastViewModal(notification.message)
-            }
         })
     }
 

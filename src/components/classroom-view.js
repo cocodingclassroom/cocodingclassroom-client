@@ -8,6 +8,8 @@ import { getSplitScreenWidthAndAlignStyle, safeRegister } from '../util/util'
 import { clearSelection } from '../util/clear-selection'
 import { murmurhash3_32_gc, toNumbers } from '../util/cc-auth'
 import { SyncService } from '../services/sync-service'
+import { Notification, NotificationType, NotifyService } from '../services/notify-service'
+import { showBroadcastViewModal } from './modals/broad-cast-modal'
 
 export class ClassRoomView extends LitElement {
     static MIN_WIDTH = 6 //percent of screen width
@@ -51,6 +53,13 @@ export class ClassRoomView extends LitElement {
 
             this.authed = true
             this.requestUpdate()
+
+            NotifyService.get().addListener((notification) => {
+                if (notification.type !== NotificationType.BROADCAST) return
+                if (!Notification.isSentByMe(notification)) {
+                    showBroadcastViewModal(notification.message)
+                }
+            })
         })
     }
 
