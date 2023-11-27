@@ -99,7 +99,7 @@ export class Setup extends LitElement {
                 </div>
             </div>
             <slot></slot>
-            <iframe id="setup-meta" src="./src/assets/html/setup-meta.html"></iframe>
+            <iframe id="setup-meta" src="./src/resources/html/setup-meta.html"></iframe>
         `
     }
 

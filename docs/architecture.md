@@ -29,7 +29,7 @@ Only relevant libraries are listed here. The full list of dependencies can be fo
 
 The code is divided into the following core modules:
 
--   **./src/assets/** – non-code assets like images, movies, etc.
+-   **./src/resources/** – non-code assets like images, movies, etc.
 -   **./src/bindings/** – bindings for different backends (p5js, hydra, etc.)
 -   **./src/components/** – view-related components, everything that is rendered in the browser should go into this folder
 -   **./src/models/** – data models that are use locally or synchronised through Yjs.
