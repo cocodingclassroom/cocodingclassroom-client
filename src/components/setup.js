@@ -23,7 +23,7 @@ export class Setup extends LitElement {
             <div class="container-row">
                 <div class="container-col">
                     <h3 class="p5">SETUP</h3>
-                    <hr />
+                    <hr class="hr2" />
                     <div class="p5 tooltip" data-tip="Backend technology to be used for class." data-tip-left>
                         <select class="round submit" name="binding" @change="${this.onChangeBinding}">
                             ${bindings.map(
@@ -86,7 +86,7 @@ export class Setup extends LitElement {
                         />
                         <label for="password">Password</label>
                     </div>
-                    <hr />
+                    <hr class="hr2" />
                     <div class="p5" style="display: flex; flex-direction: column; justify-content: center">
                         <input
                             class="p5 round submit"
@@ -176,6 +176,10 @@ export class Setup extends LitElement {
             .container-col {
                 display: flex;
                 flex-direction: column;
+                margin-top: 25px;
+                padding: 15px;
+                background: rgba(0, 0, 0, 0.75);
+                border: 1px solid rgba(255, 255, 255, 0.5);
             }
 
             .container-row {
@@ -193,7 +197,8 @@ export class Setup extends LitElement {
             }
 
             h3 {
-                margin-bottom: 0;
+                font-size: 1.5em;
+                margin: 0;
             }
 
             .round {
@@ -209,10 +214,13 @@ export class Setup extends LitElement {
             }
 
             hr {
-                height: 2px;
-                background-color: white;
+                height: 1px;
+                background: rgba(255, 255, 255, 0.75);
                 border: none;
                 width: 400px;
+            }
+            .hr2 {
+                height: 2px;
             }
 
             input,
