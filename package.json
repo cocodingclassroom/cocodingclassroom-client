@@ -10,32 +10,32 @@
         "start": "webpack serve --open"
     },
     "dependencies": {
-        "@vaadin/router": "^1.7.4",
-        "ace-builds": "^1.15.1",
+        "@vaadin/router": "^1.7.5",
+        "ace-builds": "^1.31.2",
         "client-zip": "^2.4.4",
-        "html-webpack-plugin": "^5.5.0",
-        "js-beautify": "^1.14.7",
-        "lib0": "^0.2.69",
-        "lit": "^2.6.1",
-        "lit-html": "^2.7.2",
+        "html-webpack-plugin": "^5.5.3",
+        "js-beautify": "^1.14.11",
+        "lib0": "^0.2.88",
+        "lit": "^3.1.0",
+        "lit-html": "^3.1.0",
         "lit-icon": "^1.0.1",
         "loop-breaker": "^0.1.1",
         "showdown": "^2.1.0",
-        "y-protocols": "^1.0.5",
-        "y-websocket": "^1.4.5",
-        "yjs": "^13.5.46"
+        "y-protocols": "^1.0.6",
+        "y-websocket": "^1.5.0",
+        "yjs": "^13.6.10"
     },
     "devDependencies": {
         "copy-webpack-plugin": "^11.0.0",
-        "css-loader": "^6.7.3",
+        "css-loader": "^6.8.1",
         "file-loader": "^6.2.0",
-        "prettier": "2.8.4",
+        "prettier": "3.1.0",
         "process": "^0.11.10",
         "raw-loader": "^4.0.2",
-        "style-loader": "^3.3.2",
+        "style-loader": "^3.3.3",
         "svg-inline-loader": "^0.8.2",
-        "webpack": "^5.88.1",
-        "webpack-cli": "^5.0.1",
-        "webpack-dev-server": "^4.11.1"
+        "webpack": "^5.89.0",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^4.15.1"
     }
 }
