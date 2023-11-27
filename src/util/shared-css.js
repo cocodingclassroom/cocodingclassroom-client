@@ -159,7 +159,7 @@ export const toolTipStyle = () => css`
         position: fixed;
         z-index: 70;
         font-size: 12px;
-        line-height: 12px;
+        line-height: 1.2em;
         padding: 5px;
         background: ${menuBackground1()};
         color: ${menuForegroundLight()};
