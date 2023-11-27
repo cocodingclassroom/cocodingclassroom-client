@@ -359,8 +359,8 @@ export class EditorView extends LitElement {
       ),
       ...Shortcut.fromPattern(
         "export picture",
-        ["shift+ctrl+s"],
-        ["shift+ctrl+s"],
+        ["ctrl+shift+s"],
+        ["ctrl+shift+s"],
         () => {
           this.#exportPicture();
         },

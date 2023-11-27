@@ -64,7 +64,7 @@ export class ShortcutExtension {
     );
   };
 
-  // open developer console and call: window.ShortcutExtension.shortcutsTable() 
+  // open developer console and call: window.ShortcutExtension.shortcutsTable()
   shortcutsTable = () => {
     var prettyPrint = []
     prettyPrint.push("| Name | Windows | MacOs |")
