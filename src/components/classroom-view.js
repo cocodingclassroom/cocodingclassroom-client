@@ -33,6 +33,16 @@ export class ClassRoomView extends LitElement {
             this._setMembers()
             ClassroomService.get().classroom.addListener(this.localUpdate)
 
+            let teacher = UserService.get().getFirstTeacher()
+
+            teacher.addListener((changes) => {
+                changes.forEach((change) => {
+                    if (change.keysChanged.has('selectedRoomRight')) {
+                        this.requestUpdate()
+                    }
+                })
+            })
+
             UserService.get().localUser.addListener((changes) => {
                 this.#localUserUpdate(changes)
             })
@@ -50,10 +60,10 @@ export class ClassRoomView extends LitElement {
                 this.rightRoom = undefined
                 this.requestUpdate()
                 /*
-         Christoph 23.11.2023:
-         Set the rightRoom to undefined to trigger a complete rebuild of the editor on the right side
-         this is need to ensure proper setup
-         */
+Christoph 23.11.2023:
+Set the rightRoom to undefined to trigger a complete rebuild of the editor on the right side
+this is need to ensure proper setup
+*/
                 setTimeout(() => {
                     this.rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight)
                     this.requestUpdate()
