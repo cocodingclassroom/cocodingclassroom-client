@@ -181,6 +181,12 @@ export class Setup extends LitElement {
                 background: rgba(0, 0, 0, 0.75);
                 border: 1px solid rgba(255, 255, 255, 0.5);
             }
+            .container-col div {
+                padding: 10px 0 10px 10px;
+            }
+            .container-col div:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
 
             .container-row {
                 display: flex;
@@ -198,7 +204,7 @@ export class Setup extends LitElement {
 
             h3 {
                 font-size: 1.5em;
-                margin: 0;
+                margin: 0 0 0 5px;
             }
 
             .round {
@@ -218,6 +224,7 @@ export class Setup extends LitElement {
                 background: rgba(255, 255, 255, 0.75);
                 border: none;
                 width: 400px;
+                margin: 0;
             }
             .hr2 {
                 height: 2px;
