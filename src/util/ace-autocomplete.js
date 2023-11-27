@@ -1,9 +1,11 @@
 // add to editor.setOptions({})
 // for parsing autocomplete:
-export const loadAutoComplete = (langTools, acOBJ) => {
+export const loadAutoComplete = (langTools, binding) => {
   // propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
   let acList = [];
   let curFunction = "";
+  let acOBJ = binding.getAutoCompleteJson();
+  let bindingName = binding.bindingName;
 
   // cycle through auto complete list
   acOBJ.code.forEach(function (ac) {
@@ -42,7 +44,7 @@ export const loadAutoComplete = (langTools, acOBJ) => {
         completions.push({
           caption: wl.cap,
           snippet: wl.snip,
-          meta: "hydra",
+          meta: bindingName,
           score: 1,
         });
       }

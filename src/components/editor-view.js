@@ -123,7 +123,7 @@ export class EditorView extends LitElement {
     this.editor.renderer.attachToShadowRoot();
     this.editor.setTheme("ace/theme/cobalt");
     let activeBinding = BindingService.get().binding;
-    loadAutoComplete(langTools, activeBinding.getAutoCompleteJson());
+    loadAutoComplete(langTools, activeBinding);
     this.editor.getSession().setMode("ace/mode/javascript");
     this.editor.session.setMode("ace/mode/javascript");
     let classroom = ClassroomService.get().classroom;
@@ -140,7 +140,6 @@ export class EditorView extends LitElement {
       fontSize: UserService.get().localUser.getEditorFontSize(),
       enableBasicAutocompletion: true,
       enableSnippets: false,
-      enableLiveAutocompletion: true,
     });
     this.editor.container.style.background = "rgba(1,1,1,0)";
     this.editor.commands.removeCommands([
