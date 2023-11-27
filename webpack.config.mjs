@@ -27,10 +27,10 @@ export default (env, arg) => {
             }),
             new CopyPlugin({
                 patterns: [
-                    './src/assets/resource/*.svg',
-                    './src/assets/fonts/*',
-                    './src/assets/html/*',
-                    './src/assets/css/global.css',
+                    './src/resources/icons/*.svg',
+                    './src/resources/fonts/*',
+                    './src/resources/html/*',
+                    './src/resources/css/global.css',
                     { from: './src/bindings/', to: 'bindings' },
                 ],
             }),
