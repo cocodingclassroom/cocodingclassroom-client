@@ -210,7 +210,11 @@ export class EditorView extends LitElement {
         let localUser = UserService.get().localUser
         let room = RoomService.get().getRoom(this.roomId)
 
-        if (ClassroomService.get().classroom.roomLocks) {
+        debugLog('Teacher ' + localUser.isTeacher())
+        debugLog('Teacher Room ' + room.isTeacherRoom())
+        debugLog('roomlocks ' + ClassroomService.get().classroom.roomLocks)
+
+        if (ClassroomService.get().classroom.roomLocks && room.isClaimed()) {
             if (room.isTeacherRoom()) {
                 if (localUser.isTeacher()) {
                     this.#allowWritingInEditor()
@@ -247,10 +251,12 @@ export class EditorView extends LitElement {
     }
 
     #allowWritingInEditor = () => {
+        debugLog('can write')
         this.editor.setReadOnly(false)
     }
 
     #dontAllowWritingInEditor = () => {
+        debugLog('cannot write')
         this.editor.setReadOnly(true)
     }
 
