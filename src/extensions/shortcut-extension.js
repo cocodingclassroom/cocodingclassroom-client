@@ -29,6 +29,8 @@ export class ShortcutExtension {
     if (ShortcutExtension._instance === undefined) {
       ShortcutExtension._instance = new ShortcutExtension();
       ShortcutExtension._instance.register();
+      // register on window to access it from console.
+      window.ShortcutExtension = ShortcutExtension._instance;
     }
     return ShortcutExtension._instance;
   }
@@ -61,6 +63,18 @@ export class ShortcutExtension {
       this._shortcuts.splice(this._shortcuts.indexOf(shortcut), 1)
     );
   };
+
+  // open developer console and call: window.ShortcutExtension.shortcutsTable()
+  shortcutsTable = () => {
+    var prettyPrint = []
+    prettyPrint.push("| Name | Windows | MacOs |")
+    this._shortcuts.forEach(shortcut => {
+        prettyPrint.push(`| ${shortcut.shortcutName} | ${shortcut.keyBindingsWin} | ${shortcut.keyBindingsMac} |`)        
+    });
+    // remove duplicates
+    prettyPrint = prettyPrint.filter((item, index) => prettyPrint.indexOf(item) === index);
+    return prettyPrint.join("\n");
+  }
 
   keyLifted = (event) => {
     if (!this._pressedKeys.delete(event.key.toLowerCase())) {
@@ -145,6 +159,8 @@ export class Shortcut {
   keyBind;
   command;
   preValidation;
+  keyBindingsWin; // documentation only
+  keyBindingsMac; // documentation only
 
   constructor(
     shortcutName,
@@ -154,7 +170,10 @@ export class Shortcut {
     shiftKey,
     keyBind,
     command,
-    preValidation = undefined
+    preValidation = undefined,
+    keyBindingsWin,
+    keyBindingsMac
+
   ) {
     this.shortcutName = shortcutName;
     this.keyBind = keyBind;
@@ -164,6 +183,8 @@ export class Shortcut {
     this.shiftKey = shiftKey;
     this.command = command;
     this.preValidation = preValidation;
+    this.keyBindingsWin = keyBindingsWin;
+    this.keyBindingsMac = keyBindingsMac;
   }
 
   /**
@@ -205,7 +226,9 @@ export class Shortcut {
         short.shiftKey,
         short.keyBind,
         command,
-        preValidation
+        preValidation,
+        keyBindingsWin,
+        keyBindingsMac
       );
     });
     return ret;
