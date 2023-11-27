@@ -1,8 +1,8 @@
 @font-face {
-    font-family: "Roboto Mono";
-    src: url("./src/assets/fonts/robotomono-regular-webfont.woff2") format('woff2'),
-         url("./src/assets/fonts/robotomono-regular-webfont.woff") format('woff'),
-         url("./src/assets/fonts/RobotoMono-Regular.ttf") format('truetype');
+    font-family: 'Roboto Mono';
+    src: url('./src/assets/fonts/robotomono-regular-webfont.woff2') format('woff2'),
+        url('./src/assets/fonts/robotomono-regular-webfont.woff') format('woff'),
+        url('./src/assets/fonts/RobotoMono-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
 }
@@ -10,10 +10,10 @@
 /* Roboto light */
 
 @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     src: url('./src/assets/fonts/robotomono-light-webfont.woff2') format('woff2'),
-         url('./src/assets/fonts/robotomono-light-webfont.woff') format('woff'),
-         url('./src/assets/fonts/RobotoMono-Light.ttf') format('truetype');
+        url('./src/assets/fonts/robotomono-light-webfont.woff') format('woff'),
+        url('./src/assets/fonts/RobotoMono-Light.ttf') format('truetype');
     font-weight: 200;
     font-style: normal;
 }
@@ -23,16 +23,21 @@
     color: white;
 }
 
-input, textarea, select, option { font-family:inherit; }
+input,
+textarea,
+select,
+option {
+    font-family: inherit;
+}
 
 /** global css for config page */
 body {
-  background-color: #000;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    background-color: #000;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 * {
-    outline:none;
+    outline: none;
 }

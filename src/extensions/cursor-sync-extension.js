@@ -1,139 +1,138 @@
-import { UserService } from "../services/user-service";
-import { Range } from "ace-builds";
-import { isColorLight, newShade, numberOfTabs } from "../util/util";
-import { menuForegroundDark, menuForegroundLight } from "../util/shared-css";
-import { ClassroomService } from "../services/classroom-service";
+import { UserService } from '../services/user-service'
+import { Range } from 'ace-builds'
+import { isColorLight, newShade, numberOfTabs } from '../util/util'
+import { menuForegroundDark, menuForegroundLight } from '../util/shared-css'
+import { ClassroomService } from '../services/classroom-service'
 
 export class CursorSyncExtension {
-  editor;
-  room;
-  view;
+    editor
+    room
+    view
 
-  activeSelectionMarkerIds = [];
+    activeSelectionMarkerIds = []
 
-  constructor(editor, room, view) {
-    this.editor = editor;
-    this.room = room;
-    this.view = view;
-    this.#setup();
-  }
-
-  #setup() {
-    UserService.get()
-      .getAllUsers()
-      .forEach((user) => {
-        user.addListener(() => {
-          this.#rerender();
-        });
-      });
-    ClassroomService.get().classroom.addListener(() => {
-      this.#rerender();
-    });
-    this.editor.session.selection.on("changeSelection", () => {
-      this.#updateSelection();
-      this.#rerender();
-    });
-    this.editor.session.on("changeScrollTop", () => {
-      this.#rerender();
-    });
-    this.editor.commands.on("afterExec", (data) => {
-      if (data.command.name === "insertstring") {
-        this.#updateSelection();
-        this.#rerender();
-      }
-    });
-    this.room.addListener(() => {
-      this.#rerender();
-    });
-  }
-
-  #rerender() {
-    this.#clearSelections();
-    this.#renderSelectionsInEditor();
-    this.#removeAllCursorsAndFlags();
-    this.#renderUserCursorsAndFlags();
-  }
-
-  #updateSelection() {
-    let user = UserService.get().localUser;
-    let selection = this.editor.getSelectionRange();
-    user.activeRoom = this.room.id;
-    user.selection = JSON.parse(JSON.stringify(selection)); // to simple object so y-js can easily sync it.
-  }
-
-  #clearSelections() {
-    this.activeSelectionMarkerIds.forEach((id) => {
-      this.editor.session.removeMarker(id);
-    });
-    this.activeSelectionMarkerIds = [];
-  }
-
-  #renderSelectionsInEditor() {
-    UserService.get().otherUsers.forEach((user) => {
-      if (!this.#shouldDrawThisUsersSelection(user)) return;
-      this.#createUserSelectionStyleIfNotExistingYet(user);
-      let id = this.editor.session.addMarker(
-        new Range(
-          user.selection.start.row,
-          user.selection.start.column,
-          user.selection.end.row,
-          user.selection.end.column
-        ),
-        "selection-" + user.id,
-        "text",
-        true
-      );
-      this.activeSelectionMarkerIds.push(id);
-    });
-  }
-
-  #shouldDrawThisUsersSelection(user) {
-    if (user.activeRoom !== this.room.id) return false;
-    if (this.room.isTeacherRoom()) {
-      if (user.isStudent()) return false;
+    constructor(editor, room, view) {
+        this.editor = editor
+        this.room = room
+        this.view = view
+        this.#setup()
     }
-    if (ClassroomService.get().classroom.roomLocks) {
-      if (user.isStudent()) {
-        if (this.room.isClaimed()) {
-          if (!this.room.isWriter(user.id)) {
-            return false;
-          }
+
+    #setup() {
+        UserService.get()
+            .getAllUsers()
+            .forEach((user) => {
+                user.addListener(() => {
+                    this.#rerender()
+                })
+            })
+        ClassroomService.get().classroom.addListener(() => {
+            this.#rerender()
+        })
+        this.editor.session.selection.on('changeSelection', () => {
+            this.#updateSelection()
+            this.#rerender()
+        })
+        this.editor.session.on('changeScrollTop', () => {
+            this.#rerender()
+        })
+        this.editor.commands.on('afterExec', (data) => {
+            if (data.command.name === 'insertstring') {
+                this.#updateSelection()
+                this.#rerender()
+            }
+        })
+        this.room.addListener(() => {
+            this.#rerender()
+        })
+    }
+
+    #rerender() {
+        this.#clearSelections()
+        this.#renderSelectionsInEditor()
+        this.#removeAllCursorsAndFlags()
+        this.#renderUserCursorsAndFlags()
+    }
+
+    #updateSelection() {
+        let user = UserService.get().localUser
+        let selection = this.editor.getSelectionRange()
+        user.activeRoom = this.room.id
+        user.selection = JSON.parse(JSON.stringify(selection)) // to simple object so y-js can easily sync it.
+    }
+
+    #clearSelections() {
+        this.activeSelectionMarkerIds.forEach((id) => {
+            this.editor.session.removeMarker(id)
+        })
+        this.activeSelectionMarkerIds = []
+    }
+
+    #renderSelectionsInEditor() {
+        UserService.get().otherUsers.forEach((user) => {
+            if (!this.#shouldDrawThisUsersSelection(user)) return
+            this.#createUserSelectionStyleIfNotExistingYet(user)
+            let id = this.editor.session.addMarker(
+                new Range(
+                    user.selection.start.row,
+                    user.selection.start.column,
+                    user.selection.end.row,
+                    user.selection.end.column
+                ),
+                'selection-' + user.id,
+                'text',
+                true
+            )
+            this.activeSelectionMarkerIds.push(id)
+        })
+    }
+
+    #shouldDrawThisUsersSelection(user) {
+        if (user.activeRoom !== this.room.id) return false
+        if (this.room.isTeacherRoom()) {
+            if (user.isStudent()) return false
         }
-      }
+        if (ClassroomService.get().classroom.roomLocks) {
+            if (user.isStudent()) {
+                if (this.room.isClaimed()) {
+                    if (!this.room.isWriter(user.id)) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
     }
-    return true;
-  }
 
-  #removeAllCursorsAndFlags() {
-    this.view.renderRoot.querySelectorAll(".synced_flag").forEach((elm) => {
-      elm.remove();
-    });
-    this.view.renderRoot.querySelectorAll(".synced_cursor").forEach((elm) => {
-      elm.remove();
-    });
-  }
+    #removeAllCursorsAndFlags() {
+        this.view.renderRoot.querySelectorAll('.synced_flag').forEach((elm) => {
+            elm.remove()
+        })
+        this.view.renderRoot.querySelectorAll('.synced_cursor').forEach((elm) => {
+            elm.remove()
+        })
+    }
 
-  #renderUserCursorsAndFlags() {
-    UserService.get().otherUsers.forEach((user) => {
-      if (!this.#shouldDrawThisUsersSelection(user)) return;
-      this.#renderFlag(user);
-      this.#renderCursor(user);
-    });
-  }
+    #renderUserCursorsAndFlags() {
+        UserService.get().otherUsers.forEach((user) => {
+            if (!this.#shouldDrawThisUsersSelection(user)) return
+            this.#renderFlag(user)
+            this.#renderCursor(user)
+        })
+    }
 
-  #renderCursor(user) {
-    let scroll = this.editor.renderer.session.getScrollTop();
-    let leftOffsetLineNumbers = this.#getWidthOfLineNumbers();
-    let height = this.editor.renderer.lineHeight;
-    let width = this.editor.renderer.characterWidth;
-    let left =
-      this.#adjustColumnByNumberOfTabs(user) * width + leftOffsetLineNumbers;
-    let top = user.selection.end.row * height - scroll;
+    #renderCursor(user) {
+        let scroll = this.editor.renderer.session.getScrollTop()
+        let leftOffsetLineNumbers = this.#getWidthOfLineNumbers()
+        let height = this.editor.renderer.lineHeight
+        let width = this.editor.renderer.characterWidth
+        let left = this.#adjustColumnByNumberOfTabs(user) * width + leftOffsetLineNumbers
+        let top = user.selection.end.row * height - scroll
 
-    let cursor = document.createElement("div");
-    cursor.id = "cursor_" + user.id;
-    cursor.className = "synced_cursor";
-    cursor.style = `
+        let cursor = document.createElement('div')
+        cursor.id = 'cursor_' + user.id
+        cursor.className = 'synced_cursor'
+        cursor.style = `
       	position: absolute;
 							background: ${user.color};
 							height: ${height}px;
@@ -142,23 +141,22 @@ export class CursorSyncExtension {
 							left: ${left + width * 0.3}px;
 							z-index: 48;
 							cursor: help;
-    `;
-    this.view.renderRoot.appendChild(cursor);
-  }
+    `
+        this.view.renderRoot.appendChild(cursor)
+    }
 
-  #renderFlag(user) {
-    let scroll = this.editor.renderer.session.getScrollTop();
-    let leftOffsetLineNumbers = this.#getWidthOfLineNumbers();
-    let height = this.editor.renderer.lineHeight;
-    let width = this.editor.renderer.characterWidth;
-    let left =
-      this.#adjustColumnByNumberOfTabs(user) * width + leftOffsetLineNumbers;
-    let top = (user.selection.end.row - 1) * height - scroll;
+    #renderFlag(user) {
+        let scroll = this.editor.renderer.session.getScrollTop()
+        let leftOffsetLineNumbers = this.#getWidthOfLineNumbers()
+        let height = this.editor.renderer.lineHeight
+        let width = this.editor.renderer.characterWidth
+        let left = this.#adjustColumnByNumberOfTabs(user) * width + leftOffsetLineNumbers
+        let top = (user.selection.end.row - 1) * height - scroll
 
-    let flag = document.createElement("div");
-    flag.id = "flag_" + user.id;
-    flag.className = "synced_flag";
-    flag.style = `
+        let flag = document.createElement('div')
+        flag.id = 'flag_' + user.id
+        flag.className = 'synced_flag'
+        flag.style = `
 							position: absolute;
 							background: ${user.color};
 							display: inline-block;
@@ -167,53 +165,47 @@ export class CursorSyncExtension {
 							z-index: 49;
 							color: ${isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight()};
 							cursor: help;
-						`;
-    flag.innerHTML =
-      '<div class="cursor-label" style="white-space: nowrap;">' +
-      user.name +
-      "</div>";
+						`
+        flag.innerHTML = '<div class="cursor-label" style="white-space: nowrap;">' + user.name + '</div>'
 
-    this.view.renderRoot.appendChild(flag);
-  }
-
-  #adjustColumnByNumberOfTabs(user) {
-    let line = this.editor.session.getLine(user.selection.end.row);
-    let tabSize = this.editor.session.getOption("tabSize");
-    let tabs = numberOfTabs(line);
-    let extraColumn = tabs * (tabSize - 1);
-    return user.selection.end.column + extraColumn;
-  }
-
-  #getWidthOfLineNumbers() {
-    let lineNumbers = this.editor.getOption("showLineNumbers");
-    let gutter =
-      this.editor.container.getElementsByClassName("ace_gutter-layer");
-    let leftOffsetLineNumbers = 0;
-    if (lineNumbers && gutter) {
-      let gutterElement = gutter[0];
-      let gutterWidth = gutterElement.style.width;
-      let removedPx = gutterWidth.substring(0, gutterWidth.length - 2);
-      leftOffsetLineNumbers = parseInt(removedPx);
+        this.view.renderRoot.appendChild(flag)
     }
-    return leftOffsetLineNumbers;
-  }
 
-  #createUserSelectionStyleIfNotExistingYet(user) {
-    let customStyle = this.view.renderRoot.getElementById(
-      "selection-style" + user.id
-    );
-    if (customStyle) {
-      customStyle.innerHTML =
-        ".selection-" +
-        user.id +
-        " { position: absolute; z-index: 20; opacity: 0.3; background: " +
-        newShade(user.color, 50) +
-        "; }";
-    } else {
-      let style = document.createElement("style");
-      style.type = "text/css";
-      style.id = "selection-style" + user.id;
-      this.view.renderRoot.appendChild(style);
+    #adjustColumnByNumberOfTabs(user) {
+        let line = this.editor.session.getLine(user.selection.end.row)
+        let tabSize = this.editor.session.getOption('tabSize')
+        let tabs = numberOfTabs(line)
+        let extraColumn = tabs * (tabSize - 1)
+        return user.selection.end.column + extraColumn
     }
-  }
+
+    #getWidthOfLineNumbers() {
+        let lineNumbers = this.editor.getOption('showLineNumbers')
+        let gutter = this.editor.container.getElementsByClassName('ace_gutter-layer')
+        let leftOffsetLineNumbers = 0
+        if (lineNumbers && gutter) {
+            let gutterElement = gutter[0]
+            let gutterWidth = gutterElement.style.width
+            let removedPx = gutterWidth.substring(0, gutterWidth.length - 2)
+            leftOffsetLineNumbers = parseInt(removedPx)
+        }
+        return leftOffsetLineNumbers
+    }
+
+    #createUserSelectionStyleIfNotExistingYet(user) {
+        let customStyle = this.view.renderRoot.getElementById('selection-style' + user.id)
+        if (customStyle) {
+            customStyle.innerHTML =
+                '.selection-' +
+                user.id +
+                ' { position: absolute; z-index: 20; opacity: 0.3; background: ' +
+                newShade(user.color, 50) +
+                '; }'
+        } else {
+            let style = document.createElement('style')
+            style.type = 'text/css'
+            style.id = 'selection-style' + user.id
+            this.view.renderRoot.appendChild(style)
+        }
+    }
 }

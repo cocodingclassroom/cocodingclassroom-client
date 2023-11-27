@@ -1,23 +1,23 @@
-import { YSyncModel } from "/src/models/y-sync-model.js";
-import { Text as YText } from "yjs";
-import { BindingService } from "../services/binding-service";
-import { UserService } from "../services/user-service";
-import { html } from "lit";
+import { YSyncModel } from '/src/models/y-sync-model.js'
+import { Text as YText } from 'yjs'
+import { BindingService } from '../services/binding-service'
+import { UserService } from '../services/user-service'
+import { html } from 'lit'
 
 export class Room extends YSyncModel {
-  id;
-  roomName;
-  roomType;
-  codeContent;
-  messages;
-  galleryMessages;
-  ownerId;
-  writersIds;
-  l_changedPositions;
-  l_editorForRoom;
-  l_iframeForRoom;
-  l_filename;
-  l_iframeMeta = `
+    id
+    roomName
+    roomType
+    codeContent
+    messages
+    galleryMessages
+    ownerId
+    writersIds
+    l_changedPositions
+    l_editorForRoom
+    l_iframeForRoom
+    l_filename
+    l_iframeMeta = `
 		// catch mouse focus
 		// document.addEventListener("mouseup", function(){
 		// 	parent.focus()
@@ -53,108 +53,105 @@ export class Room extends YSyncModel {
 		console.log = function(m){
 			ccSelf.consoleMessage(m)
 		}
-	`;
+	`
 
-  constructor(id) {
-    super(`room_${id}`);
-    this.id = id;
-    this.messages = [];
-    this.galleryMessages = [];
-    this.writersIds = [];
-    this.setup();
-    this.roomName = this.roomName ?? "Room";
-    if (this.codeContent === null || this.codeContent === undefined) {
-      let activeBinding = BindingService.get().binding;
-      this.codeContent = new YText(activeBinding.getCodeTemplate() ?? "");
+    constructor(id) {
+        super(`room_${id}`)
+        this.id = id
+        this.messages = []
+        this.galleryMessages = []
+        this.writersIds = []
+        this.setup()
+        this.roomName = this.roomName ?? 'Room'
+        if (this.codeContent === null || this.codeContent === undefined) {
+            let activeBinding = BindingService.get().binding
+            this.codeContent = new YText(activeBinding.getCodeTemplate() ?? '')
+        }
+        this.l_changedPositions = []
     }
-    this.l_changedPositions = [];
-  }
 
-  isTeacherRoom = () => {
-    return this.roomType === RoomType.TEACHER;
-  };
-
-  isStudentRoom = () => {
-    return this.roomType === RoomType.STUDENT;
-  };
-
-  isLobby = () => {
-    return this.roomType === RoomType.LOBBY;
-  };
-
-  isStudentRoomOrLobby = () => {
-    return this.isStudentRoom() || this.isLobby();
-  };
-
-  clearAllAuthorizationOnRoom = () => {
-    this.writersIds.delete(0, this.writersIds.length);
-    this.ownerId = null;
-  };
-
-  claimRoomToLocalUser = () => {
-    this.ownerId = UserService.get().localUser.id;
-  };
-
-  removeClaim = () => {
-    this.ownerId = null;
-  };
-
-  isUnclaimed = () => {
-    return this.ownerId === null || this.ownerId === undefined;
-  };
-
-  isClaimed = () => {
-    return !this.isUnclaimed();
-  };
-
-  isOwnedByLocalUser = () => {
-    return this.ownerId === UserService.get().localUser.id;
-  };
-
-  isOwnedBy = (userId) => {
-    return this.ownerId === userId;
-  };
-
-  getOwnerAsUser = () => {
-    return UserService.get()
-      .getAllUsers()
-      .find((user) => user.id === this.ownerId);
-  };
-
-  isWriter = (userId) => {
-    return (
-      this.writersIds.toArray().includes(userId) || this.ownerId === userId
-    );
-  };
-
-  giveAccess = (userId) => {
-    this.writersIds.push([userId]);
-  };
-
-  removeAccess = (userId) => {
-    const index = this.writersIds.toArray().indexOf(userId);
-    if (index !== -1) {
-      this.writersIds.delete(index);
+    isTeacherRoom = () => {
+        return this.roomType === RoomType.TEACHER
     }
-  };
 
-  hasUsers = () => {
-    return (
-      UserService.get()
-        .getAllUsers()
-        .filter((user) => user.isRoomLeft(this.id) || user.isRoomRight(this.id))
-        .length > 0
-    );
-  };
+    isStudentRoom = () => {
+        return this.roomType === RoomType.STUDENT
+    }
 
-  getRoomNameDisplay() {
-    if (this.isLobby()) return html`${this.roomName}`;
-    return html` ${this.id}_${this.roomName}`;
-  }
+    isLobby = () => {
+        return this.roomType === RoomType.LOBBY
+    }
+
+    isStudentRoomOrLobby = () => {
+        return this.isStudentRoom() || this.isLobby()
+    }
+
+    clearAllAuthorizationOnRoom = () => {
+        this.writersIds.delete(0, this.writersIds.length)
+        this.ownerId = null
+    }
+
+    claimRoomToLocalUser = () => {
+        this.ownerId = UserService.get().localUser.id
+    }
+
+    removeClaim = () => {
+        this.ownerId = null
+    }
+
+    isUnclaimed = () => {
+        return this.ownerId === null || this.ownerId === undefined
+    }
+
+    isClaimed = () => {
+        return !this.isUnclaimed()
+    }
+
+    isOwnedByLocalUser = () => {
+        return this.ownerId === UserService.get().localUser.id
+    }
+
+    isOwnedBy = (userId) => {
+        return this.ownerId === userId
+    }
+
+    getOwnerAsUser = () => {
+        return UserService.get()
+            .getAllUsers()
+            .find((user) => user.id === this.ownerId)
+    }
+
+    isWriter = (userId) => {
+        return this.writersIds.toArray().includes(userId) || this.ownerId === userId
+    }
+
+    giveAccess = (userId) => {
+        this.writersIds.push([userId])
+    }
+
+    removeAccess = (userId) => {
+        const index = this.writersIds.toArray().indexOf(userId)
+        if (index !== -1) {
+            this.writersIds.delete(index)
+        }
+    }
+
+    hasUsers = () => {
+        return (
+            UserService.get()
+                .getAllUsers()
+                .filter((user) => user.isRoomLeft(this.id) || user.isRoomRight(this.id)).length > 0
+        )
+    }
+
+    getRoomNameDisplay() {
+        if (this.isLobby()) return html`${this.roomName}`
+        return html` ${this.id}_${this.roomName}`
+    }
 }
 
 export class RoomType {
-  static STUDENT = 0;
-  static TEACHER = 1;
-  static LOBBY = 2;
+    static STUDENT = 0
+    static TEACHER = 1
+    static LOBBY = 2
 }

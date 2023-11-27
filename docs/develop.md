@@ -2,9 +2,9 @@
 
 ## Table of Contents
 
-* [Howto install Cocoding Classroom](install.md)
-* [Architecture overview](architecture.md)
-* [Howto add another binding](binding.md)
+-   [Howto install Cocoding Classroom](install.md)
+-   [Architecture overview](architecture.md)
+-   [Howto add another binding](binding.md)
 
 ## Develop locally
 
@@ -14,13 +14,13 @@ Clone the client and server repositories locally
 
 2. Install dependencies
 
-```bash 
+```bash
 npm i
 ```
 
 3. Start server
 
-```bash 
+```bash
 npm run start
 ```
 
@@ -28,13 +28,13 @@ npm run start
 
 5. Install dependencies
 
-```bash 
+```bash
 npm i
 ```
 
 6. Start local webpack dev server
 
-```bash 
+```bash
 npm run start
 ```
 

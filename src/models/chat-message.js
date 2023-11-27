@@ -1,16 +1,14 @@
 export class ChatMessage {
+    userid
+    text
 
-  userid;
-  text;
+    constructor(userid, text) {
+        this.userid = userid
+        this.text = text
+    }
 
-  constructor(userid, text) {
-    this.userid = userid;
-    this.text = text;
-  }
-
-
-  static fromJSON = (jsonString) => {
-    let json = JSON.parse(jsonString);
-    return new ChatMessage(json.userid, json.text);
-  };
+    static fromJSON = (jsonString) => {
+        let json = JSON.parse(jsonString)
+        return new ChatMessage(json.userid, json.text)
+    }
 }

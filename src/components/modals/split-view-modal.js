@@ -1,10 +1,10 @@
-import { UserService } from "../../services/user-service";
-import { showModal } from "../../util/modal";
+import { UserService } from '../../services/user-service'
+import { showModal } from '../../util/modal'
 
 export const forceSplitView = () => {
-  let value = UserService.get().localUser.leftSize;
-  showModal(
-    `
+    let value = UserService.get().localUser.leftSize
+    showModal(
+        `
       <div style="display: flex; flex-direction: column; justify-content: space-evenly; height: 200px">
         <div>
           Set split screen
@@ -23,41 +23,41 @@ export const forceSplitView = () => {
       </div>
        <input id="slider" type="range" min="0" max="100" value="50" class="slider">
       </div>`,
-    () => {
-      // leftSize should not be 0 or 100. 
-      value = value == 0 ? 0.5 : value == 100 ? 99.5 : value;
-      UserService.get().otherUsers.forEach((otherUser) => {
-        otherUser.leftSize = value;
-      });
-      UserService.get().localUser.leftSize = value;
-    },
-    () => {
-      let slider = document.getElementById("slider");
-      const leftLabel = document.getElementById("left-split-label");
-      const rightLabel = document.getElementById("right-split-label");
-      slider.addEventListener("input", (e) => {
-        let snap_value = e.target.value;
-        if (e.target.value < 10) {
-          snap_value = 0;
-        }
-        if (e.target.value > 45 && e.target.value < 55) {
-          snap_value= 50;
-        } 
-        if (e.target.value > 90) {
-          snap_value = 100;
-        }
+        () => {
+            // leftSize should not be 0 or 100.
+            value = value == 0 ? 0.5 : value == 100 ? 99.5 : value
+            UserService.get().otherUsers.forEach((otherUser) => {
+                otherUser.leftSize = value
+            })
+            UserService.get().localUser.leftSize = value
+        },
+        () => {
+            let slider = document.getElementById('slider')
+            const leftLabel = document.getElementById('left-split-label')
+            const rightLabel = document.getElementById('right-split-label')
+            slider.addEventListener('input', (e) => {
+                let snap_value = e.target.value
+                if (e.target.value < 10) {
+                    snap_value = 0
+                }
+                if (e.target.value > 45 && e.target.value < 55) {
+                    snap_value = 50
+                }
+                if (e.target.value > 90) {
+                    snap_value = 100
+                }
 
-        slider.value = snap_value;
+                slider.value = snap_value
 
-        leftLabel.innerText = `Teacher (${snap_value}%)`;
-        rightLabel.innerText = `Student (${(100 - snap_value)}%)`;
-        slider.style.backgroundSize = snap_value + '% 100%'
-      });
+                leftLabel.innerText = `Teacher (${snap_value}%)`
+                rightLabel.innerText = `Student (${100 - snap_value}%)`
+                slider.style.backgroundSize = snap_value + '% 100%'
+            })
 
-      slider.addEventListener("change", (e) => {
-        value = e.target.value;
-      });
-    },
-    true
-  );
-};
+            slider.addEventListener('change', (e) => {
+                value = e.target.value
+            })
+        },
+        true
+    )
+}

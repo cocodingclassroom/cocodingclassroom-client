@@ -1,23 +1,23 @@
-import { BindingBase, JSLoadingConfig } from "../binding-base";
-import hydraAutocomplete from "./hydra_autocomplete.json";
+import { BindingBase, JSLoadingConfig } from '../binding-base'
+import hydraAutocomplete from './hydra_autocomplete.json'
 
 export class binding extends BindingBase {
-  bindingName = "Hydra";
+    bindingName = 'Hydra'
 
-  getCodeTemplate = () => {
-    return `noise().out()`;
-  };
+    getCodeTemplate = () => {
+        return `noise().out()`
+    }
 
-  getCustomCode = () => {
-    return `
+    getCustomCode = () => {
+        return `
     function exportImage() {
       hydra.getScreenImage()
     }
-    `;
-  };
+    `
+    }
 
-  getIFrameTemplate = () => {
-    return `
+    getIFrameTemplate = () => {
+        return `
 <head>
 	<title>HYRDA</title>
 	<meta charset="utf-8">
@@ -48,54 +48,57 @@ export class binding extends BindingBase {
 	<script type="text/javascript">
 		let hydra = new Hydra({
 			detectAudio: false,
-			canvas: document.querySelector('canvas')
-		})
+			canvas: document.querySelector("canvas")
+		});
+		setTimeout(() =>  {
+      	setResolution(window.innerWidth, window.innerHeight);
+		}, 10);
 	</script>
 </body>
-`;
-  };
-
-  getScriptTags = () => {
-    return [
-      new JSLoadingConfig(
-        '<script type="text/javascript" src="https://unpkg.com/hydra-synth"></script>',
-        "Hydra"
-      ),
-    ];
-  };
-
-  bindingSpecificSoftCompile = (editor) => {
-    let rawLines = editor.session.getLines(0, editor.session.getLength());
-    let currline = editor.getSelectionRange().start.row;
-    let currCode = editor.session.getLine(currline);
-
-    // search +/- cur pos for new lines
-    let block = currCode;
-    let start = currline;
-    let end = currline;
-
-    let i = currline - 1;
-    while (i >= 0 && rawLines[i].trimStart() !== "") {
-      block = editor.session.getLine(i) + "\n" + block;
-      start--;
-      i--;
+`
     }
 
-    i = currline + 1;
-    while (i < rawLines.length && rawLines[i].trimStart() !== "") {
-      block += "\n" + editor.session.getLine(i);
-      end++;
-      i++;
+    getScriptTags = () => {
+        return [
+            new JSLoadingConfig(
+                '<script type="text/javascript" src="https://unpkg.com/hydra-synth"></script>',
+                'Hydra'
+            ),
+        ]
     }
 
-    return block;
-  };
+    bindingSpecificSoftCompile = (editor) => {
+        let rawLines = editor.session.getLines(0, editor.session.getLength())
+        let currline = editor.getSelectionRange().start.row
+        let currCode = editor.session.getLine(currline)
 
-  exportPicture = (room) => {
-    room.l_iframeForRoom.contentWindow.exportImage();
-  };
+        // search +/- cur pos for new lines
+        let block = currCode
+        let start = currline
+        let end = currline
 
-  getAutoCompleteJson = () => {
-    return hydraAutocomplete;
-  };
+        let i = currline - 1
+        while (i >= 0 && rawLines[i].trimStart() !== '') {
+            block = editor.session.getLine(i) + '\n' + block
+            start--
+            i--
+        }
+
+        i = currline + 1
+        while (i < rawLines.length && rawLines[i].trimStart() !== '') {
+            block += '\n' + editor.session.getLine(i)
+            end++
+            i++
+        }
+
+        return block
+    }
+
+    exportPicture = (room) => {
+        room.l_iframeForRoom.contentWindow.exportImage()
+    }
+
+    getAutoCompleteJson = () => {
+        return hydraAutocomplete
+    }
 }

@@ -1,388 +1,348 @@
-import { css, html, LitElement } from "lit";
-import { UserService } from "../../services/user-service";
-import { isColorLight, safeRegister } from "../../util/util";
-import { styleMap } from "lit/directives/style-map.js";
+import { css, html, LitElement } from 'lit'
+import { UserService } from '../../services/user-service'
+import { isColorLight, safeRegister } from '../../util/util'
+import { styleMap } from 'lit/directives/style-map.js'
 import {
-  basicFlexStyles,
-  cursorTipStyle,
-  pulseStyle,
-  helpRotationStyle,
-  toolTipStyle,
-  menuForegroundLight,
-  menuForegroundDark,
-  menuBackground3,
-  menuBorder1,
-} from "../../util/shared-css";
-import { initDataTips } from "../../util/tooltips";
-import { UserColorRenameModal } from "../user-color-rename-modal";
-import { ClassroomService } from "../../services/classroom-service";
-import { RoomService } from "../../services/room-service";
-import { RoomType } from "../../models/room";
-import { sortUsers } from "../../util/user";
+    basicFlexStyles,
+    cursorTipStyle,
+    pulseStyle,
+    helpRotationStyle,
+    toolTipStyle,
+    menuForegroundLight,
+    menuForegroundDark,
+    menuBackground3,
+    menuBorder1,
+} from '../../util/shared-css'
+import { initDataTips } from '../../util/tooltips'
+import { UserColorRenameModal } from '../user-color-rename-modal'
+import { ClassroomService } from '../../services/classroom-service'
+import { RoomService } from '../../services/room-service'
+import { RoomType } from '../../models/room'
+import { sortUsers } from '../../util/user'
 
 export class UserListView extends LitElement {
-  static properties = {
-    roomId: { type: String },
-  };
-
-  adminIcon = "🔐";
-  writerIcon = "🔏";
-
-  connectedCallback() {
-    this.addListeners();
-    super.connectedCallback();
-  }
-
-  addListeners() {
-    UserService.get()
-      .getAllUsers()
-      .forEach((user) => user.addListener(this.listener));
-    UserService.get().localUser.addListener(this.listener);
-    ClassroomService.get().classroom.addListener(this.classroomListener);
-    RoomService.get().getRoom(this.roomId).addListener(this.listener);
-  }
-
-  disconnectedCallback() {
-    this.removeListeners();
-    super.disconnectedCallback();
-  }
-
-  removeListeners() {
-    UserService.get()
-      .getAllUsers()
-      .forEach((user) => user.removeListener(this.listener));
-    UserService.get().localUser.removeListener(this.listener);
-    ClassroomService.get().classroom.removeListener(this.classroomListener);
-    RoomService.get().getRoom(this.roomId).removeListener(this.listener);
-  }
-
-  firstUpdated(_changedProperties) {
-    super.firstUpdated(_changedProperties);
-    initDataTips(this.renderRoot);
-    const localUser = UserService.get().localUser
-    if (localUser.isNew)
-        UserColorRenameModal(localUser);
-  }
-
-  updated(_changedProperties) {
-    super.updated(_changedProperties);
-    initDataTips(this.renderRoot);
-  }
-
-  listener = () => {
-    this.requestUpdate();
-  };
-
-  classroomListener = () => {
-    this.removeListeners();
-    this.addListeners();
-    this.listener();
-  };
-
-  render = () => {
-    let room = RoomService.get().getRoom(this.roomId);
-    return html`
-      ${UserService.get()
-        .getAllUsers()
-        .filter(
-          (user) =>
-            room.isTeacherRoom() ||
-            ClassroomService.get().isGalleryMode() ||
-            user.isRoomRight(this.roomId) ||
-            user.isRoomLeft(this.roomId)
-        )
-        .sort((a, b) => sortUsers(a, b, this.roomId))
-        .reverse()
-        .map((user) => {
-          let backgroundColorStyle = {
-            backgroundColor: user.color,
-            filter: user.isOnline ? "" : "grayscale(70%)",
-          };
-          return html` <div
-            class="row center border ${user.needsHelp ? "pulse-on" : ""}"
-            style="${styleMap(backgroundColorStyle)}"
-          >
-            ${this.#renderSplitIndicator(user)} ${this.#renderNameAndRoom(user)}
-            ${this.#renderNeedsHelp(user)} ${this.#renderTeacherSymbol(user)}
-            ${this.#renderRoomAccess(user)}
-          </div>`;
-        })}
-    `;
-  };
-
-  #renderNameAndRoom(user) {
-    let textColorStyle = {
-      color: isColorLight(user.color)
-        ? menuForegroundDark()
-        : menuForegroundLight(),
-    };
-
-    if (user.isLocalUser()) {
-      return html` <div
-        class="row user-row grow pointer font"
-        @click="${() => {
-          UserColorRenameModal(user);
-        }}"
-      >
-        <div
-          data-tip="Set Username and Color"
-          data-tip-left
-          style="${styleMap(textColorStyle)}"
-        >
-          ${user.getNameShortened()}
-        </div>
-        ${this.#renderJumpToRoomElement(user)}
-      </div>`;
-    } else {
-      let localUser = UserService.get().localUser;
-      return html` <div class="row font user-row grow pointer">
-        <div
-          class="row"
-          data-tip="${localUser.getTrackingByRoom(this.roomId)
-            ? "Stop Tracking"
-            : "Track Cursor"}"
-          data-tip-left
-          style="${styleMap(textColorStyle)}"
-          @click="${() => {
-            this.#onClickFollow(user);
-            this.requestUpdate();
-            initDataTips(this.renderRoot);
-          }}"
-        >
-          <div>${this.#renderFollowing(user)}</div>
-          <div>${user.getNameShortened()}</div>
-        </div>
-        ${this.#renderJumpToRoomElement(user)}
-      </div>`;
-    }
-  }
-
-  #onClickFollow(user) {
-    let localUser = UserService.get().localUser;
-    localUser.toggleTrackingInRoom(this.roomId, user);
-  }
-
-  #renderSplitIndicator(user) {
-    let localUser = UserService.get().localUser;
-    let splitindicator =
-      localUser.isTeacher() &&
-      user !== localUser &&
-      user.isRoomLeft(this.roomId);
-    if (splitindicator) {
-      let leftSize =
-        user.leftSize <= 0.5
-          ? 0.5
-          : user.leftSize >= 99.5
-          ? 99.5
-          : user.leftSize;
-      return html` <div
-        class="splitindicator"
-        style="left:${leftSize}%"
-      ></div>`;
-    } else return "";
-  }
-
-  #renderJumpToRoomElement(user) {
-    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
-    if (RoomService.get().getRoom(this.roomId).isStudentRoom()) return "";
-    let isLight = isColorLight(user.color);
-    let backgroundStyle = {
-      backgroundColor: isLight ? menuForegroundLight() : menuForegroundDark(),
-    };
-    let fontStyle = {
-      color: isLight ? menuForegroundDark() : menuForegroundLight(),
-    };
-    return html` <div
-      class="little-box row center alias center-cross-axis"
-      style="${styleMap(backgroundStyle)}"
-      data-tip="Jump to Room"
-      data-tip-left
-      @click="${() => {
-        this.#jumpToRoomOfUser(user);
-      }}"
-    >
-      <p style="${styleMap(fontStyle)}">${user.selectedRoomRight}</p>
-    </div>`;
-  }
-
-  #jumpToRoomOfUser(user) {
-    UserService.get().localUser.selectedRoomRight = user.selectedRoomRight;
-  }
-
-  #renderNeedsHelp = (user) => {
-    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
-    let localIsStudent = UserService.get().localUser.isStudent();
-    if (user.needsHelp) {
-      return html` <div
-        class="font-emoji pulse pointer help-rotation rm"
-        data-tip="Needs Help"
-        @click="${() => {
-          this.#onClickLowerHand(localIsStudent, user);
-        }}"
-      >
-        👋
-      </div>`;
+    static properties = {
+        roomId: { type: String },
     }
 
-    if (!user.isLocalUser()) return html``;
-    return html` <div
-      class="font-emoji pulse pointer rm"
-      data-tip="Request Help"
-      @click="${() => {
-        this.#onClickRaiseHand(user);
-      }}"
-    >
-      ✋
-    </div>`;
-  };
+    adminIcon = '🔐'
+    writerIcon = '🔏'
 
-  #onClickLowerHand(localIsStudent, user) {
-    if (
-      RoomService.get().getRoom(this.roomId).isTeacherRoom() &&
-      !user.isLocalUser
-    ) {
-      this.#jumpToRoomOfUser(user);
-      return;
+    connectedCallback() {
+        this.addListeners()
+        super.connectedCallback()
     }
 
-    if (localIsStudent && !user.isLocalUser()) return;
-    user.needsHelp = false;
-    this.requestUpdate();
-  }
-
-  #onClickRaiseHand = (user) => {
-    user.needsHelp = true;
-    this.requestUpdate();
-  };
-
-  #renderTeacherSymbol = (user) => {
-    if (user.isStudent()) return html``;
-    return html` <div class="font-emoji pointer rm" data-tip="Teacher">
-      🎓
-    </div>`;
-  };
-
-  #renderRoomAccess(user) {
-    let room = RoomService.get().getRoom(this.roomId);
-    if (room.roomType === RoomType.STUDENT) {
-      return this.#renderRoomAccessStudentRoom(user);
+    addListeners() {
+        UserService.get()
+            .getAllUsers()
+            .forEach((user) => user.addListener(this.listener))
+        UserService.get().localUser.addListener(this.listener)
+        ClassroomService.get().classroom.addListener(this.classroomListener)
+        RoomService.get().getRoom(this.roomId).addListener(this.listener)
     }
 
-    return this.#renderRoomAccessTeacherRoom(user);
-  }
-
-  #renderRoomAccessTeacherRoom = (user) => {
-    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
-
-    let room = RoomService.get().getRoom(this.roomId);
-
-    if (UserService.get().localUser.isStudent()) {
-      if (room.isWriter(user.id)) {
-        return html` <div class="pointer emoji-font" data-tip="Has Access">
-          ${this.writerIcon}
-        </div>`;
-      }
+    disconnectedCallback() {
+        this.removeListeners()
+        super.disconnectedCallback()
     }
 
-    if (UserService.get().localUser.isTeacher()) {
-      if (user.id === UserService.get().localUser.id) return "";
-
-      if (room.isWriter(user.id)) {
-        return html` <div
-          class="pointer emoji-font"
-          data-tip="Remove Access"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).removeAccess(user.id);
-            this.requestUpdate();
-          }}"
-        >
-          ${this.writerIcon}
-        </div>`;
-      }
-
-      return html` <div
-        class="pointer emoji-font grey-out"
-        data-tip="Give Access"
-        @click="${() => {
-          RoomService.get().getRoom(this.roomId).giveAccess(user.id);
-          this.requestUpdate();
-        }}"
-      >
-        ${this.writerIcon}
-      </div>`;
-    }
-  };
-
-  #renderRoomAccessStudentRoom = (user) => {
-    if (ClassroomService.get().classroom.isGalleryMode()) return html``;
-    if (!ClassroomService.get().classroom.roomLocks) return html``;
-    if (RoomService.get().getRoom(this.roomId).isUnclaimed()) return html``;
-
-    if (RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)) {
-      return html`
-        <div class="pointer emoji-font" data-tip="Room Owner">
-          ${this.adminIcon}
-        </div>
-      `;
+    removeListeners() {
+        UserService.get()
+            .getAllUsers()
+            .forEach((user) => user.removeListener(this.listener))
+        UserService.get().localUser.removeListener(this.listener)
+        ClassroomService.get().classroom.removeListener(this.classroomListener)
+        RoomService.get().getRoom(this.roomId).removeListener(this.listener)
     }
 
-    if (
-      RoomService.get()
-        .getRoom(this.roomId)
-        .isWriter(UserService.get().localUser.id) ||
-      UserService.get().localUser.isTeacher()
-    ) {
-      if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
-        // make sure you cannot remove yourself from the list of writers.
-        if (UserService.get().localUser.id === user.id) {
-          return html` <div
-            class="pointer emoji-font"
-            data-tip="You have Access"
-          >
-            ${this.writerIcon}
-          </div>`;
+    firstUpdated(_changedProperties) {
+        super.firstUpdated(_changedProperties)
+        initDataTips(this.renderRoot)
+        const localUser = UserService.get().localUser
+        if (localUser.isNew) UserColorRenameModal(localUser)
+    }
+
+    updated(_changedProperties) {
+        super.updated(_changedProperties)
+        initDataTips(this.renderRoot)
+    }
+
+    listener = () => {
+        this.requestUpdate()
+    }
+
+    classroomListener = () => {
+        this.removeListeners()
+        this.addListeners()
+        this.listener()
+    }
+
+    render = () => {
+        let room = RoomService.get().getRoom(this.roomId)
+        return html`
+            ${UserService.get()
+                .getAllUsers()
+                .filter(
+                    (user) =>
+                        room.isTeacherRoom() ||
+                        ClassroomService.get().isGalleryMode() ||
+                        user.isRoomRight(this.roomId) ||
+                        user.isRoomLeft(this.roomId)
+                )
+                .sort((a, b) => sortUsers(a, b, this.roomId))
+                .reverse()
+                .map((user) => {
+                    let backgroundColorStyle = {
+                        backgroundColor: user.color,
+                        filter: user.isOnline ? '' : 'grayscale(70%)',
+                    }
+                    return html` <div
+                        class="row center border ${user.needsHelp ? 'pulse-on' : ''}"
+                        style="${styleMap(backgroundColorStyle)}"
+                    >
+                        ${this.#renderSplitIndicator(user)} ${this.#renderNameAndRoom(user)}
+                        ${this.#renderNeedsHelp(user)} ${this.#renderTeacherSymbol(user)}
+                        ${this.#renderRoomAccess(user)}
+                    </div>`
+                })}
+        `
+    }
+
+    #renderNameAndRoom(user) {
+        let textColorStyle = {
+            color: isColorLight(user.color) ? menuForegroundDark() : menuForegroundLight(),
         }
 
-        return html` <div
-          class="pointer emoji-font"
-          data-tip="Remove Access"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).removeAccess(user.id);
-            this.requestUpdate();
-          }}"
-        >
-          ${this.writerIcon}
-        </div>`;
-      }
-      if (user.isStudent()) {
-        return html` <div
-          class="pointer emoji-font grey-out"
-          data-tip="Give Access"
-          @click="${() => {
-            RoomService.get().getRoom(this.roomId).giveAccess(user.id);
-            this.requestUpdate();
-          }}"
-        >
-          ${this.writerIcon}
-        </div>`;
-      }
+        if (user.isLocalUser()) {
+            return html` <div
+                class="row user-row grow pointer font"
+                @click="${() => {
+                    UserColorRenameModal(user)
+                }}"
+            >
+                <div data-tip="Set Username and Color" data-tip-left style="${styleMap(textColorStyle)}">
+                    ${user.getNameShortened()}
+                </div>
+                ${this.#renderJumpToRoomElement(user)}
+            </div>`
+        } else {
+            let localUser = UserService.get().localUser
+            return html` <div class="row font user-row grow pointer">
+                <div
+                    class="row"
+                    data-tip="${localUser.getTrackingByRoom(this.roomId) ? 'Stop Tracking' : 'Track Cursor'}"
+                    data-tip-left
+                    style="${styleMap(textColorStyle)}"
+                    @click="${() => {
+                        this.#onClickFollow(user)
+                        this.requestUpdate()
+                        initDataTips(this.renderRoot)
+                    }}"
+                >
+                    <div>${this.#renderFollowing(user)}</div>
+                    <div>${user.getNameShortened()}</div>
+                </div>
+                ${this.#renderJumpToRoomElement(user)}
+            </div>`
+        }
     }
 
-    return html``;
-  };
-
-  #renderFollowing(user) {
-    if (
-      UserService.get().localUser.getTrackingByRoom(this.roomId) === user.id
-    ) {
-      return html` <div class="font-emoji pulse-on rm">👀</div> `;
+    #onClickFollow(user) {
+        let localUser = UserService.get().localUser
+        localUser.toggleTrackingInRoom(this.roomId, user)
     }
 
-    return "";
-  }
+    #renderSplitIndicator(user) {
+        let localUser = UserService.get().localUser
+        let splitindicator = localUser.isTeacher() && user !== localUser && user.isRoomLeft(this.roomId)
+        if (splitindicator) {
+            let leftSize = user.leftSize <= 0.5 ? 0.5 : user.leftSize >= 99.5 ? 99.5 : user.leftSize
+            return html` <div class="splitindicator" style="left:${leftSize}%"></div>`
+        } else return ''
+    }
 
-  static styles = [
-    css`
+    #renderJumpToRoomElement(user) {
+        if (ClassroomService.get().classroom.isGalleryMode()) return html``
+        if (RoomService.get().getRoom(this.roomId).isStudentRoom()) return ''
+        let isLight = isColorLight(user.color)
+        let backgroundStyle = {
+            backgroundColor: isLight ? menuForegroundLight() : menuForegroundDark(),
+        }
+        let fontStyle = {
+            color: isLight ? menuForegroundDark() : menuForegroundLight(),
+        }
+        return html` <div
+            class="little-box row center alias center-cross-axis"
+            style="${styleMap(backgroundStyle)}"
+            data-tip="Jump to Room"
+            data-tip-left
+            @click="${() => {
+                this.#jumpToRoomOfUser(user)
+            }}"
+        >
+            <p style="${styleMap(fontStyle)}">${user.selectedRoomRight}</p>
+        </div>`
+    }
+
+    #jumpToRoomOfUser(user) {
+        UserService.get().localUser.selectedRoomRight = user.selectedRoomRight
+    }
+
+    #renderNeedsHelp = (user) => {
+        if (ClassroomService.get().classroom.isGalleryMode()) return html``
+        let localIsStudent = UserService.get().localUser.isStudent()
+        if (user.needsHelp) {
+            return html` <div
+                class="font-emoji pulse pointer help-rotation rm"
+                data-tip="Needs Help"
+                @click="${() => {
+                    this.#onClickLowerHand(localIsStudent, user)
+                }}"
+            >
+                👋
+            </div>`
+        }
+
+        if (!user.isLocalUser()) return html``
+        return html` <div
+            class="font-emoji pulse pointer rm"
+            data-tip="Request Help"
+            @click="${() => {
+                this.#onClickRaiseHand(user)
+            }}"
+        >
+            ✋
+        </div>`
+    }
+
+    #onClickLowerHand(localIsStudent, user) {
+        if (RoomService.get().getRoom(this.roomId).isTeacherRoom() && !user.isLocalUser) {
+            this.#jumpToRoomOfUser(user)
+            return
+        }
+
+        if (localIsStudent && !user.isLocalUser()) return
+        user.needsHelp = false
+        this.requestUpdate()
+    }
+
+    #onClickRaiseHand = (user) => {
+        user.needsHelp = true
+        this.requestUpdate()
+    }
+
+    #renderTeacherSymbol = (user) => {
+        if (user.isStudent()) return html``
+        return html` <div class="font-emoji pointer rm" data-tip="Teacher">🎓</div>`
+    }
+
+    #renderRoomAccess(user) {
+        let room = RoomService.get().getRoom(this.roomId)
+        if (room.roomType === RoomType.STUDENT) {
+            return this.#renderRoomAccessStudentRoom(user)
+        }
+
+        return this.#renderRoomAccessTeacherRoom(user)
+    }
+
+    #renderRoomAccessTeacherRoom = (user) => {
+        if (ClassroomService.get().classroom.isGalleryMode()) return html``
+
+        let room = RoomService.get().getRoom(this.roomId)
+
+        if (UserService.get().localUser.isStudent()) {
+            if (room.isWriter(user.id)) {
+                return html` <div class="pointer emoji-font" data-tip="Has Access">${this.writerIcon}</div>`
+            }
+        }
+
+        if (UserService.get().localUser.isTeacher()) {
+            if (user.id === UserService.get().localUser.id) return ''
+
+            if (room.isWriter(user.id)) {
+                return html` <div
+                    class="pointer emoji-font"
+                    data-tip="Remove Access"
+                    @click="${() => {
+                        RoomService.get().getRoom(this.roomId).removeAccess(user.id)
+                        this.requestUpdate()
+                    }}"
+                >
+                    ${this.writerIcon}
+                </div>`
+            }
+
+            return html` <div
+                class="pointer emoji-font grey-out"
+                data-tip="Give Access"
+                @click="${() => {
+                    RoomService.get().getRoom(this.roomId).giveAccess(user.id)
+                    this.requestUpdate()
+                }}"
+            >
+                ${this.writerIcon}
+            </div>`
+        }
+    }
+
+    #renderRoomAccessStudentRoom = (user) => {
+        if (ClassroomService.get().classroom.isGalleryMode()) return html``
+        if (!ClassroomService.get().classroom.roomLocks) return html``
+        if (RoomService.get().getRoom(this.roomId).isUnclaimed()) return html``
+
+        if (RoomService.get().getRoom(this.roomId).isOwnedBy(user.id)) {
+            return html` <div class="pointer emoji-font" data-tip="Room Owner">${this.adminIcon}</div> `
+        }
+
+        if (
+            RoomService.get().getRoom(this.roomId).isWriter(UserService.get().localUser.id) ||
+            UserService.get().localUser.isTeacher()
+        ) {
+            if (RoomService.get().getRoom(this.roomId).isWriter(user.id)) {
+                // make sure you cannot remove yourself from the list of writers.
+                if (UserService.get().localUser.id === user.id) {
+                    return html` <div class="pointer emoji-font" data-tip="You have Access">${this.writerIcon}</div>`
+                }
+
+                return html` <div
+                    class="pointer emoji-font"
+                    data-tip="Remove Access"
+                    @click="${() => {
+                        RoomService.get().getRoom(this.roomId).removeAccess(user.id)
+                        this.requestUpdate()
+                    }}"
+                >
+                    ${this.writerIcon}
+                </div>`
+            }
+            if (user.isStudent()) {
+                return html` <div
+                    class="pointer emoji-font grey-out"
+                    data-tip="Give Access"
+                    @click="${() => {
+                        RoomService.get().getRoom(this.roomId).giveAccess(user.id)
+                        this.requestUpdate()
+                    }}"
+                >
+                    ${this.writerIcon}
+                </div>`
+            }
+        }
+
+        return html``
+    }
+
+    #renderFollowing(user) {
+        if (UserService.get().localUser.getTrackingByRoom(this.roomId) === user.id) {
+            return html` <div class="font-emoji pulse-on rm">👀</div> `
+        }
+
+        return ''
+    }
+
+    static styles = [
+        css`
       .grey-out {
         opacity: 0.5;
       }
@@ -425,12 +385,12 @@ export class UserListView extends LitElement {
     ;
     }
     `,
-    basicFlexStyles(),
-    pulseStyle(),
-    cursorTipStyle(),
-    toolTipStyle(),
-    helpRotationStyle(),
-  ];
+        basicFlexStyles(),
+        pulseStyle(),
+        cursorTipStyle(),
+        toolTipStyle(),
+        helpRotationStyle(),
+    ]
 }
 
-safeRegister("cc-user-list", UserListView);
+safeRegister('cc-user-list', UserListView)
