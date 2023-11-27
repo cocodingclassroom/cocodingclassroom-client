@@ -2,9 +2,10 @@ import { css, html, LitElement } from 'lit'
 import { ClassroomService } from '/src/services/classroom-service.js'
 import { Router } from '@vaadin/router'
 import { safeRegister } from '../util/util'
-import { inputStyle, menuBackground1, menuForegroundLight } from '../util/shared-css'
+import { inputStyle, menuBackground1, menuForegroundLight, toolTipStyle } from '../util/shared-css'
 import { bindings } from '../bindings/bindings-config'
 import { number } from 'lib0'
+import { initDataTips } from '../util/tooltips'
 
 export class Setup extends LitElement {
     initialRoomNumbers = 5
@@ -23,9 +24,9 @@ export class Setup extends LitElement {
         return html`
             <div class="container-row">
                 <div class="container-col">
-                    <h3 class="p5">COCODING CLASSROOM - SETUP</h3>
+                    <h3 class="p5">SETUP</h3>
                     <hr />
-                    <div class="p5 tooltip" data-tip="Backend technology to be used for class.">
+                    <div class="p5 tooltip" data-tip="Backend technology to be used for class." data-tip-left>
                         <select class="round submit" name="binding" @change="${this.onChangeBinding}">
                             ${bindings.map(
                                 (binding) => html` <option value="${i++}">${new binding().bindingName}</option>`
@@ -33,6 +34,7 @@ export class Setup extends LitElement {
                         </select>
                         <label for="binding">Selected Binding</label>
                     </div>
+                    <hr />
                     <div class="p5 tooltip" data-tip="Room count (${this.minRoomNumbers}-${this.maxRoomNumbers})">
                         <input
                             class="round w55"
@@ -99,6 +101,7 @@ export class Setup extends LitElement {
                 </div>
             </div>
             <slot></slot>
+            <iframe id="setup-meta" src="./src/assets/html/setup-meta.html"></iframe>
         `
     }
 
@@ -170,6 +173,7 @@ export class Setup extends LitElement {
     }
 
     static styles = [
+        // toolTipStyle(),
         css`
             .container-col {
                 display: flex;
@@ -250,6 +254,16 @@ export class Setup extends LitElement {
             div.tooltip:hover::before {
                 opacity: 1;
                 /* bottom: -35px; */
+            }
+
+            #setup-meta {
+                position: fixed;
+                top: 0;
+                left: 0;
+                border: none;
+                z-index: -1;
+                width: 100vw;
+                height: 100vh;
             }
         `,
         inputStyle(),

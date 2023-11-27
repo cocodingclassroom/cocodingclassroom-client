@@ -29,6 +29,7 @@ export default (env, arg) => {
                 patterns: [
                     './src/assets/resource/*.svg',
                     './src/assets/fonts/*',
+                    './src/assets/html/*',
                     './src/assets/css/global.css',
                     { from: './src/bindings/', to: 'bindings' },
                 ],

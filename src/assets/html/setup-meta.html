@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>cocoding-classroom-meta_001</title>
+	<meta charset="utf-8">
+	<!-- Compiled w/ P5LIVE, http://github.com/ffd8/p5live -->
+	<style type="text/css">
+		body{
+			margin:0;
+			overflow:hidden;
+		}
+		canvas{
+			position:fixed;
+			top:0;
+			left:0;
+			z-index:-1;
+			width:100vw;
+			height:100vh;
+			margin:0;
+		}
+	</style>
+	<script type="text/javascript">
+		// // eco-mode = only render if window focused
+		// window.onblur = function () {
+		// 	noLoop();
+		// };
+		// window.onfocus = function () {
+		// 	loop();
+		// };
+	</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/p5.min.js"></script>
+</head>
+<body style="background: rgb(0, 0, 0);">
+
+<script type="text/javascript">
+// cocoding-classroom-meta_001
+// cc teddavis.org 2023
+
+/* CUSTOM FUNCTIONS FOR P5LIVE */
+// keep fullscreen if window resized
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+			layerClassroom.width = width/2
+		layerClassroom.height = height/2
+
+}
+
+
+/*	_meta_COCODING_Classroom // cc teddavis.org 2023	*/
+
+let fontPath = '../fonts/RobotoMono-Regular.ttf',
+	font, fontSize = 24,
+	classrooms = [],
+	rooms = 6,
+	userColors = [],
+	roomDisplay = 1,
+	layerClassroom, layerClassroomTxt, offZ = 30,
+	splitView = .25,
+	splitCutoff = .025
+
+function preload() {
+	font = loadFont(fontPath)
+}
+
+function setup() {
+	createCanvas(windowWidth, windowHeight, WEBGL)
+	background(0)
+	imageMode(CENTER)
+	pixelDensity(1)
+	document.body.style.imageRendering = "pixelated"
+	noSmooth()
+	mouseX = width/2
+
+
+	// transparent from behind!
+	gl = this._renderer.GL;
+	gl.disable(gl.DEPTH_TEST);
+
+	for(let i = 0; i < rooms; i++) {
+		let txt = 'Teacher'
+		if(i > 0) {
+			txt = `Room ${i}`
+		}
+		classrooms.push(new Classroom(width * .25, height / 2, txt))
+	}
+
+	for(let cr of classrooms) {
+		cr.buildGui()
+	}
+
+	genClassroom()
+}
+
+
+
+
+function draw() {
+	background(0)
+	// orbitControl(2)
+	scale(1.25 + sin(frameCount*.001)*.5)
+
+	rotateY(-radians(sin(frameCount * .005) * 45))
+	rotateX(radians(20))
+	// rotateX(radians(sin(frameCount * .0025) * 15))
+	if(frameCount % 120 == 0) {
+		roomDisplay++
+	}
+
+	splitView = constrain(map(mouseX, 0, width, 0, .5), 0, .5) //noise(frameCount * .005) * .5
+	let offX = width * splitView
+	classrooms[0].resize(width * splitView)
+
+
+	for(let i = 0; i < classrooms.length; i++) {
+		let cr = classrooms[i]
+		cr.update()
+		push()
+		translate(-width * .25, 0)
+
+		if(i == 0 || i == (1 + roomDisplay % (classrooms.length - 1))) {
+			if(i > 0) {
+				cr.resize(width * (.5 - splitView))
+			}
+			if(i == 0) {
+				translate(offX - cr.canvas.width / 2, 0)
+				if(splitView > splitCutoff){
+					cr.display()
+					cr.render()
+				}
+			} else {
+				translate(offX + cr.canvas.width / 2, 0)
+				if(splitView < (.5-splitCutoff)){
+					cr.display()
+					cr.render()
+				}
+			}
+		}
+		pop()
+	}
+
+	translate(0, 0, offZ * 1)
+	image(layerClassroom, 0, 0)
+	translate(0, -layerClassroom.height / 2 - layerClassroomTxt.height)
+	image(layerClassroomTxt, 0, 0)
+}
+
+function mouseMoved(){
+	// splitView = constrain(map(mouseX, 0, width, 0, .5), 0, .5)
+	// classrooms[0].resize(width * splitView)
+	// for(let i = 0; i < classrooms.length; i++) {
+	// 	let cr = classrooms[i]
+	// 	if(i > 0) {
+	// 			cr.resize(width * (.5 - splitView))
+	// 		}
+	// }
+}
+
+function genClassroom() {
+	layerClassroom = createGraphics(width / 2, height / 2)
+	layerClassroom.stroke(255)
+	layerClassroom.noFill()
+	layerClassroom.rect(0, 0, layerClassroom.width-2, layerClassroom.height-2)
+	layerClassroomTxt = createGraphics(width / 2, fontSize)
+	layerClassroomTxt.fill(255)
+	layerClassroomTxt.textFont(font)
+	layerClassroomTxt.textSize(fontSize)
+	layerClassroomTxt.textAlign(LEFT, BOTTOM)
+	layerClassroomTxt.text('COCODING CLASSROOM', 0, fontSize)
+}
+
+class Classroom {
+	constructor(w, h, txt) {
+		this.canvas = createGraphics(w, h + fontSize)
+		this.fg = createGraphics(w, h)
+		this.bg = createGraphics(w, h)
+		this.gui = createGraphics(75, h / 3)
+		this.txt = createGraphics(w, fontSize)
+		this.bg.colorMode(HSB)
+		this.height = h
+		this.y = 5
+		this.fc = floor(random(9999))
+		this.c = color(random(255), random(255), random(255))
+		userColors.push(this.c)
+		this.buildBox()
+		this.buildType(txt)
+		this.id = classrooms.length
+	}
+
+	buildType(txt) {
+		this.txt.fill(255)
+		this.txt.textFont(font)
+		this.txt.textSize(fontSize)
+		this.txt.textAlign(LEFT, BOTTOM)
+		this.txt.text(txt, 0, this.txt.height)
+	}
+
+	buildBox() {
+		this.bg.clear()
+		this.fg.clear()
+
+	}
+
+	buildGui() {
+		// this.gui.background(80)
+		this.gui.fill(80)
+		this.gui.rect(0, 0, this.gui.width, 10)
+		let y = 10
+		this.gui.fill(255)
+		this.gui.textSize(8)
+		this.gui.text('Cocoding Classroom', 5, 8)
+		for(let i = 0; i < 4; i++) {
+			for(let j = 0; j < 2; j++) {
+				let w = this.gui.width / 4
+				let h = 15
+				this.gui.fill(150)
+				this.gui.rect(i * w, 10 + j * h, w, h)
+			}
+		}
+
+		y += 30
+
+		if(this.id == 0) {
+			for(let i = 0; i < userColors.length; i++) {
+				// let y = 40 + i * 10
+				this.gui.fill(userColors[i])
+				this.gui.rect(0, y, this.gui.width, 10)
+				y += 10
+			}
+		} else {
+			this.gui.fill(this.c)
+			this.gui.rect(0, y, this.gui.width, 10)
+			y += 10
+			if(random(1) > .8) {
+				let rc = random(userColors)
+				if(rc == this.c)
+					rc = random(userColors)
+				this.gui.fill(rc)
+				this.gui.rect(0, 50, this.gui.width, 10)
+				y += 10
+			}
+		}
+
+		// this.gui.fill(50)
+		// this.gui.rect(0, y, this.gui.width, 10)
+		// 		y += 10
+		// this.gui.fill(50)
+		// this.gui.rect(0, y, this.gui.width, 50)
+	}
+
+	update() {
+		if(random(1) > .97) {
+			this.y += 12
+			if(this.y > this.fg.height) {
+				this.y = 5
+				this.buildBox()
+				this.c = [random(255), random(255), random(255)]
+			}
+
+			this.fg.fill(this.c)
+			this.fg.noStroke()
+			if(random(1) > .25)
+				this.fg.rect(5, this.y, random(50, 250), 10)
+		}
+
+		if(this.y > this.fg.height / 4) {
+			this.fc++
+			this.bg.noStroke()
+			this.bg.fill(noise(this.fc * .01) * 360, 100, 100)
+			// let sclX = this.bg.width/width;
+			// let sclY = this.bg.height/height;
+			// this.bg.circle(mouseX*sclX, mouseY*sclY, noise(this.fc * .012) * 100)
+			this.bg.circle(noise(this.fc * .01) * this.bg.width, noise(this.fc * .012) * this.bg.height, noise(this.fc * .012) * 100)
+		}
+	}
+
+	display() {
+		// this.canvas.clear()
+		this.canvas.reset()
+
+		this.canvas.push()
+		this.canvas.translate(0, fontSize, -offZ)
+
+		this.canvas.push()
+		this.canvas.imageMode(CENTER)
+		this.canvas.translate(this.canvas.width / 2, this.canvas.height / 2)
+		this.canvas.image(this.bg, 0, 0)
+		this.canvas.pop()
+
+		this.canvas.translate(0, 0, offZ)
+		this.canvas.image(this.fg, 0, 0)
+
+		this.canvas.translate(0, 0, 1)
+		this.canvas.image(this.gui, this.canvas.width - this.gui.width - 5, 5)
+
+		// this.canvas.translate(0, -this.height / 2 - this.txt.height / 2, 0)
+		this.canvas.translate(0, 0, 1)
+		this.canvas.image(this.txt, 0, -fontSize)
+		this.canvas.pop()
+
+	}
+
+	resize(w) {
+		// Now simply resize like this
+		this.canvas.width = w;
+		this.canvas.height = this.height;
+		this.canvas.canvas.width = w;
+		this.canvas.canvas.height = this.height;
+		// this.canvas.clear()
+		// this.canvas.reset()
+		// this.display()
+		// this.canvas = createGraphics(w, this.height)
+		this.canvas.noFill()
+		this.canvas.stroke(150)
+		this.canvas.strokeWeight(1)
+		this.canvas.rect(1, fontSize, this.canvas.width - 2, this.fg.height - 2 - fontSize)
+		// this.canvas.imageMode(CENTER)
+		// _renderer.getTexture(this.canvas).setInterpolation(NEAREST, NEAREST);
+
+	}
+
+	render() {
+		image(this.canvas, 0, 0)
+	}
+}
+</script>
+
+</body>
+</html>
