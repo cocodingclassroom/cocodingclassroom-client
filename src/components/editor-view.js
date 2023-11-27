@@ -207,27 +207,50 @@ export class EditorView extends LitElement {
     }
 
     #updateOnRoomAccess = () => {
-        if (!ClassroomService.get().classroom.roomLocks && RoomService.get().getRoom(this.roomId).isStudentRoom()) {
-            return
-        }
-
-        if (RoomService.get().getRoom(this.roomId).isUnclaimed()) {
-            this.editor.setReadOnly(false)
-            return
-        }
-
         let localUser = UserService.get().localUser
+        let room = RoomService.get().getRoom(this.roomId)
 
-        if (localUser.isTeacher()) {
-            this.editor.setReadOnly(false)
-            return
+        if (ClassroomService.get().classroom.roomLocks) {
+            if (room.isTeacherRoom()) {
+                if (localUser.isTeacher()) {
+                    this.#allowWritingInEditor()
+                } else {
+                    if (room.isWriter(localUser.id)) {
+                        this.#allowWritingInEditor()
+                    } else {
+                        this.#dontAllowWritingInEditor()
+                    }
+                }
+            } else {
+                // student room
+                if (room.isWriter(localUser.id) || localUser.isTeacher()) {
+                    this.#allowWritingInEditor()
+                } else {
+                    this.#dontAllowWritingInEditor()
+                }
+            }
+        } else {
+            if (room.isTeacherRoom()) {
+                if (localUser.isTeacher()) {
+                    this.#allowWritingInEditor()
+                } else {
+                    if (room.isWriter(localUser.id)) {
+                        this.#allowWritingInEditor()
+                    } else {
+                        this.#dontAllowWritingInEditor()
+                    }
+                }
+            } else {
+                this.#allowWritingInEditor()
+            }
         }
+    }
 
-        if (this.room.isWriter(localUser.id) || this.room.isOwnedByLocalUser()) {
-            this.editor.setReadOnly(false)
-            return
-        }
+    #allowWritingInEditor = () => {
+        this.editor.setReadOnly(false)
+    }
 
+    #dontAllowWritingInEditor = () => {
         this.editor.setReadOnly(true)
     }
 
