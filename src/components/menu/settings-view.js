@@ -174,11 +174,11 @@ export class SettingsView extends LitElement {
     }
 
     _setSelectedMode = () => {
-        if (ClassroomService.get().classroom.mode === ClassroomMode.EDIT) {
+        if (ClassroomService.get().classroom.isEditMode() && UserService.get().localUser.isTeacher()) {
             this.renderRoot.getElementById('editInput').checked = true
             this.renderRoot.getElementById('galleryInput').checked = false
         }
-        if (ClassroomService.get().classroom.mode === ClassroomMode.GALLERY) {
+        if (ClassroomService.get().classroom.isGalleryMode() && UserService.get().localUser.isTeacher()) {
             this.renderRoot.getElementById('editInput').checked = false
             this.renderRoot.getElementById('galleryInput').checked = true
         }
