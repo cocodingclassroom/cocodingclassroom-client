@@ -63,8 +63,12 @@ export class ShortcutExtension {
     shortcutsTable = () => {
         var prettyPrint = []
         prettyPrint.push('| Name | Windows | MacOs |')
+        prettyPrint.push('| --- | --- | --- |')
         this._shortcuts.forEach((shortcut) => {
-            prettyPrint.push(`| ${shortcut.shortcutName} | ${shortcut.keyBindingsWin} | ${shortcut.keyBindingsMac} |`)
+            prettyPrint.push(
+                `| ${shortcut.shortcutName} | ${shortcut.keyBindingsWin.join(', ')} ` +
+                    `| ${shortcut.keyBindingsMac.join(', ')} |`
+            )
         })
         // remove duplicates
         prettyPrint = prettyPrint.filter((item, index) => prettyPrint.indexOf(item) === index)
