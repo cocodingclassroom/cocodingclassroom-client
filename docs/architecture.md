@@ -140,6 +140,11 @@ Finally, the view elements has to be registered as custom HTML element.
 window.customElements.define('cc-room', RoomView)
 ```
 
+
+The following diagram shows the core classes of cocoding II.
+<img src="figures/classes.png" alt="Class diagram of coccoding II main classes" />
+
+
 ### Service
 
 Services serve several tasks:
@@ -158,3 +163,25 @@ Collection of static utility functions and some utility classes, which have not 
 see [binding.md](binding.md)
 
 ## Shortcuts
+
+Shortcuts are collected in class [../../src/extensions/shortcut-extension.js](extensions/shortcut-extension.js)
+
+To list all shortcuts you can open the developer console and type
+```javascript
+window.ShortcutExtension.shortcutsTable()
+
+"| Name | Windows | MacOs |
+| --- | --- | --- |
+| export snapshot | ctrl+shift+e | ctrl+shift+e |
+| toggle editor | ctrl+e | ctrl+e |
+| tidy code | ctrl+shift+t | ctrl+shift+t, ctrl+t |
+| decrease fontsize | ctrl+-, ctrl+shift+- | ctrl+-, ctrl+shift+- |
+| reset fontsize | ctrl+=, ctrl+shift+= | ctrl+=, ctrl+shift+= |
+| increase fontsize | ctrl++, ctrl+shift++ | ctrl++, ctrl+shift++ |
+| export picture | ctrl+shift+s | ctrl+shift+s |
+| toggle menu | ctrl+m | ctrl+m |
+| hard-compile | ctrl+shift+enter | ctrl+shift+enter |
+| soft-compile | ctrl+enter | ctrl+enter |"
+
+
+```

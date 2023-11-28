@@ -1,0 +1,274 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>150</x><y>140</y><w>210</w><h>190</h></coordinates><panel_attributes>Setup [cc-setup]
+setup.js
+--
+_styles: []_
+initialRoomNumbers = 5
+liveCodingOn = true
+secondsDelay = 0.5
+lineNumbersVisible = true
+roomLocksOn = false
+bindingIndex = 0
+password = ''
+--
+render()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>0</y><w>200</w><h>50</h></coordinates><panel_attributes>index.js
+--
+router</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>250</x><y>40</y><w>140</w><h>120</h></coordinates><panel_attributes>lt=-
+&lt; [/] </panel_attributes><additional_attributes>120;10;10;100</additional_attributes></element><element><id>UMLClass</id><coordinates><x>400</x><y>140</y><w>210</w><h>150</h></coordinates><panel_attributes>ClassRoomView [cc-classroom]
+classroom-view.js
+--
+_styles: []_
+localUser::User
+--
+render()
+#renderGalleryMode()
+#renderEditMode()
+  #renderLeftRoom()
+  #renferRightRoom()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>40</y><w>160</w><h>120</h></coordinates><panel_attributes>lt=-
+[/:id] </panel_attributes><additional_attributes>10;10;140;100</additional_attributes></element><element><id>UMLClass</id><coordinates><x>660</x><y>220</y><w>210</w><h>150</h></coordinates><panel_attributes>RoomView [cc-room]
+room-view.js
+--
+_styles: []_
+roomId: String
+width: Number
+isLeft: Number
+binding: Object
+--
+render()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>600</x><y>150</y><w>180</w><h>90</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;160;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>950</x><y>30</y><w>210</w><h>150</h></coordinates><panel_attributes>FrameView [cc-frame]
+framew-view.js
+--
+_styles: []_
+ roomId: String
+ frameWidth: Number
+ leftAlign: Number
+ frameIdentifier: String
+--
+render()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>950</x><y>210</y><w>210</w><h>220</h></coordinates><panel_attributes>EditorView [cc-editor]
+editor-view.js
+--
+_styles: []_
+roomId: String
+editorWidth: Number
+leftAlign: Number
+editorIdentifier: String
+message: String
+editorVisible: Boolean
+--
+render()
+#setupEditor()
+#runCode()
+...
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>950</x><y>470</y><w>210</w><h>150</h></coordinates><panel_attributes>MenuView [cc-menu]
+./menu/menu-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+#renderChat()
+#renderMessages()
+#send*Message()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1270</x><y>220</y><w>210</w><h>150</h></coordinates><panel_attributes>ConsoleView [cc-output]
+console-view.js
+--
+_styles: []_
+ roomId: String
+ frameWidth: Number
+ leftAlign: Number
+ frameIdentifier: String
+--
+render()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>100</y><w>110</w><h>220</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>90;10;10;200</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>290</y><w>110</w><h>280</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>90;260;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>290</y><w>110</w><h>50</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>90;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1150</x><y>290</y><w>140</w><h>40</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;20;120;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>430</x><y>700</y><w>270</w><h>140</h></coordinates><panel_attributes>GalleryModeMenuView [cc-gallery-menu-view]
+./menu/gallery-mode-menu-view.js
+--
+_styles: []_
+roomId: String
+settingsOpen: Boolean
+--
+render()
+#renderSettings()
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>990</x><y>970</y><w>210</w><h>110</h></coordinates><panel_attributes>RoomSelectView [cc-room-select]
+./menu/room-select-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>560</x><y>610</y><w>500</w><h>110</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;90;480;10</additional_attributes></element><element><id>Relation</id><coordinates><x>430</x><y>830</y><w>140</w><h>160</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>120;10;10;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>340</x><y>970</y><w>180</w><h>120</h></coordinates><panel_attributes>SettingsView [cc-settings]
+./menu/settings-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+#renderSettings()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>830</y><w>580</w><h>160</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;560;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>100</x><y>970</y><w>220</w><h>130</h></coordinates><panel_attributes>WalkRoomView [cc-walk-room-view]
+./menu/walk-room-view.js
+--
+_styles: []_
+roomId: String
+- classroom: Classroom
+--
+render()
+#walkRooms()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>190</x><y>830</y><w>380</w><h>160</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>360;10;10;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>970</y><w>190</w><h>100</h></coordinates><panel_attributes>ExportCodeView [cc-export-code]
+./menu/export-code-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>830</y><w>350</w><h>160</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;330;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>700</y><w>180</w><h>150</h></coordinates><panel_attributes>UserListView [cc-user-list]
+./menu/user-list-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+#renderNameAndRoom()
+#renderSplitIndicator()
+#renderUserActions()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>760</x><y>700</y><w>270</w><h>160</h></coordinates><panel_attributes>TeacherMenuView [cc-teacher-menu-view]
+./menu/teacher-menu-view.js
+--
+_styles: []_
+roomId: String
+settingsOpen: Boolean
+--
+render()
+#renderSettings()
+#renderTeacherActions()
+#renderStudentActions()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1070</x><y>700</y><w>270</w><h>110</h></coordinates><panel_attributes>StudentMenuView [cc-student-menu-view]
+./menu/student-menu-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>850</y><w>470</w><h>140</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>450;10;10;120</additional_attributes></element><element><id>Relation</id><coordinates><x>880</x><y>850</y><w>240</w><h>140</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;220;120</additional_attributes></element><element><id>Relation</id><coordinates><x>190</x><y>850</y><w>720</w><h>140</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>700;10;10;120</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1240</x><y>970</y><w>180</w><h>100</h></coordinates><panel_attributes>NewSketchView [cc-new-sketch]
+./menu/new-sketch-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>560</x><y>970</y><w>180</w><h>100</h></coordinates><panel_attributes>SyncCodeView [cc-sync-code]
+./menu/sync-code-view.js
+--
+_styles: []_
+roomId: String
+--
+render()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>880</x><y>850</y><w>480</w><h>140</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;460;120</additional_attributes></element><element><id>Relation</id><coordinates><x>630</x><y>850</y><w>280</w><h>140</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>260;10;10;120</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>850</y><w>50</w><h>140</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>30;10;10;120</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>800</y><w>340</w><h>190</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>320;10;10;170</additional_attributes></element><element><id>Relation</id><coordinates><x>1090</x><y>800</y><w>110</w><h>190</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>90;10;10;170</additional_attributes></element><element><id>Relation</id><coordinates><x>1170</x><y>800</y><w>190</w><h>190</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;10;170;170</additional_attributes></element><element><id>Relation</id><coordinates><x>890</x><y>610</y><w>170</w><h>110</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;90;150;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1030</x><y>610</y><w>190</w><h>110</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>170;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>330</x><y>610</y><w>730</w><h>110</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;90;710;10</additional_attributes></element><element><id>Relation</id><coordinates><x>80</x><y>1130</y><w>1370</w><h>30</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;1350;10</additional_attributes></element><element><id>Text</id><coordinates><x>100</x><y>1110</y><w>740</w><h>20</h></coordinates><panel_attributes>All classes above this line implement view elements (i.e. elements containing HTML and CSS)
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>Text</id><coordinates><x>100</x><y>1140</y><w>740</w><h>50</h></coordinates><panel_attributes>All classes below this line implement logic only (no elements that are displayed)
+Connections between views and services are not shown here. 
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>820</x><y>1190</y><w>180</w><h>100</h></coordinates><panel_attributes>&lt;&lt;singelton&gt;&gt;
+BindingService
+./services/binding-service.js
+--
+--
+_get()_
+setBindingByIndex(index)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1210</x><y>440</y><w>170</w><h>80</h></coordinates><panel_attributes>*Modal
+./modals/*-modal.js
+--
+*-service
+--
+show*Modal()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1340</x><y>570</y><w>120</w><h>90</h></coordinates><panel_attributes>./utils/modal.js
+--
+cancelButton
+okButton
+--
+showModal()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1290</x><y>500</y><w>140</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
+call showModal()</panel_attributes><additional_attributes>50;70;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1190</x><y>400</y><w>280</w><h>270</h></coordinates><panel_attributes>Modals
+(are used by most Views)
+bg=white
+layer=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>1200</y><w>180</w><h>120</h></coordinates><panel_attributes>&lt;&lt;singelton&gt;&gt;
+ClassroomService
+./services/classroom-service.js
+--
+--
+_get()_
+createNewRoom()
+connectToExistingRoom()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>120</x><y>1190</y><w>180</w><h>140</h></coordinates><panel_attributes>&lt;&lt;singelton&gt;&gt;
+RoomService
+./services/room-service.js
+--
+--
+_get()_
+getRoom()
+addRoom()
+defineRooms()
+clearAllGalleryChats()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>290</x><y>1220</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>1370</y><w>180</w><h>170</h></coordinates><panel_attributes>&lt;&lt;singelton&gt;&gt;
+SyncService
+./services/sync-service.js
+--
+--
+_get()_
+_connectAndSetup()_
+_saveHash()_
+_getHash()_
+getSharedMap()
+getSharedText()
+getSharedArray()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>580</x><y>1360</y><w>180</w><h>180</h></coordinates><panel_attributes>&lt;&lt;singelton&gt;&gt;
+UserService
+./services/user-service.js
+--
+localUsers
+otherUsers
+--
+_get()_
+updateOtherUsers()
+getAllUsers()
+getUserById()
+getFirstTeacher()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>520</x><y>1400</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>Relation</id><coordinates><x>430</x><y>1310</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>290</x><y>1240</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>60;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>430</x><y>1310</y><w>270</w><h>70</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>250;50;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>580</x><y>1180</y><w>180</w><h>130</h></coordinates><panel_attributes>&lt;&lt;singelton&gt;&gt;
+NotifyService
+./services/notify-service.js
+--
+--
+_get()_
+addListener()
+removeListener()
+notify()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>670</x><y>1300</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>430</x><y>1300</y><w>270</w><h>90</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;70;250;10</additional_attributes></element></diagram>
