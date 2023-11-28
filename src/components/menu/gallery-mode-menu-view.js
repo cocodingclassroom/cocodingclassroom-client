@@ -75,26 +75,6 @@ export class GalleryModeMenuView extends LitElement {
         </div>`
     }
 
-    static styles = [
-        css`
-            .cc-controls-row div.cc-header-title {
-                font-size: 10pt;
-                min-width: calc(100% - 65px);
-                padding: 4px;
-                cursor: help;
-                margin-bottom: -1px;
-                border-bottom: 1px solid ${menuBorder1()};
-            }
-
-            .help {
-                border-bottom: 1px solid ${menuBorder1()} !important;
-                margin-bottom: -1px;
-            }
-        `,
-        menuRowStyles(),
-        cursorTipStyle(),
-        toolTipStyle(),
-    ]
 
     #renderActions = () => {
         let user = UserService.get().localUser
@@ -125,6 +105,28 @@ export class GalleryModeMenuView extends LitElement {
             <cc-export-code roomId="${this.roomId}"></cc-export-code>
         </div>`
     }
+
+
+    static styles = [
+        css`
+            .cc-controls-row div.cc-header-title {
+                font-size: 10pt;
+                min-width: calc(100% - 65px);
+                padding: 4px;
+                cursor: help;
+                margin-bottom: -1px;
+                border-bottom: 1px solid ${menuBorder1()};
+            }
+
+            .help {
+                border-bottom: 1px solid ${menuBorder1()} !important;
+                margin-bottom: -1px;
+            }
+        `,
+        menuRowStyles(),
+        cursorTipStyle(),
+        toolTipStyle(),
+    ]
 }
 
 safeRegister('cc-gallery-menu-view', GalleryModeMenuView)
