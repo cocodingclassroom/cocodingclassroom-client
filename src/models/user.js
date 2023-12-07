@@ -6,7 +6,8 @@ import { RoomService } from '../services/room-service.js'
 export class User extends YSyncModel {
     id
     awarenessId
-    isOnline
+    hasWindowOpen
+    l_isOnline
     role = UserRole.STUDENT
     isNew = true
     name

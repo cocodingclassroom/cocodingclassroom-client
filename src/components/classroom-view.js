@@ -49,6 +49,8 @@ export class ClassRoomView extends LitElement {
                 this.#localUserUpdate(changes)
             })
 
+            UserService.get().registerTransientUserStore()
+
             this.rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight)
 
             this.authed = true

@@ -6,6 +6,7 @@ export class UserService {
     static _instance
     localUser
     otherUsers
+    currentlyActiveUsers
 
     constructor() {
         if (UserService._instance !== undefined && UserService._instance !== null) {
@@ -18,7 +19,7 @@ export class UserService {
         document.addEventListener('visibilitychange', () => {
             debugLog('Current State: ', document.visibilityState)
             if (this.localUser) {
-                this.localUser.isOnline = document.visibilityState === 'visible'
+                this.localUser.hasWindowOpen = document.visibilityState === 'visible'
             }
         })
     }
@@ -33,7 +34,7 @@ export class UserService {
         if (user == null) {
             user = this._createNewLocalUser()
         }
-        user.isOnline = true
+        user.hasWindowOpen = true
 
         if (classroom.teacherIds.toArray().includes(user.id)) {
             user.role = UserRole.TEACHER
@@ -88,6 +89,10 @@ export class UserService {
         return [this.localUser, ...this.otherUsers]
     }
 
+    getAllOnlineUsers = () => {
+        return this.getAllUsers().filter((user) => user.l_isOnline)
+    }
+
     getUserByID = (id) => {
         return this.getAllUsers().find((user) => user.id === id)
     }
@@ -112,5 +117,46 @@ export class UserService {
         let allTeachers = this.getAllUsers().filter((user) => user.isTeacher())
         if (allTeachers.length === 0) return this.getAllUsers()[0]
         return allTeachers[0]
+    }
+
+    registerTransientUserStore = () => {
+        SyncService.get().getAwareness().setLocalStateField('user', {
+            id: this.localUser.id,
+            awarenessId: SyncService.get().getAwareness().clientID,
+            // name: this.localUser.name,
+        })
+
+        this.localUser.l_isOnline = true
+
+        let initialStates = Array.from(SyncService.get().getAwareness().getStates().values())
+        this.#setOnlineFromAwarenessList(initialStates)
+
+        SyncService.get()
+            .getAwareness()
+            .on('change', (changes) => {
+                let states = Array.from(SyncService.get().getAwareness().getStates().values())
+
+                changes.added.forEach((added) => {
+                    this.#setOnlineFromAwarenessList(states)
+                })
+
+                changes.removed.forEach((removed) => {
+                    this.#setOnlineFromAwarenessList(states)
+                })
+            })
+    }
+
+    #setOnlineFromAwarenessList(initialStates) {
+        this.getAllUsers().forEach((user) => (user.l_isOnline = false))
+        initialStates.forEach((state) => {
+            let activeUser = state.user
+            let user = this.getUserByID(activeUser.id)
+            user.l_isOnline = true
+        })
+    }
+
+    #getUserFromAwarenessId(states, awarenessId) {
+        let localId = states.filter((state) => state.user['awarenessId'] === awarenessId)[0].user['id']
+        return this.getAllUsers().filter((user) => user.id === localId)[0]
     }
 }

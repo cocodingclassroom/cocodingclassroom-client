@@ -82,7 +82,7 @@ export class UserListView extends LitElement {
         let room = RoomService.get().getRoom(this.roomId)
         return html`
             ${UserService.get()
-                .getAllUsers()
+                .getAllOnlineUsers()
                 .filter(
                     (user) =>
                         room.isTeacherRoom() ||
