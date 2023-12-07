@@ -43,17 +43,50 @@ export class StudentMenuView extends LitElement {
             ${this.#renderRoomRename()} ${this.#renderRoomClaim()}
         </div>
         <div class="cc-controls-row">
-            <div data-tip="New Sketch" class="bg2">
-                <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
-            </div>
+            ${this.#renderNewSketch()}
             <div data-tip="Export Code" class="bg2">
                 <cc-export-code roomId="${this.roomId}"></cc-export-code>
             </div>
         </div>
     `
 
+    #renderNewSketch = () => {
+        let newSketchHtml = html`
+            <div data-tip="New Sketch" class="bg2">
+                <cc-new-sketch roomId="${this.roomId}"></cc-new-sketch>
+            </div>
+        `
+
+        if (ClassroomService.get().classroom.roomLocks && RoomService.get().getRoom(this.roomId).isClaimed()) {
+            if (UserService.get().localUser.isTeacher()) {
+                return newSketchHtml
+            }
+            if (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser()) {
+                return newSketchHtml
+            }
+
+            return ''
+        }
+
+        return newSketchHtml
+    }
+
     #renderRoomRename = () => {
         if (RoomService.get().getRoom(this.roomId).isLobby()) return ''
+        if (ClassroomService.get().classroom.roomLocks && RoomService.get().getRoom(this.roomId).isClaimed()) {
+            if (UserService.get().localUser.isTeacher()) {
+                return this.#renderRoomRenameButton()
+            }
+            if (RoomService.get().getRoom(this.roomId).isOwnedByLocalUser()) {
+                return this.#renderRoomRenameButton()
+            }
+
+            return ''
+        }
+        return this.#renderRoomRenameButton()
+    }
+
+    #renderRoomRenameButton() {
         return html` <div
             class="grow bg2"
             data-tip="Rename"
