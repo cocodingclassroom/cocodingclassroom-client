@@ -6,7 +6,6 @@ export class UserService {
     static _instance
     localUser
     otherUsers
-    currentlyActiveUsers
 
     constructor() {
         if (UserService._instance !== undefined && UserService._instance !== null) {
