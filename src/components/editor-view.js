@@ -21,6 +21,7 @@ import { CursorSyncExtension } from '../extensions/cursor-sync-extension'
 import { debugLog } from '../index'
 import { BindingService } from '../services/binding-service'
 import { loadAutoComplete } from '../util/ace-autocomplete'
+import { FrameEventExtension } from '../extensions/frame-event-extension'
 
 const langTools = ace.require('ace/ext/language_tools')
 
@@ -45,6 +46,7 @@ export class EditorView extends LitElement {
         this.room = RoomService.get().getRoom(this.roomId)
         this.editorVisible = true
         this.shortcutExtension = ShortcutExtension.get()
+
         this.shortcutExtension.addShortcuts(this.#shortCuts())
         let localUser = UserService.get().localUser
         localUser.addListener(() => {
@@ -102,6 +104,15 @@ export class EditorView extends LitElement {
     firstUpdated(_changedProperties) {
         super.firstUpdated(_changedProperties)
         this.#setupEditor()
+
+        if (this.frameEventExtension != null) {
+            this.frameEventExtension.cleanUp()
+        }
+        this.frameEventExtension = new FrameEventExtension(
+            UserService.get().localUser,
+            this.room,
+            this.#isEditorFocused
+        )
     }
 
     updated(changedProperties) {

@@ -39,12 +39,8 @@ export class FrameView extends LitElement {
     }
 
     #setup() {
-        if (this.frameEventExtension != null) {
-            this.frameEventExtension.cleanUp()
-        }
         let room = RoomService.get().getRoom(this.roomId)
         room.l_iframeForRoom = this.iframeReference
-        this.frameEventExtension = new FrameEventExtension(UserService.get().localUser, room)
     }
 
     render = () => {

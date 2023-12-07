@@ -57,17 +57,24 @@ export class FrameEventExtension {
         'which',
     ]
 
-    constructor(user, room) {
+    validationFunction = () => true
+
+    constructor(user, room, validationFunction = undefined) {
         this.user = user
         this.room = room
         this.registeredKeyListeners = []
         this.registeredMouseListeners = []
         this._setupEventListeners()
+
+        if (validationFunction) {
+            this.validationFunction = validationFunction
+        }
     }
 
     _setupEventListeners() {
         FrameEventExtension._toPassMouseEvents.forEach((eventName) => {
             const f = (event) => {
+                if (!this.validationFunction()) return
                 let copy = this._copyOpts(event, FrameEventExtension._toPassMouseFields)
                 let eventCopy = new MouseEvent(eventName, copy)
                 this.room.l_iframeForRoom.contentWindow.dispatchEvent(eventCopy)
@@ -77,6 +84,7 @@ export class FrameEventExtension {
         })
         FrameEventExtension._toPassKeyEvents.forEach((eventName) => {
             const f = (event) => {
+                if (!this.validationFunction()) return
                 let copy = this._copyOpts(event, FrameEventExtension._toPassKeyFields)
                 let eventCopy = new KeyboardEvent(eventName, copy)
                 this.room.l_iframeForRoom.contentWindow.dispatchEvent(eventCopy)
