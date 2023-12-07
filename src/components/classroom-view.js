@@ -38,11 +38,8 @@ export class ClassRoomView extends LitElement {
             let teacher = UserService.get().getFirstTeacher()
 
             teacher.addListener((changes) => {
-                changes.forEach((change) => {
-                    if (change.keysChanged.has('selectedRoomRight')) {
-                        this.requestUpdate()
-                    }
-                })
+                if (!ClassroomService.get().classroom.isGalleryMode()) return
+                this.#teacherUserUpdate(changes, teacher)
             })
 
             UserService.get().localUser.addListener((changes) => {
@@ -65,16 +62,30 @@ export class ClassRoomView extends LitElement {
         })
     }
 
+    /*
+  Christoph 23.11.2023:
+    Set the rightRoom to undefined to trigger a complete rebuild of the editor on the right side
+  this is need to ensure proper setup
+  */
+    #teacherUserUpdate(changes, teacher) {
+        changes.forEach((change) => {
+            if (change.keysChanged.has('selectedRoomRight')) {
+                this.rightRoom = undefined
+                this.requestUpdate()
+
+                setTimeout(() => {
+                    this.rightRoom = RoomService.get().getRoom(teacher.selectedRoomRight)
+                    this.requestUpdate()
+                }, 0)
+            }
+        })
+    }
+
     #localUserUpdate(changes) {
         changes.forEach((change) => {
             if (change.keysChanged.has('selectedRoomRight')) {
                 this.rightRoom = undefined
                 this.requestUpdate()
-                /*
-Christoph 23.11.2023:
-Set the rightRoom to undefined to trigger a complete rebuild of the editor on the right side
-this is need to ensure proper setup
-*/
                 setTimeout(() => {
                     this.rightRoom = RoomService.get().getRoom(this.localUser.selectedRoomRight)
                     this.requestUpdate()
@@ -85,6 +96,10 @@ this is need to ensure proper setup
             this.requestUpdate()
         })
     }
+
+    /*
+     * End special impl with rightRoom
+     */
 
     disconnectedCallback() {
         window.removeEventListener('resize', this.onResize)
@@ -143,17 +158,7 @@ this is need to ensure proper setup
     }
 
     #renderGalleryMode() {
-        let hiddenStyle = { display: 'none' }
-        let fullStyle = { width: '100%', height: '100%' }
-
-        let teacher = UserService.get().getFirstTeacher()
-        return html` ${RoomService.get().rooms.map((room) => {
-            return html`
-                <div style="${styleMap(teacher.isRoomRight(room.id) ? fullStyle : hiddenStyle)}">
-                    <cc-room roomId="${room.id}" width="${100}" isLeft="${0}"></cc-room>
-                </div>
-            `
-        })}`
+        return html` ${this.#renderRightRoom(window.innerWidth)} `
     }
 
     #renderEditMode() {
